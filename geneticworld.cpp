@@ -1,10 +1,8 @@
 #include "geneticworld.h"
 
-struct commands {
-    const int photosynthesis = -3;
-    const int minerals = -2;
-    const int step = -1;
-};
+#define photosynthesis -3
+#define minerals = -2
+#define step -1
 
 GeneticWorld::GeneticWorld(int genom_len, int max_energy) {
     assert(genom_len!=0);
@@ -16,9 +14,6 @@ GeneticWorld::GeneticWorld(int genom_len, int max_energy) {
     // > 0 - goto
 }
 
-
-GeneticWorld::GeneticWorld() {}
-
 Bot *GeneticWorld::newBot() {
     bots.push_back(Bot());
     return &bots.back();
@@ -26,4 +21,13 @@ Bot *GeneticWorld::newBot() {
 
 void GeneticWorld::deleteBot(int index) {
     bots.erase(bots.begin()+index);
+}
+
+void GeneticWorld::botStep(Bot bot) {
+    int command_index = bot.iterator;
+    int command = bot.genom[command_index];
+    switch (command) {
+        case photosynthesis:
+            break;
+    }
 }

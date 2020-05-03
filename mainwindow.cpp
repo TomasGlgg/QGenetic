@@ -26,7 +26,7 @@ void MainWindow::initWorld() {
     int max_energy = ui->max_energy->value();
     world = new GeneticWorld(genome_len, max_energy);
     Bot *newBot = world->newBot();
-    newBot->energy = 5;
+    newBot->energy = 254;
 }
 
 void MainWindow::start() {
@@ -35,7 +35,8 @@ void MainWindow::start() {
     ui->newWorldButton->setEnabled(false);
     int w = this->width();
     int h = this->height();
-    this->setFixedSize(w, h);
+    this->setMinimumSize(w, h);
+    this->setMaximumSize(w, h);
 
     std::string str_size = std::to_string(w) + " x " + std::to_string(h);
     ui->sizeLabel->setText(QString().fromStdString(str_size));
@@ -57,16 +58,17 @@ void MainWindow::stop() {
 void MainWindow::new_world() {
     new_world_flag = true;
     ui->newWorldButton->setEnabled(false);
+    this->setMinimumSize(0, 0);
+    this->setMaximumSize(16777215, 16777215);
+    scene->clear();
 }
 
 void MainWindow::render() {
     if (!run) return;
-    for(std::vector<int>::size_type i = 0; i != world->bots.size(); i++) {
-        QColor bot_color = BotColor(world->bots[i]);
-        QPen pen(bot_color);
-        QPainter painter;
-        painter.setPen(pen);
-    }
+    scene->clear();
+    for(unsigned int i = 0; i != world->bots.size(); i++) {
+        scene->addRect(10, 10, 10, 10, QPen(BotColor(world->bots[i])));
 
+    }
     timer->singleShot(ui->timerInterval->value(), this, SLOT(render()));
 }

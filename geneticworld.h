@@ -9,7 +9,6 @@
 class GeneticWorld {
 public:
     GeneticWorld(int genom_len, int max_energy);
-    GeneticWorld();
     std::vector<Bot> bots;
     Bot *newBot();
 
@@ -17,6 +16,7 @@ private:
     int genome_len;
     int max_energy;
 
+    void botStep(Bot bot);
     void deleteBot(int index);
 };
 
