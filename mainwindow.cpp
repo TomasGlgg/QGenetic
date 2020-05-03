@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->DrawArea->setAlignment(Qt::AlignLeft | Qt::AlignBottom); //сдвигаем пространство вниз влево
     scene = new QGraphicsScene(this);
     ui->DrawArea->setScene(scene);
 
@@ -21,10 +22,10 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::initWorld() {
+void MainWindow::initWorld(int x, int y) {
     int genome_len = ui->genome_len->value();
     int max_energy = ui->max_energy->value();
-    world = new GeneticWorld(genome_len, max_energy);
+    world = new GeneticWorld(genome_len, max_energy, x, y);
     Bot *newBot = world->newBot();
     newBot->energy = 254;
 }
@@ -43,7 +44,7 @@ void MainWindow::start() {
 
     run = true;
     if (new_world_flag)
-        initWorld();
+        initWorld(w, h);
     new_world_flag = false;
     timer->singleShot(ui->timerInterval->value(), this, SLOT(render()));
 }
@@ -66,9 +67,11 @@ void MainWindow::new_world() {
 void MainWindow::render() {
     if (!run) return;
     scene->clear();
-    for(unsigned int i = 0; i != world->bots.size(); i++) {
-        scene->addRect(10, 10, 10, 10, QPen(BotColor(world->bots[i])));
-
+    unsigned int bot_len = world->bots.size();
+    ui->botLen->display(QString().fromStdString(std::to_string(bot_len))); //display bot lenght
+    ui->generation->setText(QString().fromStdString(std::to_string(world->generation)));
+    for(unsigned int i = 0; i != bot_len; i++) {
+        scene->addRect(1, 1, 1, 1, QPen(BotColor(world->bots[i])));
     }
     timer->singleShot(ui->timerInterval->value(), this, SLOT(render()));
 }

@@ -175,20 +175,40 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLCDNumber" name="lcdNumber">
+           <item row="2" column="1">
+            <widget class="QLCDNumber" name="botLen">
              <property name="minimumSize">
               <size>
                <width>160</width>
                <height>50</height>
               </size>
              </property>
+             <property name="intValue" stdset="0">
+              <number>0</number>
+             </property>
             </widget>
            </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="label_5">
              <property name="text">
               <string>Кол-во ботов:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Генерация:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="generation">
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

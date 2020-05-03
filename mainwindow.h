@@ -28,7 +28,7 @@ private:
     bool run;
     bool new_world_flag = true;
 
-    void initWorld();
+    void initWorld(int x, int y);
 
 private slots:
     void render();
