@@ -23,6 +23,9 @@ private:
 
     int getPhotosynthesisEnergy(int y);
     int getMineralsEnergy(int y);
+    int *oppositeBot(Bot bot);
+    bool checkCoords(int x, int y);
+    bool checkCoords(int *xy);
     void botStep(Bot bot);
     void deleteBot(int index);
 };

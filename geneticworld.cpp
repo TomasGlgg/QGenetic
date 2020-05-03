@@ -43,7 +43,66 @@ int GeneticWorld::getMineralsEnergy(int y) {
     else return 0;
 }
 
-void GeneticWorld::botStep(Bot bot) {
+int *GeneticWorld::oppositeBot(Bot bot) {
+   int direction = bot.direction;
+   int xy[2] = {bot.xy[0], bot.xy[1]};
+   switch (direction) {
+       case 0: {
+           xy[1]++;
+           break;
+       }
+       case 1: {
+           xy[0]++;
+           xy[1]++;
+           break;
+       }
+       case 2: {
+           xy[0]++;
+           break;
+       }
+       case 3: {
+           xy[0]++;
+           xy[1]--;
+           break;
+       }
+       case 4: {
+           xy[1]--;
+           break;
+       }
+       case 5: {
+           xy[1]--;
+           xy[0]--;
+       }
+       case 6: {
+           xy[0]--;
+           break;
+       }
+       case 7: {
+           xy[0]--;
+           xy[1]++;
+           break;
+       }
+       case 8: {
+           xy[1]++;
+           break;
+       }
+   }
+   return xy;
+}
+
+bool GeneticWorld::checkCoords(int x, int y) {
+    if (x<0 || y<0) return false;
+    if (x>=max_x || y>=max_y) return false;
+    return true;
+}
+
+bool GeneticWorld::checkCoords(int *xy) {
+    if (xy[0]<0 || xy[1]<0) return false;
+    if (xy[0]>=max_x || xy[1]>=max_y) return false;
+    return true;
+}
+
+void GeneticWorld::botStep(Bot bot) { //process gen
     int command_index = bot.iterator;
     int command = bot.genom[command_index];
     switch (command) {
@@ -55,6 +114,24 @@ void GeneticWorld::botStep(Bot bot) {
         case minerals: {
             int new_energy = getMineralsEnergy(bot.xy[1]);
             bot.energy += new_energy;
+            break;
+        }
+        case left: {
+            bot.direction--;
+            bot.direction %= 8;
+            break;
+        }
+        case right: {
+            bot.direction++;
+            bot.direction %= 8;
+            break;
+        }
+        case step: {
+            int *xy = oppositeBot(bot);
+            if (checkCoords(xy)) {
+                bot.xy[0] = xy[0];
+                bot.xy[1] = xy[1];
+            }
             break;
         }
     }
