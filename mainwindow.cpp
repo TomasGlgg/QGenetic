@@ -1,14 +1,28 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
+QColor BotColor(Bot bot) {
+    int energy = bot.energy;
+    return QColor(energy, energy, energy);
+}
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->DrawArea->setAlignment(Qt::AlignLeft | Qt::AlignBottom); //сдвигаем пространство вниз влево
     scene = new QGraphicsScene(this);
     ui->DrawArea->setScene(scene);
+    ui->DrawArea->rotate(270);
+    //x
+    // /\
+    // |
+    // |
+    // |
+    // |
+    // 0---------> y
 
     QTimer *timer = new QTimer(this);
 
@@ -17,8 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->newWorldButton, SIGNAL(released()), this, SLOT(new_world()));
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
 }
 
@@ -41,6 +54,8 @@ void MainWindow::start() {
 
     std::string str_size = std::to_string(w) + " x " + std::to_string(h);
     ui->sizeLabel->setText(QString().fromStdString(str_size));
+
+    scene->setSceneRect(0, 0, w, h);
 
     run = true;
     if (new_world_flag)
@@ -66,12 +81,15 @@ void MainWindow::new_world() {
 
 void MainWindow::render() {
     if (!run) return;
+
     scene->clear();
+
+
     unsigned int bot_len = world->bots.size();
     ui->botLen->display(QString().fromStdString(std::to_string(bot_len))); //display bot lenght
     ui->generation->setText(QString().fromStdString(std::to_string(world->generation)));
     for(unsigned int i = 0; i != bot_len; i++) {
-        scene->addRect(1, 1, 1, 1, QPen(BotColor(world->bots[i])));
+        scene->addRect(world->bots[i].xy[0], world->bots[i].xy[1], 1, 1, QPen(BotColor(world->bots[i])));
     }
     timer->singleShot(ui->timerInterval->value(), this, SLOT(render()));
 }

@@ -72,6 +72,7 @@ int *GeneticWorld::oppositeBot(Bot bot) {
        case 5: {
            xy[1]--;
            xy[0]--;
+           break;
        }
        case 6: {
            xy[0]--;

@@ -19,14 +19,12 @@ SOURCES += \
     botstruct.cpp \
     geneticworld.cpp \
     main.cpp \
-    mainwindow.cpp \
-    renderfunctions.cpp
+    mainwindow.cpp
 
 HEADERS += \
     botstruct.h \
     geneticworld.h \
-    mainwindow.h \
-    renderfunctions.h
+    mainwindow.h
 
 FORMS += \
     mainwindow.ui
