@@ -16,14 +16,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    botstruct.cpp \
     geneticworld.cpp \
     main.cpp \
     mainwindow.cpp \
-    renderFunc.cpp
+    renderfunctions.cpp
 
 HEADERS += \
+    botstruct.h \
     geneticworld.h \
-    mainwindow.h
+    mainwindow.h \
+    renderfunctions.h
 
 FORMS += \
     mainwindow.ui

@@ -6,7 +6,7 @@
 #include <QTimer>
 #include <iostream>
 
-#include "renderFunc.cpp"
+#include "renderfunctions.h"
 #include "geneticworld.h"
 
 QT_BEGIN_NAMESPACE

@@ -44,7 +44,7 @@ void MainWindow::start() {
     if (new_world_flag)
         initWorld();
     new_world_flag = false;
-    timer->singleShot(ui->timerInterval->value(), this, SLOT(render())); //один раз вызвать render() через
+    timer->singleShot(ui->timerInterval->value(), this, SLOT(render()));
 }
 
 void MainWindow::stop() {
@@ -61,7 +61,6 @@ void MainWindow::new_world() {
 
 void MainWindow::render() {
     if (!run) return;
-    std::cout << world->bots.size() << std::endl; //пустой) удалился после return опходу опять
     for(std::vector<int>::size_type i = 0; i != world->bots.size(); i++) {
         QColor bot_color = BotColor(world->bots[i]);
         QPen pen(bot_color);
@@ -69,5 +68,5 @@ void MainWindow::render() {
         painter.setPen(pen);
     }
 
-    timer->singleShot(ui->timerInterval->value(), this, SLOT(render())); //ну и тка по кругу
+    timer->singleShot(ui->timerInterval->value(), this, SLOT(render()));
 }
