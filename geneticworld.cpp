@@ -138,10 +138,13 @@ bool GeneticWorld::reproduction(Bot bot) {
 
 void GeneticWorld::clearDie() {
     std::sort(die_bots.begin(), die_bots.end());
-    int size = die_bots.size();
+    int index, size = die_bots.size();
     int offset = 0;
     for (int i = 0; i<size; i++) {
-        bots.erase(bots.begin()+die_bots[i]-offset);
+        index = die_bots[i]-offset;
+        delete [] bots[index].xy;
+        delete [] bots[index].genom;
+        bots.erase(bots.begin()+index);
         offset++;
     }
     die_bots.clear();
