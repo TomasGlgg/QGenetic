@@ -3,8 +3,9 @@
 
 
 QColor BotColor(Bot bot) {
-    int energy = bot.energy;
-    return QColor(energy, energy, energy);
+    //int energy = bot.energy;
+    //return QColor(energy, energy, energy);
+    return QColor(254, 254, 254);
 }
 
 
@@ -16,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new QGraphicsScene(this);
     ui->DrawArea->setScene(scene);
     ui->DrawArea->rotate(180);
-    //              y
+    //             y
     //           /\
     //            |
     //            |
@@ -40,10 +41,19 @@ void MainWindow::initWorld(int x, int y) {
     int max_energy = ui->max_energy->value();
     world = new GeneticWorld(genome_len, max_energy, x, y);
     Bot *newBot = world->newBot();
-    newBot->energy = 254;
+    newBot->energy = 10;
+    newBot->direction = 0;
     newBot->xy[0] = 10;
     newBot->xy[1] = 10;
-    for (int i = 0; i<20; i++) newBot->genom[i] = -1;
+    int flag = 0;
+    for (int i = 0; i<20; i++){
+        flag++;
+        flag %= 2;
+        if (flag == 0)
+            newBot->genom[i] = -2;
+        else if (flag==1)
+            newBot->genom[i] = -4;
+    }
 }
 
 void MainWindow::start() {
@@ -69,9 +79,7 @@ void MainWindow::start() {
     if (new_world_flag)
         initWorld(widget_w, widget_h);
     new_world_flag = false;
-
     world->start();
-
     timer->singleShot(ui->timerInterval->value(), this, SLOT(render()));
 }
 
@@ -106,5 +114,5 @@ void MainWindow::render() {
     for(unsigned int i = 0; i != bot_len; i++) {
         scene->addRect(world->bots[i].xy[0], world->bots[i].xy[1], 1, 1, QPen(BotColor(world->bots[i])));
     }
-    timer->singleShot(ui->timerInterval->value(), this, SLOT(render()));
+    timer->singleShot(ui->timerInterval->value(), this, SLOT(render()));//рекурсия не функция то завершается   там тоже самое было я знаю
 }

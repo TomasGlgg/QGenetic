@@ -9,6 +9,7 @@ struct Bot {
     int *genom;
     int old = 0;
     int *xy;
+    bool alive = true;
 };
 
 #endif // BOTSTRUCT_H
