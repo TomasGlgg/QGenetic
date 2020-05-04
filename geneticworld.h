@@ -39,7 +39,7 @@ private:
     int findBot(int x, int y);
     bool checkCoords(int x, int y);
     bool checkCoords(int *xy);
-    void botStep(Bot *bot, int i);
+    void botStep(int i);
     void deleteBot(int index);
     void clearDie();
 };

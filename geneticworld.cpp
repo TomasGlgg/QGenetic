@@ -147,7 +147,8 @@ void GeneticWorld::clearDie() {
     die_bots.clear();
 }
 
-void GeneticWorld::botStep(Bot *bot, int i) { //process gen
+void GeneticWorld::botStep(int i) { //process gen
+    Bot *bot = &bots[i];
     int command_index = bot->iterator;
     int command = bot->genom[command_index];
     switch (command) {
@@ -198,7 +199,7 @@ void GeneticWorld::botStep(Bot *bot, int i) { //process gen
 void GeneticWorld::process() {
     unsigned int bot_len = bots.size();
     for(unsigned int i = 0; i != bot_len; i++) {
-        botStep(&bots[i], i);
+        botStep(i);
     }
     clearDie();
     generation++;
