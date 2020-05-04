@@ -3,27 +3,40 @@
 
 #include <cassert>
 #include <vector>
+#include <QThread>
+#include <QTimer>
+#include <unistd.h>
+#include <iostream>
+
 #include "botstruct.h"
 
 
-class GeneticWorld {
+class GeneticWorld : public QThread {
+    Q_OBJECT
+protected:
+    void run();
+
 public:
     GeneticWorld(int genom_len, int max_energy, int max_x, int max_y);
-    std::vector<Bot> bots;
     Bot *newBot();
-    void Process();
 
+    std::vector<Bot> bots;
     int generation = 0;
-    bool run;
+    int process_delay = 1000; //1 ms
+    bool run_flag;
 
 private:
     int genome_len;
     int max_energy;
     int max_x, max_y;
+    QTimer *timer;
 
+    void process();
+    void reproduction(Bot bot);
     int getPhotosynthesisEnergy(int y);
     int getMineralsEnergy(int y);
-    int *oppositeBot(Bot bot);
+    int *oppositeBot(Bot bot, int *xy);
+    int findBot(int x, int y);
     bool checkCoords(int x, int y);
     bool checkCoords(int *xy);
     void botStep(Bot bot);

@@ -4,11 +4,11 @@
 
 struct Bot {
     int iterator = 0;
-    int direction = 1;
+    int direction = 0;
     int energy;
     int *genom;
     int old = 0;
-    int xy[2];
+    int *xy;
 };
 
 #endif // BOTSTRUCT_H
