@@ -28,6 +28,7 @@ private:
     int genome_len;
     int max_energy;
     int max_x, max_y;
+    std::vector<int> die_bots;
     float mutate_chance = 0.1;
 
     void process();
@@ -38,8 +39,8 @@ private:
     int findBot(int x, int y);
     bool checkCoords(int x, int y);
     bool checkCoords(int *xy);
-    void botStep(Bot *bot);
-    void deleteBot(Bot *bot);
+    void botStep(Bot *bot, int i);
+    void deleteBot(int index);
     void clearDie();
 };
 

@@ -26,9 +26,9 @@ Bot *GeneticWorld::newBot() {
     return &bots.back();
 }
 
-void GeneticWorld::deleteBot(Bot *bot) {
+void GeneticWorld::deleteBot(int index) {
 
-    bot->alive = false;
+    die_bots.push_back(index);
 }
 
 int GeneticWorld::getPhotosynthesisEnergy(int y) {
@@ -137,20 +137,17 @@ bool GeneticWorld::reproduction(Bot bot) {
 }
 
 void GeneticWorld::clearDie() {
-    int size, i = 0;
-    size = bots.size();
-
-    while (i<size) {
-        if (!bots[i].alive) {
-            bots.erase(bots.begin()+i);
-            size--;
-        } else {
-            i++;
-        }
+    std::sort(die_bots.begin(), die_bots.end());
+    int size = die_bots.size();
+    int offset = 0;
+    for (int i = 0; i<size; i++) {
+        bots.erase(bots.begin()+die_bots[i]-offset);
+        offset++;
     }
+    die_bots.clear();
 }
 
-void GeneticWorld::botStep(Bot *bot) { //process gen
+void GeneticWorld::botStep(Bot *bot, int i) { //process gen
     int command_index = bot->iterator;
     int command = bot->genom[command_index];
     switch (command) {
@@ -184,26 +181,26 @@ void GeneticWorld::botStep(Bot *bot) { //process gen
             break;
         }
     }
+    bot->energy--;
     if (bot->energy>max_energy) {
         if (!reproduction(*bot)) {
-            deleteBot(bot);
+            deleteBot(i);
         }
     } else if (bot->energy<=-0) {
-        deleteBot(bot);
+        deleteBot(i);
     }
-    bot->energy--;
     bot->old++;
     bot->iterator++;
     bot->iterator %= genome_len;
-    clearDie();
 }
 
 
 void GeneticWorld::process() {
     unsigned int bot_len = bots.size();
     for(unsigned int i = 0; i != bot_len; i++) {
-        botStep(&bots[i]);
+        botStep(&bots[i], i);
     }
+    clearDie();
     generation++;
 }
 
