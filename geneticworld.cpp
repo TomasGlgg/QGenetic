@@ -6,6 +6,9 @@
 #define minerals  -2
 #define step -1
 
+
+GeneticWorld::~GeneticWorld(){}
+
 GeneticWorld::GeneticWorld(int genom_len, int max_energy, int max_x, int max_y) {
     assert(genom_len!=0);
     this->genome_len = genom_len;
@@ -13,16 +16,13 @@ GeneticWorld::GeneticWorld(int genom_len, int max_energy, int max_x, int max_y) 
     this->max_x = max_x;
     this->max_y = max_y;
 
-    std::vector<Bot*> bots;
+   // std::vector<Bot*> bots;
     // < 0 - команды
     // > 0 - goto
 }
 
 Bot *GeneticWorld::newBot() {
-    Bot new_bot;
-    new_bot.genom = new int[genome_len];
-    new_bot.xy = new int[2];
-    bots.push_back(new_bot);
+    bots.push_back(Bot(genome_len));
     return &bots.back();
 }
 
@@ -50,13 +50,13 @@ int GeneticWorld::getMineralsEnergy(int y) {
 int GeneticWorld::findBot(int x, int y) { //найти бота по координатам
     unsigned int bot_len = bots.size();
     for(unsigned int i = 0; i != bot_len; i++)
-        if (bots[i].xy[0]==x && bots[i].xy[1]==y) return i;
+        if (bots[i].x==x && bots[i].y==y) return i;
     return -1;
 }
 
 int *GeneticWorld::oppositeBot(Bot bot, int *xy) {
-   xy[0] = bot.xy[0];
-   xy[1] = bot.xy[1];
+   xy[0] = bot.x;
+   xy[1] = bot.y;
    switch (bot.direction) {
        case 0: {
            xy[1]++;
@@ -121,8 +121,8 @@ bool GeneticWorld::reproduction(Bot bot) {
     Bot *new_bot = newBot();
     new_bot->direction = bot.direction;
     new_bot->energy = max_energy/2;
-    new_bot->xy[0] = xy[0];
-    new_bot->xy[1] = xy[1];
+    new_bot->x = xy[0];
+    new_bot->y = xy[1];
 
     //copy genom and mutate
     int k;
@@ -142,8 +142,6 @@ void GeneticWorld::clearDie() {
     int offset = 0;
     for (int i = 0; i<size; i++) {
         index = die_bots[i]-offset;
-        delete [] bots[index].xy;
-        delete [] bots[index].genom;
         bots.erase(bots.begin()+index);
         offset++;
     }
@@ -156,12 +154,12 @@ void GeneticWorld::botStep(int i) { //process gen
     int command = bot->genom[command_index];
     switch (command) {
         case photosynthesis: {
-            int new_energy = getPhotosynthesisEnergy(bot->xy[1]);
+            int new_energy = getPhotosynthesisEnergy(bot->y);
             bot->energy += new_energy;
             break;
         }
         case minerals: {
-            int new_energy = getMineralsEnergy(bot->xy[1]);
+            int new_energy = getMineralsEnergy(bot->y);
             bot->energy += new_energy;
             break;
         }
@@ -179,8 +177,8 @@ void GeneticWorld::botStep(int i) { //process gen
             int xy[2];
             oppositeBot(*bot, xy);
             if (checkCoords(xy)) {
-                bot->xy[0] = xy[0];
-                bot->xy[1] = xy[1];
+                bot->x = xy[0];
+                bot->y = xy[1];
             }
             break;
         }

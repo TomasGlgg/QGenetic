@@ -18,10 +18,10 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QTimer *timer;
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
-    QTimer *timer;
     GeneticWorld *world;
     bool run;
     bool new_world_flag = true;
