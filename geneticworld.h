@@ -24,7 +24,7 @@ public:
     float process_delay = 1000; //1 ms
     bool run_flag;
 
-    std::vector<Bot> bots;
+    std::vector<Bot*> bots;
 private:
     int genome_len;
     int max_energy;

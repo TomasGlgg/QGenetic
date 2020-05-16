@@ -1,24 +1,24 @@
 #ifndef BOTSTRUCT_H
 #define BOTSTRUCT_H
-
+#include <vector>
 
 struct _Bot {
     int iterator = 0;
     int direction = 0;
     int energy;
-    int *genom;
+    std::vector<int> genom;
     int old = 0;
     int x, y;
 };
 
 class Bot {
 public:
-    Bot(int genome_len);
+    Bot();
     ~Bot();
 
     int x, y, direction;
     int energy;
-    int *genom;
+    std::vector<int> genom;
     int iterator;
     int old;
 };

@@ -7,7 +7,13 @@
 #define step -1
 
 
-GeneticWorld::~GeneticWorld(){}
+GeneticWorld::~GeneticWorld() {
+    bots.clear();
+    bots.shrink_to_fit();
+
+    die_bots.clear();
+    die_bots.shrink_to_fit();
+}
 
 GeneticWorld::GeneticWorld(int genom_len, int max_energy, int max_x, int max_y) {
     assert(genom_len!=0);
@@ -22,8 +28,8 @@ GeneticWorld::GeneticWorld(int genom_len, int max_energy, int max_x, int max_y) 
 }
 
 Bot *GeneticWorld::newBot() {
-    bots.push_back(Bot(genome_len));
-    return &bots.back();
+    bots.push_back(new Bot());
+    return bots.back();
 }
 
 void GeneticWorld::deleteBot(int index) {
@@ -50,7 +56,7 @@ int GeneticWorld::getMineralsEnergy(int y) {
 int GeneticWorld::findBot(int x, int y) { //найти бота по координатам
     unsigned int bot_len = bots.size();
     for(unsigned int i = 0; i != bot_len; i++)
-        if (bots[i].x==x && bots[i].y==y) return i;
+        if (bots[i]->x==x && bots[i]->y==y) return i;
     return -1;
 }
 
@@ -119,6 +125,7 @@ bool GeneticWorld::reproduction(Bot bot) {
     if (!checkCoords(xy)) return false;
 
     Bot *new_bot = newBot();
+    new_bot->genom.resize(genome_len);
     new_bot->direction = bot.direction;
     new_bot->energy = max_energy/2;
     new_bot->x = xy[0];
@@ -142,6 +149,7 @@ void GeneticWorld::clearDie() {
     int offset = 0;
     for (int i = 0; i<size; i++) {
         index = die_bots[i]-offset;
+        delete bots[index];
         bots.erase(bots.begin()+index);
         offset++;
     }
@@ -149,7 +157,7 @@ void GeneticWorld::clearDie() {
 }
 
 void GeneticWorld::botStep(int i) { //process gen
-    Bot *bot = &bots[i];
+    Bot *bot = bots[i];
     int command_index = bot->iterator;
     int command = bot->genom[command_index];
     switch (command) {
@@ -208,7 +216,8 @@ void GeneticWorld::process() {
 
 void GeneticWorld::run() {
     run_flag = true;
-    while (run_flag) {
+    while (true) {
+        if(run_flag) //это что блоно падает по завершении потока оно и так падает ты лучше с геномом разберись и с классом
         process();
         if (process_delay!=0)
             QThread::msleep(process_delay);

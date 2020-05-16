@@ -40,6 +40,7 @@ void MainWindow::initWorld(int x, int y) {
     int max_energy = ui->max_energy->value();
     world = new GeneticWorld(genome_len, max_energy, x, y);
     Bot *newBot = world->newBot();
+    newBot->genom.resize(genome_len);
     newBot->energy = 10;
     newBot->direction = 0;
     newBot->x = 10;
@@ -102,6 +103,7 @@ void MainWindow::new_world() {
     this->setMinimumSize(0, 0);
     this->setMaximumSize(16777215, 16777215);
     scene->clear();
+    delete world;
 }
 
 void MainWindow::render() {
@@ -110,7 +112,7 @@ void MainWindow::render() {
     unsigned int bot_len = world->bots.size();
     ui->botLen->display(QString::number(bot_len)); //display bot lenght
     ui->generation->setText(QString::number(world->generation));
-    for(unsigned int i = 0; i != bot_len; i++) {
-        scene->addRect(world->bots[i].x, world->bots[i].y, 1, 1, QPen(BotColor(&world->bots[i])));
+    for(unsigned int i = 0; i < bot_len; i++) {
+        scene->addRect(world->bots[i]->x, world->bots[i]->y, 1, 1, QPen(BotColor(world->bots[i])));
     }
 }
