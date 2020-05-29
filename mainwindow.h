@@ -18,6 +18,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QColor BotColor(Bot *bot);
     QTimer *timer;
 private:
     Ui::MainWindow *ui;

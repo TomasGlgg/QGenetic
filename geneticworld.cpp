@@ -9,12 +9,8 @@
 
 GeneticWorld::~GeneticWorld() {
     bots.clear();
-    bots.shrink_to_fit();
-
-    die_bots.clear();
-    die_bots.shrink_to_fit();
+    //bots.shrink_to_fit();
 }
-
 GeneticWorld::GeneticWorld(int genom_len, int max_energy, int max_x, int max_y) {
     assert(genom_len!=0);
     this->genome_len = genom_len;
@@ -28,8 +24,9 @@ GeneticWorld::GeneticWorld(int genom_len, int max_energy, int max_x, int max_y) 
 }
 
 Bot *GeneticWorld::newBot() {
-    bots.push_back(new Bot());
-    return bots.back();
+    Bot *new_bot = new Bot();
+    bots.push_back(new_bot);
+    return new_bot;
 }
 
 void GeneticWorld::deleteBot(int index) {
@@ -134,7 +131,7 @@ bool GeneticWorld::reproduction(Bot bot) {
     //copy genom and mutate
     int k;
     for (int i = 0; i<genome_len; i++) {
-        if (rand()<mutate_chance) {
+        if ((rand()%1000)/1000.<mutate_chance) {
             k = rand()%4-2;
             new_bot->genom[i] = bot.genom[i] + k;
         } else
@@ -207,6 +204,7 @@ void GeneticWorld::botStep(int i) { //process gen
 
 void GeneticWorld::process() {
     unsigned int bot_len = bots.size();
+    //#pragma omp parallel for
     for(unsigned int i = 0; i != bot_len; i++) {
         botStep(i);
     }
@@ -216,8 +214,9 @@ void GeneticWorld::process() {
 
 void GeneticWorld::run() {
     run_flag = true;
+    omp_set_num_threads(4);
     while (true) {
-        if(run_flag) //это что блоно падает по завершении потока оно и так падает ты лучше с геномом разберись и с классом
+        if(run_flag)
         process();
         if (process_delay!=0)
             QThread::msleep(process_delay);

@@ -2,13 +2,6 @@
 #include "ui_mainwindow.h"
 
 
-QColor BotColor(Bot *bot) {
-    //int energy = bot.energy;
-    //return QColor(energy, energy, energy);
-    return QColor(254, 254, 254);
-}
-
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -62,13 +55,14 @@ void MainWindow::start() {
     ui->newWorldButton->setEnabled(false);
     ui->max_energy->setEnabled(false);
     ui->genome_len->setEnabled(false);
+    ui->timerInterval->setEnabled(false);
     int window_w = this->width();
     int window_h = this->height();
     this->setMinimumSize(window_w, window_h);
     this->setMaximumSize(window_w, window_h);
 
-    int widget_w = ui->DrawArea->width();
-    int widget_h = ui->DrawArea->height();
+    int widget_w = ui->DrawArea->width()/2;
+    int widget_h = ui->DrawArea->height()/2;
 
     QString str_size = QString::number(widget_w) + " x " + QString::number(widget_h);
     ui->sizeLabel->setText(str_size);
@@ -106,11 +100,27 @@ void MainWindow::new_world() {
     delete world;
 }
 
+QColor MainWindow::BotColor(Bot *bot) {
+    //float max_energy = world->max_energy;
+    float genome_len = world->genome_len;
+
+    unsigned int minerals_count = std::count(bot->genom.begin(), bot->genom.end(), -2);
+    unsigned int photosynthesis_count = std::count(bot->genom.begin(), bot->genom.end(), -3);
+    unsigned int step_count = std::count(bot->genom.begin(), bot->genom.end(), -1);
+
+    unsigned int B = minerals_count/genome_len*255;
+    unsigned int G = photosynthesis_count/genome_len*255;
+    unsigned int R = step_count/genome_len*255;
+    return QColor(R, G, B);
+    //return QColor(254, 254, 254);
+}
+
+
 void MainWindow::render() {
-    world->process_delay = ui->process_delay->value();
+    world->process_delay = ui->process_delay->value()/1000;
     scene->clear();
     unsigned int bot_len = world->bots.size();
-    ui->botLen->display(QString::number(bot_len)); //display bot lenght
+    ui->botLen->display(QString::number(bot_len));
     ui->generation->setText(QString::number(world->generation));
     for(unsigned int i = 0; i < bot_len; i++) {
         scene->addRect(world->bots[i]->x, world->bots[i]->y, 1, 1, QPen(BotColor(world->bots[i])));

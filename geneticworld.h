@@ -7,6 +7,8 @@
 #include <QTimer>
 #include <iostream>
 
+#include <omp.h>
+
 #include "botstruct.h"
 
 
@@ -24,13 +26,14 @@ public:
     float process_delay = 1000; //1 ms
     bool run_flag;
 
-    std::vector<Bot*> bots;
-private:
     int genome_len;
     int max_energy;
     int max_x, max_y;
-    std::vector<int> die_bots;
     float mutate_chance = 0.1;
+
+    std::vector<Bot*> bots;
+private:
+    std::vector<int> die_bots;
 
     void process();
     bool reproduction(Bot bot);
