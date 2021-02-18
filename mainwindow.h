@@ -29,7 +29,7 @@ private:
 
     const uint botsize = 5;
 
-    void initWorld(int x, int y);
+    void initWorld(uint x, uint y);
 
 private slots:
     void render();

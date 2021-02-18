@@ -16,33 +16,32 @@ protected:
     void run();
 
 public:
-    GeneticWorld(int genom_len, int max_energy, int max_x, int max_y);
+    GeneticWorld(uint genom_len, uint max_energy, uint max_x, uint max_y);
     ~GeneticWorld();
     Bot *newBot();
 
-    int generation = 0;
-    float process_delay = 1000; //1 ms
+    uint generation = 0;
+    uint process_delay = 1000; //1 ms
     bool run_flag;
 
-    int genome_len;
-    int max_energy;
-    int max_x, max_y;
+    uint genome_len;
+    uint max_energy;
+    uint max_x, max_y;
     float mutate_chance = 0.1;
 
     std::vector<Bot*> bots;
 private:
-    std::vector<int> die_bots;
+    std::vector<uint> die_bots;
 
     void process();
     bool reproduction(Bot bot);
-    int getPhotosynthesisEnergy(int y);
-    int getMineralsEnergy(int y);
-    int *oppositeBot(Bot bot, int *xy);
-    int findBot(int x, int y);
-    bool checkCoords(int x, int y);
-    bool checkCoords(int *xy);
-    void botStep(int i);
-    void deleteBot(int index);
+    uint getPhotosynthesisEnergy(uint y);
+    uint getMineralsEnergy(uint y);
+    uint *oppositeBot(Bot bot, uint *xy);
+    int findBot(uint *xy);
+    bool checkCoords(uint *xy);
+    void botStep(uint i);
+    void deleteBot(uint index);
     void clearDie();
 };
 

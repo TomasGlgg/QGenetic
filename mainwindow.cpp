@@ -28,7 +28,7 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::initWorld(int x, int y) {
+void MainWindow::initWorld(uint x, uint y) {
     int genome_len = ui->genome_len->value();
     int max_energy = ui->max_energy->value();
     world = new GeneticWorld(genome_len, max_energy, x, y);
@@ -45,7 +45,7 @@ void MainWindow::initWorld(int x, int y) {
         if (flag == 0)
             newBot->genom[i] = -2;
         else if (flag==1)
-            newBot->genom[i] = -4;
+            newBot->genom[i] = -5;
     }
 }
 
@@ -56,6 +56,7 @@ void MainWindow::start() {
     ui->max_energy->setEnabled(false);
     ui->genome_len->setEnabled(false);
     ui->timerInterval->setEnabled(false);
+    ui->process_delay->setEnabled(false);
     int window_w = this->width();
     int window_h = this->height();
     this->setMinimumSize(window_w, window_h);
@@ -63,15 +64,14 @@ void MainWindow::start() {
 
     int world_w = ui->DrawArea->width() / botsize;
     int world_h = ui->DrawArea->height() / botsize;
-
     QString str_size = QString::number(world_w) + " x " + QString::number(world_h);
     ui->sizeLabel->setText(str_size);
-
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
     run_flag = true;
     if (new_world_flag)
         initWorld(world_w, world_h);
+    world->process_delay = 100;
     new_world_flag = false;
     world->start();
 
@@ -83,9 +83,10 @@ void MainWindow::stop() {
     ui->startButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
     ui->newWorldButton->setEnabled(true);
+    ui->timerInterval->setEnabled(true);
     run_flag = false;
     world->run_flag = false;
-//    delete world;
+    //delete world;
 }
 
 void MainWindow::new_world() {
