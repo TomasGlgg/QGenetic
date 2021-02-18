@@ -27,7 +27,7 @@ private:
     bool run_flag;
     bool new_world_flag = true;
 
-    const uint botsize = 10;
+    const uint botsize = 5;
 
     void initWorld(int x, int y);
 
