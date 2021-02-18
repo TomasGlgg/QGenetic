@@ -123,6 +123,7 @@ void MainWindow::render() {
     ui->botLen->display(QString::number(bot_len));
     ui->generation->setText(QString::number(world->generation));
     for(unsigned int i = 0; i < bot_len; i++) {
-        scene->addRect(world->bots[i]->x * botsize, world->bots[i]->y * botsize, botsize, botsize, QPen(BotColor(world->bots[i])));
+        QColor botColor = BotColor(world->bots[i]);
+        scene->addRect(world->bots[i]->x * botsize, world->bots[i]->y * botsize, botsize, botsize, QPen(botColor), QBrush(botColor));
     }
 }
