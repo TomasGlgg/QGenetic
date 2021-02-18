@@ -7,8 +7,6 @@
 #include <QTimer>
 #include <iostream>
 
-#include <omp.h>
-
 #include "botstruct.h"
 
 

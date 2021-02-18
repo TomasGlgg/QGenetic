@@ -204,7 +204,6 @@ void GeneticWorld::botStep(int i) { //process gen
 
 void GeneticWorld::process() {
     unsigned int bot_len = bots.size();
-    //#pragma omp parallel for
     for(unsigned int i = 0; i != bot_len; i++) {
         botStep(i);
     }
@@ -214,9 +213,7 @@ void GeneticWorld::process() {
 
 void GeneticWorld::run() {
     run_flag = true;
-    omp_set_num_threads(4);
-    while (true) {
-        if(run_flag)
+    while (run_flag) {
         process();
         if (process_delay!=0)
             QThread::msleep(process_delay);

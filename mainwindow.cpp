@@ -61,17 +61,17 @@ void MainWindow::start() {
     this->setMinimumSize(window_w, window_h);
     this->setMaximumSize(window_w, window_h);
 
-    int widget_w = ui->DrawArea->width()/2;
-    int widget_h = ui->DrawArea->height()/2;
+    int world_w = ui->DrawArea->width() / botsize;
+    int world_h = ui->DrawArea->height() / botsize;
 
-    QString str_size = QString::number(widget_w) + " x " + QString::number(widget_h);
+    QString str_size = QString::number(world_w) + " x " + QString::number(world_h);
     ui->sizeLabel->setText(str_size);
 
-    scene->setSceneRect(0, 0, widget_w, widget_h);
+    scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
-    run = true;
+    run_flag = true;
     if (new_world_flag)
-        initWorld(widget_w, widget_h);
+        initWorld(world_w, world_h);
     new_world_flag = false;
     world->start();
 
@@ -83,7 +83,7 @@ void MainWindow::stop() {
     ui->startButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
     ui->newWorldButton->setEnabled(true);
-    run = false;
+    run_flag = false;
     world->run_flag = false;
 //    delete world;
 }
@@ -123,6 +123,6 @@ void MainWindow::render() {
     ui->botLen->display(QString::number(bot_len));
     ui->generation->setText(QString::number(world->generation));
     for(unsigned int i = 0; i < bot_len; i++) {
-        scene->addRect(world->bots[i]->x, world->bots[i]->y, 1, 1, QPen(BotColor(world->bots[i])));
+        scene->addRect(world->bots[i]->x * botsize, world->bots[i]->y * botsize, botsize, botsize, QPen(BotColor(world->bots[i])));
     }
 }

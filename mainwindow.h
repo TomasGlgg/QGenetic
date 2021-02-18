@@ -24,8 +24,10 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     GeneticWorld *world;
-    bool run;
+    bool run_flag;
     bool new_world_flag = true;
+
+    const uint botsize = 10;
 
     void initWorld(int x, int y);
 
