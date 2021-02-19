@@ -22,8 +22,9 @@ public:
     void stop();
 
     uint generation = 0;
-    uint process_delay = 1; // ms
+    uint mutation_count = 0;
 
+    uint process_delay = 1; // ms
     uint genome_len;
     uint max_energy;
     uint max_x, max_y;

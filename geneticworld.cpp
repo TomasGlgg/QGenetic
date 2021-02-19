@@ -134,6 +134,7 @@ bool GeneticWorld::reproduction(Bot bot) {
         if (random<(mutate_chance/genome_len)) {
             k = rand()%3-1; // [-1, 1]
             new_bot->genome[i] = bot.genome[i] + k;
+            mutation_count++;
         } else
             new_bot->genome[i] = bot.genome[i];
     }

@@ -119,6 +119,7 @@ void MainWindow::render() {
     unsigned int bot_len = world->bots.size();
     ui->botLen->display(QString::number(bot_len));
     ui->generation->setText(QString::number(world->generation));
+    ui->mutation_count->setText(QString::number(world->mutation_count));
     for(unsigned int i = 0; i < bot_len; i++) {
         QColor botColor = BotColor(world->bots[i]);
         scene->addRect(world->bots[i]->x * botsize + 1, world->bots[i]->y * botsize + 1, botsize, botsize, QPen(botColor), QBrush(botColor));
