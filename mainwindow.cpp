@@ -72,6 +72,7 @@ void MainWindow::start() {
     world->mutate_chance = ui->mutation_chance->value();
     world->start(ui->process_delay->value());
     timer->start(ui->timerInterval->value());
+    ui->status_led->setColor(QColor(0, 255, 0));
 }
 
 void MainWindow::stop() {
@@ -84,6 +85,7 @@ void MainWindow::stop() {
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
     ui->mutation_chance->setEnabled(true);
+    ui->status_led->setColor(QColor(255, 128, 0));
 }
 
 void MainWindow::new_world() {
@@ -117,6 +119,12 @@ QColor MainWindow::BotColor(Bot *bot) {
 void MainWindow::render() {
     scene->clear();
     unsigned int bot_len = world->bots.size();
+    if (!bot_len) {
+        timer->stop();
+        ui->newWorldButton->setEnabled(true);
+        ui->stopButton->setEnabled(false);
+        ui->status_led->setColor(QColor(255, 0, 0));
+    }
     ui->botLen->display(QString::number(bot_len));
     ui->generation->setText(QString::number(world->generation));
     ui->mutation_count->setText(QString::number(world->mutation_count));

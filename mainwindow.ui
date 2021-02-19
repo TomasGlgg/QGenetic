@@ -156,7 +156,7 @@
           <item row="2" column="0">
            <widget class="QLabel" name="label_7">
             <property name="text">
-             <string>Задержка об-ки (ms):</string>
+             <string>Задержка об-ки (ms)</string>
             </property>
            </widget>
           </item>
@@ -179,7 +179,7 @@
           <item row="3" column="0">
            <widget class="QLabel" name="label_8">
             <property name="text">
-             <string>Шанс мутации:</string>
+             <string>Шанс мутации</string>
             </property>
            </widget>
           </item>
@@ -314,12 +314,37 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="1">
+        <widget class="KLed" name="status_led">
+         <property name="color">
+          <color>
+           <red>170</red>
+           <green>85</green>
+           <blue>0</blue>
+          </color>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Статус:</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KLed</class>
+   <extends>QWidget</extends>
+   <header>kled.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
