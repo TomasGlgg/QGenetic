@@ -32,7 +32,7 @@ public:
     QList<Bot*> bots;
 private:
     QList<uint> die_bots;
-    QTimer *timer = new QTimer(this);;
+    QTimer *timer = new QTimer(this);
 
     bool reproduction(Bot bot);
     uint getPhotosynthesisEnergy(uint y);

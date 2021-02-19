@@ -130,9 +130,9 @@ bool GeneticWorld::reproduction(Bot bot) {
     //copy genom and mutate
     int k;
     for (uint i = 0; i<genome_len; i++) {
-        float random = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-        if (random<mutate_chance/genome_len) {
-            k = rand()%4-2;
+        float random = rand()/(RAND_MAX + 1.);
+        if (random<(mutate_chance/genome_len)) {
+            k = rand()%3-1; // [-1, 1]
             new_bot->genome[i] = bot.genome[i] + k;
         } else
             new_bot->genome[i] = bot.genome[i];
