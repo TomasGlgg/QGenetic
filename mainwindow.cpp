@@ -55,6 +55,7 @@ void MainWindow::start() {
     ui->genome_len->setEnabled(false);
     ui->timerInterval->setEnabled(false);
     ui->process_delay->setEnabled(false);
+    ui->mutation_chance->setEnabled(false);
     int window_w = this->width();
     int window_h = this->height();
     this->setMinimumSize(window_w, window_h);
@@ -69,6 +70,7 @@ void MainWindow::start() {
     run_flag = true;
     if (!world->inited)
         initWorld(world_w, world_h);
+    world->mutate_chance = ui->mutation_chance->value();
     world->start(ui->process_delay->value());
     timer->start(ui->timerInterval->value());
 }
@@ -81,6 +83,7 @@ void MainWindow::stop() {
     ui->timerInterval->setEnabled(true);
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
+    ui->mutation_chance->setEnabled(true);
     run_flag = false;
     world->run_flag = false;
     //delete world;
