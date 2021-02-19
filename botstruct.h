@@ -1,6 +1,6 @@
 #ifndef BOTSTRUCT_H
 #define BOTSTRUCT_H
-#include <vector>
+#include <QList>
 
 
 class Bot {
@@ -11,7 +11,7 @@ public:
     int x, y;
     unsigned int direction;
     unsigned int energy;
-    std::vector<int> genome;
+    QList<int> genome;
     unsigned int iterator;
     unsigned int old;
 };

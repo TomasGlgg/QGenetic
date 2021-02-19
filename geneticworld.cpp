@@ -15,7 +15,6 @@ enum Commands {
 
 GeneticWorld::~GeneticWorld() {
     bots.clear();
-    //bots.shrink_to_fit();
 }
 GeneticWorld::GeneticWorld(uint genom_len, uint max_energy, uint max_x, uint max_y) {
     assert(genom_len!=0);
@@ -38,7 +37,8 @@ Bot *GeneticWorld::newBot() {
 }
 
 void GeneticWorld::deleteBot(uint index) {
-    die_bots.push_back(index);
+    if (std::find(die_bots.begin(), die_bots.end(), index) == die_bots.end())
+        die_bots.push_back(index);
 }
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
@@ -122,7 +122,6 @@ bool GeneticWorld::reproduction(Bot bot) {
     if (!checkCoords(xy)) return false;
 
     Bot *new_bot = newBot();
-    new_bot->genome.resize(genome_len);
     new_bot->direction = bot.direction;
     new_bot->energy = max_energy/2;
     new_bot->x = xy[0];
@@ -131,7 +130,8 @@ bool GeneticWorld::reproduction(Bot bot) {
     //copy genom and mutate
     int k;
     for (uint i = 0; i<genome_len; i++) {
-        if ((rand()%1000)/1000.<mutate_chance) {
+        float random = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        if (random<mutate_chance/genome_len) {
             k = rand()%4-2;
             new_bot->genome[i] = bot.genome[i] + k;
         } else
@@ -141,14 +141,10 @@ bool GeneticWorld::reproduction(Bot bot) {
 }
 
 void GeneticWorld::clearDie() {
-    std::sort(die_bots.begin(), die_bots.end());
-    int index, size = die_bots.size();
-    int offset = 0;
-    for (int i = 0; i<size; i++) {
-        index = die_bots[i]-offset;
+    std::sort(die_bots.begin(), die_bots.end(), [](const int a, const int b) {return a > b; });
+    for (uint index : die_bots) {
         delete bots[index];
-        bots.erase(bots.begin()+index);
-        offset++;
+        bots.removeAt(index);
     }
     die_bots.clear();
 }
@@ -158,6 +154,10 @@ void GeneticWorld::botStep(uint i) { //process gen
     uint command_index = bot->iterator;
     int command = bot->genome[command_index];
     switch (command) {
+        case reproduction_command: {
+            if (!reproduction(*bot)) deleteBot(i);
+            break;
+        }
         case photosynthesis_command: {
             int new_energy = getPhotosynthesisEnergy(bot->y);
             bot->energy += new_energy;
@@ -224,7 +224,8 @@ void GeneticWorld::process() {
     for(unsigned int i = 0; i != bot_len; i++) {
         botStep(i);
     }
-    clearDie();
+    if (die_bots.size())
+        clearDie();
     generation++;
 }
 

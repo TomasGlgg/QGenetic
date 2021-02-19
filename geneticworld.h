@@ -2,10 +2,9 @@
 #define GENETICWORLD_H
 
 #include <cassert>
-#include <vector>
 #include <QThread>
 #include <QTimer>
-#include <iostream>
+#include <QList>
 
 #include "botstruct.h"
 
@@ -24,17 +23,15 @@ public:
 
     uint generation = 0;
     uint process_delay = 1; // ms
-    bool inited = false;
-    bool run_flag;
 
     uint genome_len;
     uint max_energy;
     uint max_x, max_y;
     float mutate_chance = 0.1;
 
-    std::vector<Bot*> bots;
+    QList<Bot*> bots;
 private:
-    std::vector<uint> die_bots;
+    QList<uint> die_bots;
     QTimer *timer = new QTimer(this);;
 
     bool reproduction(Bot bot);

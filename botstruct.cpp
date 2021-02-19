@@ -1,7 +1,9 @@
 #include "botstruct.h"
 
 Bot::Bot(unsigned int genome_len) {
-    genome.resize(genome_len);
+    for (int i = 0; i<genome_len; i++) {
+        genome.push_back(0);
+    }
     iterator = 0;
     direction = 0;
     old = 0;
@@ -12,5 +14,4 @@ Bot::Bot(unsigned int genome_len) {
 
 Bot::~Bot() {
     genome.clear();
-    genome.shrink_to_fit();
 }

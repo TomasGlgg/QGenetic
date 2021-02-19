@@ -44,7 +44,7 @@ void MainWindow::initWorld(uint x, uint y) {
         else if (i%2==1)
             newBot->genome[i] = -5;
     }
-    world->inited = true;
+    worldinited = true;
 }
 
 void MainWindow::start() {
@@ -67,7 +67,7 @@ void MainWindow::start() {
     ui->sizeLabel->setText(str_size);
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
-    if (!world->inited)
+    if (!worldinited)
         initWorld(world_w, world_h);
     world->mutate_chance = ui->mutation_chance->value();
     world->start(ui->process_delay->value());
@@ -84,7 +84,6 @@ void MainWindow::stop() {
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
     ui->mutation_chance->setEnabled(true);
-    //delete world;
 }
 
 void MainWindow::new_world() {
@@ -95,6 +94,7 @@ void MainWindow::new_world() {
     this->setMinimumSize(0, 0);
     this->setMaximumSize(16777215, 16777215);
     scene->clear();
+    worldinited = false;
     delete world;
 }
 

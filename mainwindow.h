@@ -26,7 +26,7 @@ private:
     GeneticWorld *world;
 
     const uint botsize = 5;
-
+    bool worldinited = false;
     void initWorld(uint x, uint y);
 
 private slots:
