@@ -1,14 +1,17 @@
 #include "geneticworld.h"
 
-#define eat -6
-#define eat_power 10
+#define eat_power 30
 
-#define minerals -5
-#define photosynthesis -4
-#define right -3
-#define left -2
-#define step -1
 
+enum Commands {
+    reproduction_command = -7,  // reproduction   = -7
+    eat_command,                // eat            = -6
+    minerals_command,           // minerals       = -5
+    photosynthesis_command,     // photosynthesis = -4
+    right_command,              // right          = -3
+    left_command,               // left           = -2
+    step_command                // step           = -1
+};
 
 GeneticWorld::~GeneticWorld() {
     bots.clear();
@@ -42,7 +45,7 @@ uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
     if (y>max_y/6*5) return 5;
     else if (y>max_y/6*4) return 4;
     else if (y>max_y/6*3) return 3;
-    else if (y>max_y/6*2) return 2;
+    else if (y>max_y/6*2) return 1;
     else return 0;
 }
 
@@ -50,7 +53,7 @@ uint GeneticWorld::getMineralsEnergy(uint y) {
     if (y<max_y/6*1) return 5;
     else if (y<max_y/6*2) return 4;
     else if (y<max_y/6*3) return 3;
-    else if (y<max_y/6*4) return 2;
+    else if (y<max_y/6*4) return 1;
     else return 0;
 }
 
@@ -155,27 +158,27 @@ void GeneticWorld::botStep(uint i) { //process gen
     uint command_index = bot->iterator;
     int command = bot->genome[command_index];
     switch (command) {
-        case photosynthesis: {
+        case photosynthesis_command: {
             int new_energy = getPhotosynthesisEnergy(bot->y);
             bot->energy += new_energy;
             break;
         }
-        case minerals: {
+        case minerals_command: {
             int new_energy = getMineralsEnergy(bot->y);
             bot->energy += new_energy;
             break;
         }
-        case left: {
+        case left_command: {
             if (bot->direction==0) bot->direction = 7;
             else bot->direction--;
             break;
         }
-        case right: {
+        case right_command: {
             bot->direction++;
             bot->direction %= 8;
             break;
         }
-        case step: {
+        case step_command: {
             int xy[2];
             oppositeBot(*bot, xy);
             if (checkCoords(xy)) {
@@ -184,7 +187,7 @@ void GeneticWorld::botStep(uint i) { //process gen
             }
             break;
         }
-        case eat: {
+        case eat_command: {
             int xy[2];
             oppositeBot(*bot, xy);
             int targetindex = findBot(xy);

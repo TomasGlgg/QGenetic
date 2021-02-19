@@ -38,13 +38,10 @@ void MainWindow::initWorld(uint x, uint y) {
     newBot->direction = 0;
     newBot->x = 10;
     newBot->y = 10;
-    int flag = 0;
     for (int i = 0; i<genome_len; i++){
-        flag++;
-        flag %= 2;
-        if (flag == 0)
+        if (i%2 == 0)
             newBot->genome[i] = -2;
-        else if (flag==1)
+        else if (i%2==1)
             newBot->genome[i] = -5;
     }
     world->inited = true;
