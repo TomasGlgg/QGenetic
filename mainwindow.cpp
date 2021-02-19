@@ -56,6 +56,7 @@ void MainWindow::start() {
     ui->timerInterval->setEnabled(false);
     ui->process_delay->setEnabled(false);
     ui->mutation_chance->setEnabled(false);
+    ui->draw_lines->setEnabled(true);
     int window_w = this->width();
     int window_h = this->height();
     this->setMinimumSize(window_w, window_h);
@@ -85,6 +86,7 @@ void MainWindow::stop() {
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
     ui->mutation_chance->setEnabled(true);
+    ui->draw_lines->setEnabled(false);
     ui->status_led->setColor(QColor(255, 128, 0));
 }
 
