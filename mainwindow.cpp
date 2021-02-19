@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new QGraphicsScene(this);
     ui->DrawArea->setScene(scene);
     ui->DrawArea->rotate(180);
-    //             y
+    //            y
     //           /\
     //            |
     //            |
@@ -67,7 +67,6 @@ void MainWindow::start() {
     ui->sizeLabel->setText(str_size);
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
-    run_flag = true;
     if (!world->inited)
         initWorld(world_w, world_h);
     world->mutate_chance = ui->mutation_chance->value();
@@ -76,6 +75,7 @@ void MainWindow::start() {
 }
 
 void MainWindow::stop() {
+    world->stop();
     timer->stop();
     ui->startButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
@@ -84,8 +84,6 @@ void MainWindow::stop() {
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
     ui->mutation_chance->setEnabled(true);
-    run_flag = false;
-    world->run_flag = false;
     //delete world;
 }
 

@@ -24,7 +24,6 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     GeneticWorld *world;
-    bool run_flag;
 
     const uint botsize = 5;
 

@@ -20,6 +20,7 @@ public:
     ~GeneticWorld();
     Bot *newBot();
     void start(uint delay);
+    void stop();
 
     uint generation = 0;
     uint process_delay = 1; // ms

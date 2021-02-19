@@ -232,3 +232,7 @@ void GeneticWorld::start(uint delay) {
     timer->start(delay);
 }
 
+
+void GeneticWorld::stop() {
+    timer->stop();
+}
