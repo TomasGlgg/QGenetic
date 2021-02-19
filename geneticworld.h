@@ -9,6 +9,16 @@
 #include "botstruct.h"
 
 
+enum Commands {
+    reproduction_command = -7,  // reproduction   = -7
+    eat_command,                // eat            = -6
+    minerals_command,           // minerals       = -5
+    photosynthesis_command,     // photosynthesis = -4
+    right_command,              // right          = -3
+    left_command,               // left           = -2
+    step_command                // step           = -1
+};
+
 class GeneticWorld : public QObject {
     Q_OBJECT
 protected:

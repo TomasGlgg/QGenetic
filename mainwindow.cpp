@@ -104,13 +104,13 @@ QColor MainWindow::BotColor(Bot *bot) {
     //float max_energy = world->max_energy;
     float genome_len = world->genome_len;
 
-    unsigned int minerals_count = std::count(bot->genome.begin(), bot->genome.end(), -2);
-    unsigned int photosynthesis_count = std::count(bot->genome.begin(), bot->genome.end(), -3);
-    unsigned int step_count = std::count(bot->genome.begin(), bot->genome.end(), -1);
+    unsigned int minerals_count = std::count(bot->genome.begin(), bot->genome.end(), minerals_command);
+    unsigned int photosynthesis_count = std::count(bot->genome.begin(), bot->genome.end(), photosynthesis_command);
+    unsigned int eat_count = std::count(bot->genome.begin(), bot->genome.end(), eat_command);
 
     unsigned int B = tanh(minerals_count/genome_len * 2)*255;
     unsigned int G = tanh(photosynthesis_count/genome_len * 2)*255;
-    unsigned int R = tanh(step_count/genome_len * 2)*255;
+    unsigned int R = tanh(eat_count/genome_len * 2)*255;
     return QColor(R, G, B);
     //return QColor(254, 254, 254);
 }
