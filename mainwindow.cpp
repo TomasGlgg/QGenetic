@@ -119,18 +119,22 @@ QColor MainWindow::BotColor(Bot *bot) {
 void MainWindow::render() {
     scene->clear();
     unsigned int bot_len = world->bots.size();
-    if (!bot_len) {
+    if (bot_len) {
+        ui->botLen->display(QString::number(bot_len));
+        ui->generation->setText(QString::number(world->generation));
+        ui->mutation_count->setText(QString::number(world->mutation_count));
+        for(unsigned int i = 0; i < bot_len; i++) {
+            QColor botColor = BotColor(world->bots[i]);
+            scene->addRect(world->bots[i]->x * botsize + 1, world->bots[i]->y * botsize + 1, botsize, botsize, QPen(botColor), QBrush(botColor));
+        }
+    } else {
         timer->stop();
         ui->newWorldButton->setEnabled(true);
         ui->stopButton->setEnabled(false);
         ui->status_led->setColor(QColor(255, 0, 0));
-        return;
     }
-    ui->botLen->display(QString::number(bot_len));
-    ui->generation->setText(QString::number(world->generation));
-    ui->mutation_count->setText(QString::number(world->mutation_count));
-    for(unsigned int i = 0; i < bot_len; i++) {
-        QColor botColor = BotColor(world->bots[i]);
-        scene->addRect(world->bots[i]->x * botsize + 1, world->bots[i]->y * botsize + 1, botsize, botsize, QPen(botColor), QBrush(botColor));
-    }
+    for (int i = 1; i<6; i++)
+        scene->addLine(0, ui->DrawArea->height()/6*i, ui->DrawArea->width(), ui->DrawArea->height()/6*i, QPen(QColor(128, 128, 128)));
+
+
 }
