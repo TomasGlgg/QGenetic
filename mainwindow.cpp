@@ -108,9 +108,9 @@ QColor MainWindow::BotColor(Bot *bot) {
     unsigned int photosynthesis_count = std::count(bot->genome.begin(), bot->genome.end(), -3);
     unsigned int step_count = std::count(bot->genome.begin(), bot->genome.end(), -1);
 
-    unsigned int B = minerals_count/genome_len*255;
-    unsigned int G = photosynthesis_count/genome_len*255;
-    unsigned int R = step_count/genome_len*255;
+    unsigned int B = tanh(minerals_count/genome_len * 2)*255;
+    unsigned int G = tanh(photosynthesis_count/genome_len * 2)*255;
+    unsigned int R = tanh(step_count/genome_len * 2)*255;
     return QColor(R, G, B);
     //return QColor(254, 254, 254);
 }
@@ -124,6 +124,7 @@ void MainWindow::render() {
         ui->newWorldButton->setEnabled(true);
         ui->stopButton->setEnabled(false);
         ui->status_led->setColor(QColor(255, 0, 0));
+        return;
     }
     ui->botLen->display(QString::number(bot_len));
     ui->generation->setText(QString::number(world->generation));

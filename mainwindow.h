@@ -6,6 +6,8 @@
 #include <QTimer>
 #include <iostream>
 
+#include <cmath>
+
 #include "geneticworld.h"
 
 QT_BEGIN_NAMESPACE
