@@ -10,7 +10,7 @@
 #include "botstruct.h"
 
 
-class GeneticWorld : public QThread {
+class GeneticWorld : public QObject {
     Q_OBJECT
 protected:
     void run();
@@ -19,9 +19,11 @@ public:
     GeneticWorld(uint genom_len, uint max_energy, uint max_x, uint max_y);
     ~GeneticWorld();
     Bot *newBot();
+    void start(uint delay);
 
     uint generation = 0;
-    uint process_delay = 1000; //1 ms
+    uint process_delay = 1; // ms
+    bool inited = false;
     bool run_flag;
 
     uint genome_len;
@@ -32,17 +34,20 @@ public:
     std::vector<Bot*> bots;
 private:
     std::vector<uint> die_bots;
+    QTimer *timer = new QTimer(this);;
 
-    void process();
     bool reproduction(Bot bot);
     uint getPhotosynthesisEnergy(uint y);
     uint getMineralsEnergy(uint y);
-    uint *oppositeBot(Bot bot, uint *xy);
-    int findBot(uint *xy);
-    bool checkCoords(uint *xy);
+    int *oppositeBot(Bot bot, int *xy);
+    int findBot(int *xy);
+    bool checkCoords(int *xy);
     void botStep(uint i);
     void deleteBot(uint index);
     void clearDie();
+
+private slots:
+    void process();
 };
 
 #endif // GENETICWORLD_H

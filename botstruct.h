@@ -5,14 +5,15 @@
 
 class Bot {
 public:
-    Bot();
+    Bot(unsigned int genome_len);
     ~Bot();
 
-    int x, y, direction;
-    int energy;
-    std::vector<int> genom;
-    int iterator;
-    int old;
+    int x, y;
+    unsigned int direction;
+    unsigned int energy;
+    std::vector<int> genome;
+    unsigned int iterator;
+    unsigned int old;
 };
 
 #endif // BOTSTRUCT_H

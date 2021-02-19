@@ -21,13 +21,15 @@ GeneticWorld::GeneticWorld(uint genom_len, uint max_energy, uint max_x, uint max
     this->max_x = max_x;
     this->max_y = max_y;
 
+    connect(timer, SIGNAL(timeout()), this, SLOT(process()));
+
    // std::vector<Bot*> bots;
     // < 0 - команды
     // > 0 - goto
 }
 
 Bot *GeneticWorld::newBot() {
-    Bot *new_bot = new Bot();
+    Bot *new_bot = new Bot(genome_len);
     bots.push_back(new_bot);
     return new_bot;
 }
@@ -52,14 +54,14 @@ uint GeneticWorld::getMineralsEnergy(uint y) {
     else return 0;
 }
 
-int GeneticWorld::findBot(uint *xy) { //найти бота по координатам
+int GeneticWorld::findBot(int *xy) { //найти бота по координатам
     unsigned int bot_len = bots.size();
     for(uint i = 0; i != bot_len; i++)
         if (bots[i]->x==xy[0] && bots[i]->y==xy[1]) return i;
     return -1;
 }
 
-uint *GeneticWorld::oppositeBot(Bot bot, uint *xy) {
+int *GeneticWorld::oppositeBot(Bot bot, int *xy) {
    xy[0] = bot.x;
    xy[1] = bot.y;
    switch (bot.direction) {
@@ -103,7 +105,7 @@ uint *GeneticWorld::oppositeBot(Bot bot, uint *xy) {
    return xy;
 }
 
-bool GeneticWorld::checkCoords(uint *xy) {
+bool GeneticWorld::checkCoords(int *xy) {
     if (xy[0]<0 || xy[1]<0) return false;
     if (xy[0]>=max_x-3 || xy[1]>=max_y-3) return false;
     if (findBot(xy)!=-1) return false;
@@ -111,13 +113,13 @@ bool GeneticWorld::checkCoords(uint *xy) {
 }
 
 bool GeneticWorld::reproduction(Bot bot) {
-    uint xy[2];
+    int xy[2];
     oppositeBot(bot, xy);
     if (bot.energy<max_energy/2) return false;
     if (!checkCoords(xy)) return false;
 
     Bot *new_bot = newBot();
-    new_bot->genom.resize(genome_len);
+    new_bot->genome.resize(genome_len);
     new_bot->direction = bot.direction;
     new_bot->energy = max_energy/2;
     new_bot->x = xy[0];
@@ -128,9 +130,9 @@ bool GeneticWorld::reproduction(Bot bot) {
     for (uint i = 0; i<genome_len; i++) {
         if ((rand()%1000)/1000.<mutate_chance) {
             k = rand()%4-2;
-            new_bot->genom[i] = bot.genom[i] + k;
+            new_bot->genome[i] = bot.genome[i] + k;
         } else
-            new_bot->genom[i] = bot.genom[i];
+            new_bot->genome[i] = bot.genome[i];
     }
     return true;
 }
@@ -151,7 +153,7 @@ void GeneticWorld::clearDie() {
 void GeneticWorld::botStep(uint i) { //process gen
     Bot *bot = bots[i];
     uint command_index = bot->iterator;
-    int command = bot->genom[command_index];
+    int command = bot->genome[command_index];
     switch (command) {
         case photosynthesis: {
             int new_energy = getPhotosynthesisEnergy(bot->y);
@@ -174,7 +176,7 @@ void GeneticWorld::botStep(uint i) { //process gen
             break;
         }
         case step: {
-            uint xy[2];
+            int xy[2];
             oppositeBot(*bot, xy);
             if (checkCoords(xy)) {
                 bot->x = xy[0];
@@ -183,7 +185,7 @@ void GeneticWorld::botStep(uint i) { //process gen
             break;
         }
         case eat: {
-            uint xy[2];
+            int xy[2];
             oppositeBot(*bot, xy);
             int targetindex = findBot(xy);
             if (targetindex != -1) {
@@ -213,6 +215,8 @@ void GeneticWorld::botStep(uint i) { //process gen
 
 
 void GeneticWorld::process() {
+    if (process_delay)
+        QThread::msleep(process_delay);
     unsigned int bot_len = bots.size();
     for(unsigned int i = 0; i != bot_len; i++) {
         botStep(i);
@@ -221,13 +225,7 @@ void GeneticWorld::process() {
     generation++;
 }
 
-void GeneticWorld::run() {
-    run_flag = true;
-    while (run_flag) {
-        process();
-        if (process_delay!=0)
-            QThread::msleep(process_delay);
-    }
-
+void GeneticWorld::start(uint delay) {
+    timer->start(delay);
 }
 

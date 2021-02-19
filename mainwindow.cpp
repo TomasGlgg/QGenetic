@@ -32,8 +32,8 @@ void MainWindow::initWorld(uint x, uint y) {
     int genome_len = ui->genome_len->value();
     int max_energy = ui->max_energy->value();
     world = new GeneticWorld(genome_len, max_energy, x, y);
+
     Bot *newBot = world->newBot();
-    newBot->genom.resize(genome_len);
     newBot->energy = 10;
     newBot->direction = 0;
     newBot->x = 10;
@@ -43,10 +43,11 @@ void MainWindow::initWorld(uint x, uint y) {
         flag++;
         flag %= 2;
         if (flag == 0)
-            newBot->genom[i] = -2;
+            newBot->genome[i] = -2;
         else if (flag==1)
-            newBot->genom[i] = -5;
+            newBot->genome[i] = -5;
     }
+    world->inited = true;
 }
 
 void MainWindow::start() {
@@ -69,12 +70,9 @@ void MainWindow::start() {
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
     run_flag = true;
-    if (new_world_flag)
+    if (!world->inited)
         initWorld(world_w, world_h);
-    world->process_delay = 100;
-    new_world_flag = false;
-    world->start();
-
+    world->start(ui->process_delay->value());
     timer->start(ui->timerInterval->value());
 }
 
@@ -84,13 +82,14 @@ void MainWindow::stop() {
     ui->stopButton->setEnabled(false);
     ui->newWorldButton->setEnabled(true);
     ui->timerInterval->setEnabled(true);
+    ui->process_delay->setEnabled(true);
+    ui->max_energy->setEnabled(true);
     run_flag = false;
     world->run_flag = false;
     //delete world;
 }
 
 void MainWindow::new_world() {
-    new_world_flag = true;
     ui->newWorldButton->setEnabled(false);
     ui->max_energy->setEnabled(true);
     ui->genome_len->setEnabled(true);
@@ -105,9 +104,9 @@ QColor MainWindow::BotColor(Bot *bot) {
     //float max_energy = world->max_energy;
     float genome_len = world->genome_len;
 
-    unsigned int minerals_count = std::count(bot->genom.begin(), bot->genom.end(), -2);
-    unsigned int photosynthesis_count = std::count(bot->genom.begin(), bot->genom.end(), -3);
-    unsigned int step_count = std::count(bot->genom.begin(), bot->genom.end(), -1);
+    unsigned int minerals_count = std::count(bot->genome.begin(), bot->genome.end(), -2);
+    unsigned int photosynthesis_count = std::count(bot->genome.begin(), bot->genome.end(), -3);
+    unsigned int step_count = std::count(bot->genome.begin(), bot->genome.end(), -1);
 
     unsigned int B = minerals_count/genome_len*255;
     unsigned int G = photosynthesis_count/genome_len*255;
@@ -118,13 +117,12 @@ QColor MainWindow::BotColor(Bot *bot) {
 
 
 void MainWindow::render() {
-    world->process_delay = ui->process_delay->value()/1000;
     scene->clear();
     unsigned int bot_len = world->bots.size();
     ui->botLen->display(QString::number(bot_len));
     ui->generation->setText(QString::number(world->generation));
     for(unsigned int i = 0; i < bot_len; i++) {
         QColor botColor = BotColor(world->bots[i]);
-        scene->addRect(world->bots[i]->x * botsize, world->bots[i]->y * botsize, botsize, botsize, QPen(botColor), QBrush(botColor));
+        scene->addRect(world->bots[i]->x * botsize + 1, world->bots[i]->y * botsize + 1, botsize, botsize, QPen(botColor), QBrush(botColor));
     }
 }

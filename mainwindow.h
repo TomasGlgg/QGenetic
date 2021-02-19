@@ -25,7 +25,6 @@ private:
     QGraphicsScene *scene;
     GeneticWorld *world;
     bool run_flag;
-    bool new_world_flag = true;
 
     const uint botsize = 5;
 
