@@ -133,8 +133,10 @@ void MainWindow::render() {
         ui->stopButton->setEnabled(false);
         ui->status_led->setColor(QColor(255, 0, 0));
     }
-    for (int i = 1; i<6; i++)
-        scene->addLine(0, ui->DrawArea->height()/6*i, ui->DrawArea->width(), ui->DrawArea->height()/6*i, QPen(QColor(128, 128, 128)));
+    if (ui->draw_lines->isChecked()) {
+        for (int i = 1; i<6; i++)
+            scene->addLine(0, ui->DrawArea->height()/6*i, ui->DrawArea->width(), ui->DrawArea->height()/6*i, QPen(QColor(128, 128, 128)));
+    }
 
 
 }
