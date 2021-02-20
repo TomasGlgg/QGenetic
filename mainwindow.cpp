@@ -127,7 +127,7 @@ void MainWindow::render() {
         ui->mutation_count->setText(QString::number(world->mutation_count));
         for(unsigned int i = 0; i < bot_len; i++) {
             QColor botColor = BotColor(world->bots[i]);
-            scene->addRect(world->bots[i]->x * botsize + 1, world->bots[i]->y * botsize + 1, botsize, botsize, QPen(botColor), QBrush(botColor));
+            scene->addRect(world->bots[i]->x * botsize, world->bots[i]->y * botsize, botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
         }
     } else {
         timer->stop();
