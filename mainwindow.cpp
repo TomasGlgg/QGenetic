@@ -57,14 +57,15 @@ void MainWindow::start() {
     ui->process_delay->setEnabled(false);
     ui->mutation_chance->setEnabled(false);
     ui->draw_lines->setEnabled(true);
-    int window_w = this->width();
-    int window_h = this->height();
+    uint window_w = this->width();
+    uint window_h = this->height();
     this->setMinimumSize(window_w, window_h);
     this->setMaximumSize(window_w, window_h);
 
-    int world_w = ui->DrawArea->width() / botsize;
-    int world_h = ui->DrawArea->height() / botsize;
-    QString str_size = QString::number(world_w) + " x " + QString::number(world_h);
+    uint world_w = ui->DrawArea->width() / botsize;
+    uint world_h = ui->DrawArea->height() / botsize;
+
+    QString str_size = QString::number(world_w) + " x " + QString::number(world_h) + " (" + QString::number(world_h*world_w) + ")";
     ui->sizeLabel->setText(str_size);
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 

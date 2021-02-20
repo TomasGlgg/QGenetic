@@ -101,7 +101,7 @@ int *GeneticWorld::oppositeBot(Bot bot, int *xy) {
 
 bool GeneticWorld::checkCoords(int *xy) {
     if (xy[0]<0 || xy[1]<0) return false;
-    if (xy[0]>=max_x-3 || xy[1]>=max_y-3) return false;
+    if (xy[0]>=max_x || xy[1]>=max_y) return false;
     if (findBot(xy)!=-1) return false;
     return true;
 }
@@ -190,6 +190,7 @@ void GeneticWorld::botStep(uint i) { //process gen
                 } else {
                     bot->energy += bots[targetindex]->energy;
                     deleteBot(targetindex);
+                    return;
                 }
             }
             break;
