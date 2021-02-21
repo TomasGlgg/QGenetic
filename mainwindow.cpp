@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     scene = new QGraphicsScene(this);
     ui->DrawArea->setScene(scene);
     timer = new QTimer(this);
+
     connect(ui->startButton, SIGNAL(released()), this, SLOT(start()));
     connect(ui->stopButton, SIGNAL(released()), this, SLOT(stop()));
     connect(ui->newWorldButton, SIGNAL(released()), this, SLOT(new_world()));
@@ -117,7 +118,6 @@ void MainWindow::new_world() {
     ui->bot_size->setEnabled(true);
     ui->startButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
-    ui->newWorldButton->setEnabled(true);
     ui->timerInterval->setEnabled(true);
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
@@ -126,7 +126,12 @@ void MainWindow::new_world() {
     ui->world_parts_count->setEnabled(true);
     ui->start_world_energy->setEnabled(true);
     ui->max_old->setEnabled(true);
+
     ui->generation->setText("0");
+    ui->mutation_count->setText("0");
+    ui->kill_count->setText("0");
+    ui->sizeLabel->setText("");
+    ui->bot_count->display(0);
     this->setMinimumSize(0, 0);
     this->setMaximumSize(16777215, 16777215);
     scene->clear();
@@ -171,7 +176,7 @@ void MainWindow::render() {
         ui->status_led->setColor(QColor(255, 0, 0));
     }
 
-    ui->botLen->display(QString::number(bot_len));
+    ui->bot_count->display(QString::number(bot_len));
     ui->generation->setText(QString::number(world->generation));
     ui->mutation_count->setText(QString::number(world->mutation_count));
     ui->kill_count->setText(QString::number(world->kills));

@@ -1,7 +1,7 @@
 #include "botstruct.h"
 
 Bot::Bot(unsigned int genome_len) {
-    for (int i = 0; i<genome_len; i++) {
+    for (uint i = 0; i<genome_len; i++) {
         genome.push_back(0);
     }
     iterator = 0;

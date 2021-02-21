@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>800</height>
+    <height>675</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -146,6 +146,12 @@
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
               <widget class="QRadioButton" name="radio_gen_type">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Отображение типов генов</string>
                </property>
@@ -156,6 +162,12 @@
              </item>
              <item>
               <widget class="QRadioButton" name="radio_energy_count">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="text">
                 <string>Отображение кол-во энергии</string>
                </property>
@@ -445,7 +457,7 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLCDNumber" name="botLen">
+        <widget class="QLCDNumber" name="bot_count">
          <property name="minimumSize">
           <size>
            <width>160</width>
@@ -467,7 +479,7 @@
        <item row="5" column="1">
         <widget class="KLed" name="status_led">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Зеленый цвет - мир работает&lt;/p&gt;&lt;p&gt;Оранжевый цвет - мир остановлен&lt;/p&gt;&lt;p&gt;Красный цвет - все боты погибли&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Зеленый&lt;/span&gt; цвет - мир работает&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff8000;&quot;&gt;Оранжевый&lt;/span&gt; цвет - мир остановлен&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Красный&lt;/span&gt; цвет - все боты погибли&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="statusTip">
           <string/>
