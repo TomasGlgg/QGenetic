@@ -20,15 +20,17 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    QColor BotColor(Bot *bot);
-    QTimer *timer;
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     GeneticWorld *world;
+    QTimer *timer;
 
     uint botsize;
     bool worldinited = false;
+
+    QColor botColorByType(Bot *bot);
+    QColor botColorByEnergy(Bot *bot);
     void initWorld(uint x, uint y);
     void updateWorld();
     QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);

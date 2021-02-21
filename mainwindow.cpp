@@ -9,14 +9,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
     ui->DrawArea->setScene(scene);
-    //ui->DrawArea->rotate(180);
-    //            y
-    //           /\
-    //            |
-    //            |
-    //            |
-    //            |
-    // x<---------0
     timer = new QTimer(this);
     connect(ui->startButton, SIGNAL(released()), this, SLOT(start()));
     connect(ui->stopButton, SIGNAL(released()), this, SLOT(stop()));
@@ -29,29 +21,31 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::initWorld(uint x, uint y) {
-    uint genome_len = ui->genome_len->value();
     world = new GeneticWorld();
+    world->genome_len = ui->genome_len->value();
     world->max_x = x;
     world->max_y = y;
 
     Bot *newBot = world->newBot();
     newBot->energy = 10;
-    newBot->direction = 0;
+    newBot->direction = 2;
     newBot->x = 10;
     newBot->y = 10;
-    for (int i = 0; i<genome_len; i++){
+
+    for (uint i = 0; i<world->genome_len; i++){
         if (i%2 == 0)
             newBot->genome[i] = -2;
         else if (i%2==1)
             newBot->genome[i] = -5;
     }
+
     worldinited = true;
 }
 
 void MainWindow::updateWorld() {
+    world->genome_len = ui->genome_len->value();
     uint max_energy = ui->max_energy->value();
     world->eat_power = max_energy/2;
-    world->genome_len = ui->genome_len->value();
     world->max_energy = max_energy;
     world->mutate_chance = ui->mutation_chance->value();
     world->world_parts_count = ui->world_parts_count->value();
@@ -60,8 +54,6 @@ void MainWindow::updateWorld() {
 }
 
 void MainWindow::start() {
-    botsize = ui->bot_size->value();
-
     ui->bot_size->setEnabled(false);
     ui->startButton->setEnabled(false);
     ui->stopButton->setEnabled(true);
@@ -80,6 +72,7 @@ void MainWindow::start() {
     uint window_h = this->height();
     this->setMinimumSize(window_w, window_h);
     this->setMaximumSize(window_w, window_h);
+    botsize = ui->bot_size->value();
     uint world_w = ui->DrawArea->width() / botsize;
     uint world_h = ui->DrawArea->height() / botsize;
     QString str_size = QString::number(world_w) + " x " + QString::number(world_h) + " (" + QString::number(world_h*world_w) + ")";
@@ -87,9 +80,12 @@ void MainWindow::start() {
 
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
+    // world
     if (!worldinited)
         initWorld(world_w, world_h);
     updateWorld();
+
+    // starting
     world->start(ui->process_delay->value());
     timer->start(ui->timerInterval->value());
     ui->status_led->setColor(QColor(0, 255, 0));
@@ -127,7 +123,7 @@ void MainWindow::new_world() {
     delete world;
 }
 
-QColor MainWindow::BotColor(Bot *bot) {
+QColor MainWindow::botColorByType(Bot *bot) {
     float genome_len = world->genome_len;
 
     unsigned int minerals_count = std::count(bot->genome.begin(), bot->genome.end(), minerals_command);
@@ -139,6 +135,12 @@ QColor MainWindow::BotColor(Bot *bot) {
     unsigned int R = tanh(eat_count/genome_len * 2)*255;
     return QColor(R, G, B);
 }
+
+inline QColor MainWindow::botColorByEnergy(Bot *bot) {
+    float energy_k = static_cast<float>(bot->energy)/static_cast<float>(world->max_energy);
+    return QColor(255, 255-(energy_k*255), 0);
+}
+
 
 QGraphicsTextItem* MainWindow::textWidget(QString text, uint x, uint y, QColor color) {
     QGraphicsTextItem *textItem = new QGraphicsTextItem(text);
@@ -162,12 +164,20 @@ void MainWindow::render() {
     ui->generation->setText(QString::number(world->generation));
     ui->mutation_count->setText(QString::number(world->mutation_count));
     ui->kill_count->setText(QString::number(world->kills));
-    for(unsigned int i = 0; i < bot_len; i++) {
-        QColor botColor = BotColor(world->bots[i]);
-        scene->addRect(world->bots[i]->x * botsize, ui->DrawArea->height() - (world->bots[i]->y * botsize), botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
+    QColor botColor;
+    if (ui->radio_gen_type->isChecked()) {
+        for(uint i = 0; i < bot_len; i++) {
+            botColor = botColorByType(world->bots[i]);
+            scene->addRect(world->bots[i]->x * botsize, ui->DrawArea->height() - (world->bots[i]->y * botsize), botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
+        }
+    } else if (ui->radio_energy_count->isChecked()) {
+        for(uint i = 0; i < bot_len; i++) {
+            botColor = botColorByEnergy(world->bots[i]);
+            scene->addRect(world->bots[i]->x * botsize, ui->DrawArea->height() - (world->bots[i]->y * botsize), botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
+        }
     }
 
-    if (ui->draw_lines->isChecked()) {
+    if (ui->draw_lines->isChecked()) {  // TODO: optimization
         uint current_height, coordinates_y;
         for (uint part = 1; part<=world->world_parts_count; ++part) {
             current_height = ui->DrawArea->height() - ui->DrawArea->height()/world->world_parts_count*part;

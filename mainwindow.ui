@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>600</height>
+    <height>800</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -138,6 +138,32 @@
             </property>
            </widget>
           </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QGroupBox" name="groupBox_5">
+            <property name="title">
+             <string>Режим отображения цвета</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QRadioButton" name="radio_gen_type">
+               <property name="text">
+                <string>Отображение типов генов</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radio_energy_count">
+               <property name="text">
+                <string>Отображение кол-во энергии</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -173,7 +199,7 @@
           <item row="1" column="0">
            <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>Максимальная энергия</string>
+             <string>Макс. кол-во энергии</string>
             </property>
            </widget>
           </item>
@@ -391,6 +417,26 @@
          </property>
         </widget>
        </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_16">
+         <property name="text">
+          <string>Кол-во убийств:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="kill_count">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="0">
         <widget class="QLabel" name="label_5">
          <property name="text">
@@ -420,32 +466,27 @@
        </item>
        <item row="5" column="1">
         <widget class="KLed" name="status_led">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Зеленый цвет - мир работает&lt;/p&gt;&lt;p&gt;Оранжевый цвет - мир остановлен&lt;/p&gt;&lt;p&gt;Красный цвет - все боты погибли&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="statusTip">
+          <string/>
+         </property>
+         <property name="whatsThis">
+          <string/>
+         </property>
+         <property name="accessibleDescription">
+          <string/>
+         </property>
+         <property name="shape">
+          <enum>KLed::Circular</enum>
+         </property>
          <property name="color">
           <color>
            <red>170</red>
            <green>85</green>
            <blue>0</blue>
           </color>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_16">
-         <property name="text">
-          <string>Кол-во убийств:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="kill_count">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
          </property>
         </widget>
        </item>
