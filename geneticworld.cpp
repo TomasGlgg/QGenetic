@@ -1,7 +1,5 @@
 #include "geneticworld.h"
 
-#define eat_power 30
-
 
 
 GeneticWorld::~GeneticWorld() {

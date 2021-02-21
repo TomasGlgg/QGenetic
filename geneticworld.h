@@ -43,6 +43,7 @@ public:
     uint process_delay = 1; // ms
     uint genome_len;
     uint max_energy;
+    uint eat_power;
     int max_x, max_y;
 
     QList<Bot*> bots;

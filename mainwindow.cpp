@@ -32,6 +32,10 @@ void MainWindow::initWorld(uint x, uint y) {
     int genome_len = ui->genome_len->value();
     int max_energy = ui->max_energy->value();
     world = new GeneticWorld(genome_len, max_energy, x, y);
+    world->eat_power = max_energy/2;
+    world->mutate_chance = ui->mutation_chance->value();
+    world->world_parts_count = ui->world_parts_count->value();
+    world->start_world_energy = ui->start_world_energy->value();
 
     Bot *newBot = world->newBot();
     newBot->energy = 10;
@@ -59,23 +63,21 @@ void MainWindow::start() {
     ui->draw_lines->setEnabled(true);
     ui->world_parts_count->setEnabled(false);
     ui->start_world_energy->setEnabled(false);
+
     uint window_w = this->width();
     uint window_h = this->height();
     this->setMinimumSize(window_w, window_h);
     this->setMaximumSize(window_w, window_h);
-
     uint world_w = ui->DrawArea->width() / botsize;
     uint world_h = ui->DrawArea->height() / botsize;
-
     QString str_size = QString::number(world_w) + " x " + QString::number(world_h) + " (" + QString::number(world_h*world_w) + ")";
     ui->sizeLabel->setText(str_size);
+
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
     if (!worldinited)
         initWorld(world_w, world_h);
-    world->mutate_chance = ui->mutation_chance->value();
-    world->world_parts_count = ui->world_parts_count->value();
-    world->start_world_energy = ui->start_world_energy->value();
+
     world->start(ui->process_delay->value());
     timer->start(ui->timerInterval->value());
     ui->status_led->setColor(QColor(0, 255, 0));
@@ -156,8 +158,8 @@ void MainWindow::render() {
             scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(QColor(128, 128, 128)));
             if (part < world->start_world_energy)  // minerals
                 scene->addItem(textWidget(QString::number(world->getMineralsEnergy(coordinates_y)), 0, current_height, QColor(255, 255, 255)));
-            //if (part > (world->world_parts_count - world->start_world_energy)) // photosynthesis
-                //scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
+            if (part > (world->world_parts_count - world->start_world_energy)) // photosynthesis
+                scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
         }
     }
 
