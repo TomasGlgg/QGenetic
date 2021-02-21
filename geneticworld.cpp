@@ -6,13 +6,7 @@ GeneticWorld::~GeneticWorld() {
     bots.clear();
     die_bots.clear();
 }
-GeneticWorld::GeneticWorld(uint genom_len, uint max_energy, uint max_x, uint max_y) {
-    assert(genom_len!=0);
-    this->genome_len = genom_len;
-    this->max_energy = max_energy;
-    this->max_x = max_x;
-    this->max_y = max_y;
-
+GeneticWorld::GeneticWorld() {
     connect(timer, SIGNAL(timeout()), this, SLOT(process()));
 
    // std::vector<Bot*> bots;
@@ -46,7 +40,7 @@ uint GeneticWorld::getMineralsEnergy(uint y) {  // TODO: optimize
     return 0;
 }
 
-int GeneticWorld::findBot(int *xy) { //найти бота по координатам
+int GeneticWorld::findBot(int *xy) {
     unsigned int bot_len = bots.size();
     for(uint i = 0; i != bot_len; i++)
         if (bots[i]->x==xy[0] && bots[i]->y==xy[1]) return i;
@@ -147,7 +141,7 @@ void GeneticWorld::clearDie() {
     die_bots.clear();
 }
 
-void GeneticWorld::botStep(uint i) { //process gen
+void GeneticWorld::botStep(uint i) {
     Bot *bot = bots[i];
     uint command_index = bot->iterator;
     int command = bot->genome[command_index];
@@ -205,9 +199,14 @@ void GeneticWorld::botStep(uint i) { //process gen
         case check_command: {
             int xy[2];
             oppositeBot(*bot, xy);
-            if (checkCoords(xy)) {
+            if (findBot(xy)!=-1)
                 bot->iterator++;
-            }
+
+            break;
+        }
+
+        default: {  // unconditional transfer
+            bot->iterator += command;
             break;
         }
     }

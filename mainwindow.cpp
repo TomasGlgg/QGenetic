@@ -29,13 +29,10 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::initWorld(uint x, uint y) {
-    int genome_len = ui->genome_len->value();
-    int max_energy = ui->max_energy->value();
-    world = new GeneticWorld(genome_len, max_energy, x, y);
-    world->eat_power = max_energy/2;
-    world->mutate_chance = ui->mutation_chance->value();
-    world->world_parts_count = ui->world_parts_count->value();
-    world->start_world_energy = ui->start_world_energy->value();
+    uint genome_len = ui->genome_len->value();
+    world = new GeneticWorld();
+    world->max_x = x;
+    world->max_y = y;
 
     Bot *newBot = world->newBot();
     newBot->energy = 10;
@@ -49,6 +46,16 @@ void MainWindow::initWorld(uint x, uint y) {
             newBot->genome[i] = -5;
     }
     worldinited = true;
+}
+
+void MainWindow::updateWorld() {
+    uint max_energy = ui->max_energy->value();
+    world->eat_power = max_energy/2;
+    world->genome_len = ui->genome_len->value();
+    world->max_energy = max_energy;
+    world->mutate_chance = ui->mutation_chance->value();
+    world->world_parts_count = ui->world_parts_count->value();
+    world->start_world_energy = ui->start_world_energy->value();
 }
 
 void MainWindow::start() {
@@ -77,7 +84,7 @@ void MainWindow::start() {
 
     if (!worldinited)
         initWorld(world_w, world_h);
-
+    updateWorld();
     world->start(ui->process_delay->value());
     timer->start(ui->timerInterval->value());
     ui->status_led->setColor(QColor(0, 255, 0));

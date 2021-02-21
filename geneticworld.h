@@ -26,7 +26,7 @@ protected:
     void run();
 
 public:
-    GeneticWorld(uint genom_len, uint max_energy, uint max_x, uint max_y);
+    GeneticWorld();
     ~GeneticWorld();
     Bot *newBot();
     void start(uint delay);
@@ -42,9 +42,9 @@ public:
     float mutate_chance = 0.1;
 
     uint process_delay = 1; // ms
-    uint genome_len;
-    uint max_energy;
-    uint eat_power;
+    uint genome_len = 10;
+    uint max_energy = 30;
+    uint eat_power = max_energy/2;
     int max_x, max_y;
 
     QList<Bot*> bots;

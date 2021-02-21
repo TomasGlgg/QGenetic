@@ -30,6 +30,7 @@ private:
     const uint botsize = 5;
     bool worldinited = false;
     void initWorld(uint x, uint y);
+    void updateWorld();
     QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);
 
 private slots:
