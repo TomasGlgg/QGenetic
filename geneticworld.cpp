@@ -195,7 +195,6 @@ void GeneticWorld::botStep(uint i) {
             }
             break;
         }
-
         case check_command: {
             int xy[2];
             oppositeBot(*bot, xy);

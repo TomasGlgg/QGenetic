@@ -27,7 +27,7 @@ private:
     QGraphicsScene *scene;
     GeneticWorld *world;
 
-    const uint botsize = 5;
+    uint botsize;
     bool worldinited = false;
     void initWorld(uint x, uint y);
     void updateWorld();

@@ -59,6 +59,9 @@ void MainWindow::updateWorld() {
 }
 
 void MainWindow::start() {
+    botsize = ui->bot_size->value();
+
+    ui->bot_size->setEnabled(false);
     ui->startButton->setEnabled(false);
     ui->stopButton->setEnabled(true);
     ui->newWorldButton->setEnabled(false);
@@ -111,6 +114,7 @@ void MainWindow::new_world() {
     ui->max_energy->setEnabled(true);
     ui->genome_len->setEnabled(true);
     ui->startButton->setEnabled(true);
+    ui->bot_size->setEnabled(true);
     ui->generation->setText("0");
     this->setMinimumSize(0, 0);
     this->setMaximumSize(16777215, 16777215);
