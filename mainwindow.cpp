@@ -69,10 +69,7 @@ void MainWindow::start() {
     ui->start_world_energy->setEnabled(false);
     ui->max_old->setEnabled(false);
 
-    uint window_w = this->width();
-    uint window_h = this->height();
-    this->setMinimumSize(window_w, window_h);
-    this->setMaximumSize(window_w, window_h);
+
     botsize = ui->bot_size->value();
     uint world_w = ui->DrawArea->width() / botsize;
     uint world_h = ui->DrawArea->height() / botsize;
@@ -82,8 +79,13 @@ void MainWindow::start() {
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
     // world
-    if (!worldinited)
+    if (!worldinited) {
         initWorld(world_w, world_h);
+        uint window_w = this->width();
+        uint window_h = this->height() + (ui->DrawArea->height() % (world->world_parts_count*botsize));
+        this->setMinimumSize(window_w, window_h);
+        this->setMaximumSize(window_w, window_h);
+    }
     updateWorld();
 
     // starting
