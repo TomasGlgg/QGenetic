@@ -57,6 +57,8 @@ void MainWindow::start() {
     ui->process_delay->setEnabled(false);
     ui->mutation_chance->setEnabled(false);
     ui->draw_lines->setEnabled(true);
+    ui->world_parts_count->setEnabled(false);
+    ui->start_world_energy->setEnabled(false);
     uint window_w = this->width();
     uint window_h = this->height();
     this->setMinimumSize(window_w, window_h);
@@ -72,6 +74,8 @@ void MainWindow::start() {
     if (!worldinited)
         initWorld(world_w, world_h);
     world->mutate_chance = ui->mutation_chance->value();
+    world->world_parts_count = ui->world_parts_count->value();
+    world->start_world_energy = ui->start_world_energy->value();
     world->start(ui->process_delay->value());
     timer->start(ui->timerInterval->value());
     ui->status_led->setColor(QColor(0, 255, 0));
@@ -88,6 +92,8 @@ void MainWindow::stop() {
     ui->max_energy->setEnabled(true);
     ui->mutation_chance->setEnabled(true);
     ui->draw_lines->setEnabled(false);
+    ui->world_parts_count->setEnabled(true);
+    ui->start_world_energy->setEnabled(true);
     ui->status_led->setColor(QColor(255, 128, 0));
 }
 
@@ -137,8 +143,11 @@ void MainWindow::render() {
         ui->status_led->setColor(QColor(255, 0, 0));
     }
     if (ui->draw_lines->isChecked()) {
-        for (int i = 1; i<6; i++)
-            scene->addLine(0, ui->DrawArea->height()/6*i, ui->DrawArea->width(), ui->DrawArea->height()/6*i, QPen(QColor(128, 128, 128)));
+        uint current_height;
+        for (uint part = 1; part<world->world_parts_count; ++part) {
+            current_height = ui->DrawArea->height()/world->world_parts_count*part;
+            scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(QColor(128, 128, 128)));
+        }
     }
 
 

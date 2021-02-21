@@ -116,6 +116,9 @@
             <property name="text">
              <string/>
             </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
          </layout>
@@ -163,10 +166,10 @@
              <number>1</number>
             </property>
             <property name="maximum">
-             <number>100</number>
+             <number>1000</number>
             </property>
             <property name="value">
-             <number>50</number>
+             <number>100</number>
             </property>
            </widget>
           </item>
@@ -196,7 +199,7 @@
           <item row="3" column="0">
            <widget class="QLabel" name="label_8">
             <property name="text">
-             <string>Шанс мутации</string>
+             <string>Шанс мутации гена</string>
             </property>
            </widget>
           </item>
@@ -213,6 +216,46 @@
             </property>
             <property name="value">
              <double>0.100000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Части мира</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="world_parts_count">
+            <property name="minimum">
+             <number>2</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>10</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>Энергия первой части мира</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QSpinBox" name="start_world_energy">
+            <property name="minimum">
+             <number>2</number>
+            </property>
+            <property name="maximum">
+             <number>50</number>
+            </property>
+            <property name="value">
+             <number>5</number>
             </property>
            </widget>
           </item>

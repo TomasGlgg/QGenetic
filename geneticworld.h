@@ -33,12 +33,14 @@ public:
 
     uint generation = 0;
     uint mutation_count = 0;
+    uint world_parts_count = 10;
+    uint start_world_energy = 5;
+    float mutate_chance = 0.1;
 
     uint process_delay = 1; // ms
     uint genome_len;
     uint max_energy;
     uint max_x, max_y;
-    float mutate_chance = 0.1;
 
     QList<Bot*> bots;
 private:
