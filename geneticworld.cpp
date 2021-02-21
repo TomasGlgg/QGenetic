@@ -33,11 +33,6 @@ void GeneticWorld::deleteBot(uint index) {
 }
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
-    /*if (y>max_y/6*5) return 5;
-    else if (y>max_y/6*4) return 4;
-    else if (y>max_y/6*3) return 3;
-    else if (y>max_y/6*2) return 1;
-    else return 0;*/
     for (uint part = world_parts_count; part>(world_parts_count-start_world_energy); --part) {
         if (y>max_y/world_parts_count * part)
             return start_world_energy - (world_parts_count - part);
@@ -115,10 +110,11 @@ bool GeneticWorld::reproduction(Bot bot) {
     oppositeBot(bot, xy);
     if (bot.energy<max_energy/2) return false;
     if (!checkCoords(xy)) return false;
+    bot.energy /= 2;
 
     Bot *new_bot = newBot();
     new_bot->direction = bot.direction;
-    new_bot->energy = max_energy/2;
+    new_bot->energy = bot.energy/2;
     new_bot->x = xy[0];
     new_bot->y = xy[1];
 
@@ -155,12 +151,12 @@ void GeneticWorld::botStep(uint i) { //process gen
             break;
         }
         case photosynthesis_command: {
-            int new_energy = getPhotosynthesisEnergy(bot->y);
+            uint new_energy = getPhotosynthesisEnergy(bot->y);
             bot->energy += new_energy;
             break;
         }
         case minerals_command: {
-            int new_energy = getMineralsEnergy(bot->y);
+            uint new_energy = getMineralsEnergy(bot->y);
             bot->energy += new_energy;
             break;
         }

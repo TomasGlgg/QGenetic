@@ -155,10 +155,8 @@ void MainWindow::render() {
             scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(QColor(128, 128, 128)));
             if (part < world->start_world_energy)  // minerals
                 scene->addItem(textWidget(QString::number(world->getMineralsEnergy(coordinates_y)), 0, current_height, QColor(255, 255, 255)));
-            if (part > (world->world_parts_count - world->start_world_energy)) {
-                uint PhotosynthesisEnergy = world->getPhotosynthesisEnergy(coordinates_y);
-                scene->addItem(textWidget(QString::number(PhotosynthesisEnergy), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
-            }
+            //if (part > (world->world_parts_count - world->start_world_energy)) // photosynthesis
+                //scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
         }
     }
 
