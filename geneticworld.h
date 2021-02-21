@@ -43,7 +43,7 @@ public:
     uint process_delay = 1; // ms
     uint genome_len;
     uint max_energy;
-    uint max_x, max_y;
+    int max_x, max_y;
 
     QList<Bot*> bots;
 private:
@@ -51,9 +51,10 @@ private:
     QTimer *timer = new QTimer(this);
 
     bool reproduction(Bot bot);
-    int *oppositeBot(Bot bot, int *xy);
+    int* oppositeBot(Bot bot, int *xy);
     int findBot(int *xy);
     bool checkCoords(int *xy);
+    int* translateCoords(int *xy);
     void botStep(uint i);
     void deleteBot(uint index);
     void clearDie();

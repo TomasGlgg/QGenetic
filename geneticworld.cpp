@@ -6,6 +6,7 @@
 
 GeneticWorld::~GeneticWorld() {
     bots.clear();
+    die_bots.clear();
 }
 GeneticWorld::GeneticWorld(uint genom_len, uint max_energy, uint max_x, uint max_y) {
     assert(genom_len!=0);
@@ -32,7 +33,7 @@ void GeneticWorld::deleteBot(uint index) {
         die_bots.push_back(index);
 }
 
-uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
+uint GeneticWorld::getPhotosynthesisEnergy(uint y) {  // TODO: optimize
     for (uint part = world_parts_count; part>(world_parts_count-start_world_energy); --part) {
         if (y>max_y/world_parts_count * part)
             return start_world_energy - (world_parts_count - part);
@@ -40,7 +41,7 @@ uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
     return 0;
 }
 
-uint GeneticWorld::getMineralsEnergy(uint y) {
+uint GeneticWorld::getMineralsEnergy(uint y) {  // TODO: optimize
     for (uint part = 1; part<=start_world_energy; ++part) {
         if (y<=max_y/world_parts_count * part) return start_world_energy - part + 1;
     }
@@ -54,7 +55,13 @@ int GeneticWorld::findBot(int *xy) { //найти бота по координа
     return -1;
 }
 
-int *GeneticWorld::oppositeBot(Bot bot, int *xy) {
+int* GeneticWorld::translateCoords(int *xy) {
+    if (xy[0]>=max_x) xy[0] = 0;
+    if (xy[0]<0) xy[0] = max_x-1;
+    return xy;
+}
+
+int* GeneticWorld::oppositeBot(Bot bot, int *xy) {
    xy[0] = bot.x;
    xy[1] = bot.y;
    switch (bot.direction) {
@@ -95,15 +102,16 @@ int *GeneticWorld::oppositeBot(Bot bot, int *xy) {
            break;
        }
    }
+   translateCoords(xy);
    return xy;
 }
 
 bool GeneticWorld::checkCoords(int *xy) {
-    if (xy[0]<0 || xy[1]<0) return false;
-    if (xy[0]>=max_x || xy[1]>=max_y) return false;
+    if (xy[1] < 0 || xy[1] >= max_y) return false;
     if (findBot(xy)!=-1) return false;
     return true;
 }
+
 
 bool GeneticWorld::reproduction(Bot bot) {
     int xy[2];

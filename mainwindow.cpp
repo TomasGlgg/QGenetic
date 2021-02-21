@@ -101,6 +101,7 @@ void MainWindow::new_world() {
     ui->newWorldButton->setEnabled(false);
     ui->max_energy->setEnabled(true);
     ui->genome_len->setEnabled(true);
+    ui->startButton->setEnabled(true);
     ui->generation->setText("0");
     this->setMinimumSize(0, 0);
     this->setMaximumSize(16777215, 16777215);
