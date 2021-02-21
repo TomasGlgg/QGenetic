@@ -40,12 +40,15 @@ public:
     uint world_parts_count = 10;
     uint start_world_energy = 5;
     float mutate_chance = 0.1;
-
     uint process_delay = 1; // ms
     uint genome_len = 10;
     uint max_energy = 30;
     uint eat_power = max_energy/2;
+    uint max_old = 100;
     int max_x, max_y;
+
+    //statistic
+    uint kills = 0;
 
     QList<Bot*> bots;
 private:
