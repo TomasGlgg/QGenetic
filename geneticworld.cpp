@@ -38,15 +38,16 @@ uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
     else if (y>max_y/6*3) return 3;
     else if (y>max_y/6*2) return 1;
     else return 0;*/
-    for (uint part = world_parts_count; part<(world_parts_count-start_world_energy); ++part) {
-        if (y<max_y/world_parts_count * part) return start_world_energy - (world_parts_count - part);
+    for (uint part = world_parts_count; part>(world_parts_count-start_world_energy); --part) {
+        if (y>max_y/world_parts_count * part)
+            return start_world_energy - (world_parts_count - part);
     }
     return 0;
 }
 
 uint GeneticWorld::getMineralsEnergy(uint y) {
-    for (uint part = 1; part<start_world_energy; ++part) {
-        if (y<max_y/world_parts_count * part) return start_world_energy - part + 1;
+    for (uint part = 1; part<=start_world_energy; ++part) {
+        if (y<=max_y/world_parts_count * part) return start_world_energy - part + 1;
     }
     return 0;
 }

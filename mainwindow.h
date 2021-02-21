@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QTimer>
-#include <iostream>
+#include <QGraphicsTextItem>
 
 #include <cmath>
 
@@ -30,6 +30,7 @@ private:
     const uint botsize = 5;
     bool worldinited = false;
     void initWorld(uint x, uint y);
+    QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);
 
 private slots:
     void render();

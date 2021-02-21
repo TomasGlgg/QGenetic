@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
     ui->DrawArea->setScene(scene);
-    ui->DrawArea->rotate(180);
+    //ui->DrawArea->rotate(180);
     //            y
     //           /\
     //            |
@@ -110,7 +110,6 @@ void MainWindow::new_world() {
 }
 
 QColor MainWindow::BotColor(Bot *bot) {
-    //float max_energy = world->max_energy;
     float genome_len = world->genome_len;
 
     unsigned int minerals_count = std::count(bot->genome.begin(), bot->genome.end(), minerals_command);
@@ -121,7 +120,13 @@ QColor MainWindow::BotColor(Bot *bot) {
     unsigned int G = tanh(photosynthesis_count/genome_len * 2)*255;
     unsigned int R = tanh(eat_count/genome_len * 2)*255;
     return QColor(R, G, B);
-    //return QColor(254, 254, 254);
+}
+
+QGraphicsTextItem* MainWindow::textWidget(QString text, uint x, uint y, QColor color) {
+    QGraphicsTextItem *textItem = new QGraphicsTextItem(text);
+    textItem->setPos(x, y);
+    textItem->setDefaultTextColor(color);
+    return textItem;
 }
 
 
@@ -134,7 +139,7 @@ void MainWindow::render() {
         ui->mutation_count->setText(QString::number(world->mutation_count));
         for(unsigned int i = 0; i < bot_len; i++) {
             QColor botColor = BotColor(world->bots[i]);
-            scene->addRect(world->bots[i]->x * botsize, world->bots[i]->y * botsize, botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
+            scene->addRect(world->bots[i]->x * botsize, ui->DrawArea->height() - (world->bots[i]->y * botsize), botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
         }
     } else {
         timer->stop();
@@ -143,10 +148,17 @@ void MainWindow::render() {
         ui->status_led->setColor(QColor(255, 0, 0));
     }
     if (ui->draw_lines->isChecked()) {
-        uint current_height;
-        for (uint part = 1; part<world->world_parts_count; ++part) {
-            current_height = ui->DrawArea->height()/world->world_parts_count*part;
+        uint current_height, coordinates_y;
+        for (uint part = 1; part<=world->world_parts_count; ++part) {
+            current_height = ui->DrawArea->height() - ui->DrawArea->height()/world->world_parts_count*part;
+            coordinates_y = (ui->DrawArea->height()/world->world_parts_count*part)/botsize - 1;
             scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(QColor(128, 128, 128)));
+            if (part < world->start_world_energy)  // minerals
+                scene->addItem(textWidget(QString::number(world->getMineralsEnergy(coordinates_y)), 0, current_height, QColor(255, 255, 255)));
+            if (part > (world->world_parts_count - world->start_world_energy)) {
+                uint PhotosynthesisEnergy = world->getPhotosynthesisEnergy(coordinates_y);
+                scene->addItem(textWidget(QString::number(PhotosynthesisEnergy), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
+            }
         }
     }
 

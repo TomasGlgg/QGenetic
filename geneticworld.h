@@ -31,6 +31,9 @@ public:
     void start(uint delay);
     void stop();
 
+    uint getPhotosynthesisEnergy(uint y);
+    uint getMineralsEnergy(uint y);
+
     uint generation = 0;
     uint mutation_count = 0;
     uint world_parts_count = 10;
@@ -48,8 +51,6 @@ private:
     QTimer *timer = new QTimer(this);
 
     bool reproduction(Bot bot);
-    uint getPhotosynthesisEnergy(uint y);
-    uint getMineralsEnergy(uint y);
     int *oppositeBot(Bot bot, int *xy);
     int findBot(int *xy);
     bool checkCoords(int *xy);
