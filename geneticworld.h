@@ -10,8 +10,9 @@
 
 
 enum Commands {
-    reproduction_command = -7,  // reproduction   = -7
-    eat_command,                // eat            = -6
+    reproduction_command = -8,  // reproduction   = -8
+    eat_command,                // eat            = -7
+    check_command,              // check          = -6
     minerals_command,           // minerals       = -5
     photosynthesis_command,     // photosynthesis = -4
     right_command,              // right          = -3

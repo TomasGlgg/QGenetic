@@ -201,6 +201,15 @@ void GeneticWorld::botStep(uint i) { //process gen
             }
             break;
         }
+
+        case check_command: {
+            int xy[2];
+            oppositeBot(*bot, xy);
+            if (checkCoords(xy)) {
+                bot->iterator++;
+            }
+            break;
+        }
     }
     bot->energy--;
     if (bot->energy>max_energy) {
