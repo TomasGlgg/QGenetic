@@ -115,6 +115,17 @@ void MainWindow::new_world() {
     ui->genome_len->setEnabled(true);
     ui->startButton->setEnabled(true);
     ui->bot_size->setEnabled(true);
+    ui->startButton->setEnabled(true);
+    ui->stopButton->setEnabled(false);
+    ui->newWorldButton->setEnabled(true);
+    ui->timerInterval->setEnabled(true);
+    ui->process_delay->setEnabled(true);
+    ui->max_energy->setEnabled(true);
+    ui->mutation_chance->setEnabled(true);
+    ui->draw_lines->setEnabled(false);
+    ui->world_parts_count->setEnabled(true);
+    ui->start_world_energy->setEnabled(true);
+    ui->max_old->setEnabled(true);
     ui->generation->setText("0");
     this->setMinimumSize(0, 0);
     this->setMaximumSize(16777215, 16777215);
