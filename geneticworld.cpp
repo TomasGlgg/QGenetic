@@ -26,14 +26,14 @@ void GeneticWorld::deleteBot(uint index) {
 }
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
-    uint part = y/(max_y/world_parts_count) + 1;
+    uint part = ceil(static_cast<float>(y) / static_cast<float>(part_lenght)) + 1;
     if (part > (world_parts_count - start_world_energy))
         return start_world_energy - (world_parts_count - part);
-    return 0;
+    return part;
 }
 
 uint GeneticWorld::getMineralsEnergy(uint y) {
-    uint part = y/(max_y/world_parts_count) + 1;
+    uint part = ceil(static_cast<float>(y) / static_cast<float>(part_lenght)) + 1;
     if (part <= start_world_energy)
         return start_world_energy - part + 1;
     return 0;

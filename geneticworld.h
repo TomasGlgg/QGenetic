@@ -2,6 +2,7 @@
 #define GENETICWORLD_H
 
 #include <cassert>
+#include <cmath>
 #include <QThread>
 #include <QTimer>
 #include <QList>
@@ -45,7 +46,9 @@ public:
     uint max_energy = 30;
     uint eat_power = max_energy/2;
     uint max_old = 100;
+
     int max_x, max_y;
+    uint part_lenght;
 
     //statistic
     uint kills = 0;
