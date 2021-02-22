@@ -7,9 +7,8 @@ GeneticWorld::~GeneticWorld() {
     die_bots.clear();
 }
 GeneticWorld::GeneticWorld() {
-    connect(timer, SIGNAL(timeout()), this, SLOT(process()));
-
-   // std::vector<Bot*> bots;
+    setPriority(QThread::HighPriority);
+   // QList<Bot*> bots;
     // < 0 - команды
     // > 0 - goto
 }
@@ -110,7 +109,7 @@ bool GeneticWorld::reproduction(Bot bot) {
     if (bot.energy<max_energy/2) return false;
     if (!checkCoords(xy)) return false;
     bot.energy /= 2;
-
+    bots_mutex.lock();
     Bot *new_bot = newBot();
     new_bot->direction = bot.direction;
     new_bot->energy = bot.energy/2;
@@ -128,15 +127,18 @@ bool GeneticWorld::reproduction(Bot bot) {
         } else
             new_bot->genome[i] = bot.genome[i];
     }
+    bots_mutex.unlock();
     return true;
 }
 
 void GeneticWorld::clearDie() {
     std::sort(die_bots.begin(), die_bots.end(), [](const int a, const int b) {return a > b; });
+    bots_mutex.lock();
     for (uint index : die_bots) {
         delete bots[index];
         bots.removeAt(index);
     }
+    bots_mutex.unlock();
     die_bots.clear();
 }
 
@@ -225,23 +227,21 @@ void GeneticWorld::botStep(uint i) {
 }
 
 
-void GeneticWorld::process() {
-    if (process_delay)
-        QThread::msleep(process_delay);
-    unsigned int bot_len = bots.size();
-    for(unsigned int i = 0; i != bot_len; i++) {
-        botStep(i);
+void GeneticWorld::run() {
+    run_flag = true;
+    while (run_flag) {
+        if (process_delay)
+            QThread::msleep(process_delay);
+        for(uint i = 0; i != bots.size(); i++) {
+            botStep(i);
+        }
+        if (die_bots.size())
+            clearDie();
+        generation++;
     }
-    if (die_bots.size())
-        clearDie();
-    generation++;
-}
-
-void GeneticWorld::start(uint delay) {
-    timer->start(delay);
 }
 
 
 void GeneticWorld::stop() {
-    timer->stop();
+    run_flag = false;
 }

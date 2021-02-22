@@ -4,8 +4,8 @@
 #include <cassert>
 #include <cmath>
 #include <QThread>
-#include <QTimer>
 #include <QList>
+#include <QMutex>
 
 #include "botstruct.h"
 
@@ -21,7 +21,7 @@ enum Commands {
     step_command                // step           = -1
 };
 
-class GeneticWorld : public QObject {
+class GeneticWorld : public QThread {
     Q_OBJECT
 protected:
     void run();
@@ -30,7 +30,6 @@ public:
     GeneticWorld();
     ~GeneticWorld();
     Bot *newBot();
-    void start(uint delay);
     void stop();
 
     uint getPhotosynthesisEnergy(uint y);
@@ -54,9 +53,10 @@ public:
     uint mutation_count = 0;
 
     QList<Bot*> bots;
+    QMutex bots_mutex;
 private:
     QList<uint> die_bots;
-    QTimer *timer = new QTimer(this);
+    bool run_flag;
 
     bool reproduction(Bot bot);
     int* oppositeBot(Bot bot, int *xy);
@@ -66,9 +66,6 @@ private:
     void botStep(uint i);
     void deleteBot(uint index);
     void clearDie();
-
-private slots:
-    void process();
 };
 
 #endif // GENETICWORLD_H

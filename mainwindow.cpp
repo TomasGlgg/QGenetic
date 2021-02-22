@@ -95,7 +95,8 @@ void MainWindow::start() {
     updateWorld();
 
     // starting
-    world->start(ui->process_delay->value());
+    world->process_delay = ui->process_delay->value();
+    world->start();
     timer->start(ui->timerInterval->value());
     ui->status_led->setColor(QColor(0, 255, 0));
 }
@@ -198,6 +199,8 @@ void MainWindow::render() {
     ui->mutation_count->setText(QString::number(world->mutation_count));
     ui->kill_count->setText(QString::number(world->kills));
     QColor botColor;
+    world->bots_mutex.lock();
+    bot_len = world->bots.size();
     if (ui->radio_gens_type->isChecked()) {
         for(uint i = 0; i < bot_len; i++) {
             botColor = botColorByType(world->bots[i]);
@@ -214,6 +217,7 @@ void MainWindow::render() {
             scene->addRect(world->bots[i]->x * botsize, ui->DrawArea->height() - (world->bots[i]->y * botsize), botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
         }
     }
+    world->bots_mutex.unlock();
 
     if (ui->draw_lines->isChecked()) {
         uint current_height, coordinates_y;
