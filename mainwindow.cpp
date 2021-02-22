@@ -150,15 +150,14 @@ void MainWindow::new_world() {
 }
 
 QColor MainWindow::botColorByType(Bot *bot) {
-    float genome_len = world->genome_len;
-
     uint minerals_count = std::count(bot->genome.begin(), bot->genome.end(), minerals_command);
     uint photosynthesis_count = std::count(bot->genome.begin(), bot->genome.end(), photosynthesis_command);
     uint eat_count = std::count(bot->genome.begin(), bot->genome.end(), eat_command);
+    float total_number = minerals_count + photosynthesis_count + eat_count;
 
-    uint B = tanh(minerals_count/genome_len * 2)*255;
-    uint G = tanh(photosynthesis_count/genome_len * 2)*255;
-    uint R = tanh(eat_count/genome_len * 2)*255;
+    uint B = minerals_count/total_number * 255;
+    uint G = photosynthesis_count/total_number * 255;
+    uint R = eat_count/total_number * 255;
     return QColor(R, G, B);
 }
 
