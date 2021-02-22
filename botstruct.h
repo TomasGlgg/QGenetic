@@ -5,15 +5,17 @@
 
 class Bot {
 public:
-    Bot(unsigned int genome_len);
+    Bot(uint genome_len);
     ~Bot();
 
     int x, y;
-    unsigned int direction;
-    unsigned int energy;
+    uint direction;
+    uint energy;
     QList<int> genome;
-    unsigned int iterator;
-    unsigned int old;
+    uint iterator;
+    uint old;
+
+    uint used_photosynthesis = 0, used_minerals = 0, used_eat = 0;
 };
 
 #endif // BOTSTRUCT_H

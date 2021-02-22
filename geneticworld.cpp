@@ -150,11 +150,13 @@ void GeneticWorld::botStep(uint i) {
             break;
         }
         case photosynthesis_command: {
+            bot->used_photosynthesis++;
             uint new_energy = getPhotosynthesisEnergy(bot->y);
             bot->energy += new_energy;
             break;
         }
         case minerals_command: {
+            bot->used_minerals++;
             uint new_energy = getMineralsEnergy(bot->y);
             bot->energy += new_energy;
             break;
@@ -189,6 +191,7 @@ void GeneticWorld::botStep(uint i) {
                 } else {
                     bot->energy += bots[targetindex]->energy;
                     deleteBot(targetindex);
+                    bot->used_eat++;
                     kills++;
                 }
             }

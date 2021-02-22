@@ -31,6 +31,7 @@ private:
 
     QColor botColorByType(Bot *bot);
     QColor botColorByEnergy(Bot *bot);
+    QColor botColorByUsedGens(Bot *bot);
     void initWorld(uint x, uint y);
     void updateWorld();
     QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);

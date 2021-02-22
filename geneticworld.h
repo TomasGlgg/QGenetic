@@ -36,8 +36,6 @@ public:
     uint getPhotosynthesisEnergy(uint y);
     uint getMineralsEnergy(uint y);
 
-    uint generation = 0;
-    uint mutation_count = 0;
     uint world_parts_count = 10;
     uint start_world_energy = 5;
     float mutate_chance = 0.1;
@@ -52,6 +50,8 @@ public:
 
     //statistic
     uint kills = 0;
+    uint generation = 0;
+    uint mutation_count = 0;
 
     QList<Bot*> bots;
 private:

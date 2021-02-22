@@ -51,7 +51,7 @@ void MainWindow::initWorld(uint x, uint y) {
 void MainWindow::updateWorld() {
     world->genome_len = ui->genome_len->value();
     uint max_energy = ui->max_energy->value();
-    world->eat_power = max_energy/2;
+    world->eat_power = max_energy*ui->eat_k->value();
     world->max_energy = max_energy;
     world->mutate_chance = ui->mutation_chance->value();
     world->start_world_energy = ui->start_world_energy->value();
@@ -73,6 +73,7 @@ void MainWindow::start() {
     ui->world_parts_count->setEnabled(false);
     ui->start_world_energy->setEnabled(false);
     ui->max_old->setEnabled(false);
+    ui->eat_k->setEnabled(false);
 
 
     botsize = ui->bot_size->value();
@@ -112,6 +113,7 @@ void MainWindow::stop() {
     ui->draw_lines->setEnabled(false);
     ui->start_world_energy->setEnabled(true);
     ui->max_old->setEnabled(true);
+    ui->eat_k->setEnabled(true);
 
     ui->status_led->setColor(QColor(255, 128, 0));
 }
@@ -133,6 +135,7 @@ void MainWindow::new_world() {
     ui->start_world_energy->setEnabled(true);
     ui->max_old->setEnabled(true);
     ui->world_parts_count->setEnabled(true);
+    ui->eat_k->setEnabled(true);
 
     ui->generation->setText("0");
     ui->mutation_count->setText("0");
@@ -149,13 +152,13 @@ void MainWindow::new_world() {
 QColor MainWindow::botColorByType(Bot *bot) {
     float genome_len = world->genome_len;
 
-    unsigned int minerals_count = std::count(bot->genome.begin(), bot->genome.end(), minerals_command);
-    unsigned int photosynthesis_count = std::count(bot->genome.begin(), bot->genome.end(), photosynthesis_command);
-    unsigned int eat_count = std::count(bot->genome.begin(), bot->genome.end(), eat_command);
+    uint minerals_count = std::count(bot->genome.begin(), bot->genome.end(), minerals_command);
+    uint photosynthesis_count = std::count(bot->genome.begin(), bot->genome.end(), photosynthesis_command);
+    uint eat_count = std::count(bot->genome.begin(), bot->genome.end(), eat_command);
 
-    unsigned int B = tanh(minerals_count/genome_len * 2)*255;
-    unsigned int G = tanh(photosynthesis_count/genome_len * 2)*255;
-    unsigned int R = tanh(eat_count/genome_len * 2)*255;
+    uint B = tanh(minerals_count/genome_len * 2)*255;
+    uint G = tanh(photosynthesis_count/genome_len * 2)*255;
+    uint R = tanh(eat_count/genome_len * 2)*255;
     return QColor(R, G, B);
 }
 
@@ -164,6 +167,14 @@ inline QColor MainWindow::botColorByEnergy(Bot *bot) {
     return QColor(255, 255-(energy_k*255), 0);
 }
 
+QColor MainWindow::botColorByUsedGens(Bot *bot) {
+    float total_number = bot->used_eat + bot->used_minerals + bot->used_photosynthesis;
+    if (!total_number) return QColor(255, 255, 255);
+    uint B = bot->used_minerals/total_number * 255;
+    uint G = bot->used_photosynthesis/total_number * 255;
+    uint R = bot->used_eat/total_number * 255;
+    return QColor(R, G, B);
+}
 
 QGraphicsTextItem* MainWindow::textWidget(QString text, uint x, uint y, QColor color) {
     QGraphicsTextItem *textItem = new QGraphicsTextItem(text);
@@ -171,7 +182,6 @@ QGraphicsTextItem* MainWindow::textWidget(QString text, uint x, uint y, QColor c
     textItem->setDefaultTextColor(color);
     return textItem;
 }
-
 
 void MainWindow::render() {
     scene->clear();
@@ -181,6 +191,7 @@ void MainWindow::render() {
         ui->newWorldButton->setEnabled(true);
         ui->stopButton->setEnabled(false);
         ui->status_led->setColor(QColor(255, 0, 0));
+        return;
     }
 
     ui->bot_count->display(QString::number(bot_len));
@@ -188,7 +199,7 @@ void MainWindow::render() {
     ui->mutation_count->setText(QString::number(world->mutation_count));
     ui->kill_count->setText(QString::number(world->kills));
     QColor botColor;
-    if (ui->radio_gen_type->isChecked()) {
+    if (ui->radio_gens_type->isChecked()) {
         for(uint i = 0; i < bot_len; i++) {
             botColor = botColorByType(world->bots[i]);
             scene->addRect(world->bots[i]->x * botsize, ui->DrawArea->height() - (world->bots[i]->y * botsize), botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
@@ -196,6 +207,11 @@ void MainWindow::render() {
     } else if (ui->radio_energy_count->isChecked()) {
         for(uint i = 0; i < bot_len; i++) {
             botColor = botColorByEnergy(world->bots[i]);
+            scene->addRect(world->bots[i]->x * botsize, ui->DrawArea->height() - (world->bots[i]->y * botsize), botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
+        }
+    } else if (ui->radio_used_gens->isChecked()) {
+        for(uint i = 0; i < bot_len; i++) {
+            botColor = botColorByUsedGens(world->bots[i]);
             scene->addRect(world->bots[i]->x * botsize, ui->DrawArea->height() - (world->bots[i]->y * botsize), botsize-1, botsize-1, QPen(botColor), QBrush(botColor));
         }
     }
@@ -213,6 +229,8 @@ void MainWindow::render() {
             if (part > (world->world_parts_count - world->start_world_energy)) // photosynthesis
                 scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
         }
+
+
         /*uint last_energy_p = 0, last_energy_m = 0, energy;
          for (uint i = world->max_y; i>0; --i) {
              energy = world->getPhotosynthesisEnergy(i);
