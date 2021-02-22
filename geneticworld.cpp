@@ -144,6 +144,13 @@ void GeneticWorld::clearDie() {
 
 void GeneticWorld::botStep(uint i) {
     Bot *bot = bots[i];
+
+    if (bot->energy>max_energy) {
+        if (!reproduction(*bot)) {
+            deleteBot(i);
+        }
+    }
+
     uint command_index = bot->iterator;
     int command = bot->genome[command_index];
     switch (command) {
@@ -213,11 +220,8 @@ void GeneticWorld::botStep(uint i) {
         }
     }
     bot->energy--;
-    if (bot->energy>max_energy) {
-        if (!reproduction(*bot)) {
-            deleteBot(i);
-        }
-    } else if (bot->energy<=0) {
+
+    if (bot->energy<=0) {
         deleteBot(i);
     }
     bot->old++;
@@ -231,13 +235,16 @@ void GeneticWorld::run() {
     run_flag = true;
     while (run_flag) {
         if (process_delay)
-            QThread::msleep(process_delay);
+            msleep(process_delay);
+        auto start = std::chrono::steady_clock::now();
         for(uint i = 0; i != bots.size(); i++) {
             botStep(i);
         }
         if (die_bots.size())
             clearDie();
         generation++;
+        auto end = std::chrono::steady_clock::now();
+        processing_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     }
 }
 

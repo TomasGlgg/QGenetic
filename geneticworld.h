@@ -1,11 +1,13 @@
 #ifndef GENETICWORLD_H
 #define GENETICWORLD_H
 
-#include <cassert>
-#include <cmath>
 #include <QThread>
 #include <QList>
 #include <QMutex>
+
+#include <cassert>
+#include <cmath>
+#include <chrono>
 
 #include "botstruct.h"
 
@@ -43,6 +45,7 @@ public:
     uint max_energy = 30;
     uint eat_power = max_energy/2;
     uint max_old = 100;
+    uint max_bot_count = max_x*max_y;
 
     int max_x, max_y;
     uint part_lenght;
@@ -51,6 +54,8 @@ public:
     uint kills = 0;
     uint generation = 0;
     uint mutation_count = 0;
+
+    uint processing_time = 0;
 
     QList<Bot*> bots;
     QMutex bots_mutex;

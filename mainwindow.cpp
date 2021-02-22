@@ -31,6 +31,7 @@ void MainWindow::initWorld(uint x, uint y) {
 
     world->max_x = x;
     world->max_y = y;
+    world->max_bot_count = x*y;
 
     Bot *newBot = world->newBot();
     newBot->energy = 10;
@@ -57,6 +58,7 @@ void MainWindow::updateWorld() {
     world->start_world_energy = ui->start_world_energy->value();
     world->max_old = ui->max_old->value();
 
+    ui->bot_completion->setMaximum(world->max_bot_count);
 }
 
 void MainWindow::start() {
@@ -76,21 +78,23 @@ void MainWindow::start() {
     ui->eat_k->setEnabled(false);
 
 
-    botsize = ui->bot_size->value();
-    uint world_w = ui->DrawArea->width() / botsize;
-    uint world_h = ui->DrawArea->height() / botsize;
-    QString str_size = QString::number(world_w) + " x " + QString::number(world_h) + " (" + QString::number(world_h*world_w) + ")";
-    ui->sizeLabel->setText(str_size);
-
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
     // world
     if (!worldinited) {
+        botsize = ui->bot_size->value();
+        uint world_w = ui->DrawArea->width() / botsize;
+        uint world_h = ui->DrawArea->height() / botsize;
         initWorld(world_w, world_h);
         uint window_w = this->width();
         uint window_h = botsize * world->max_y + (this->height() - ui->DrawArea->height());
         this->setMinimumSize(window_w, window_h);
         this->setMaximumSize(window_w, window_h);
+
+        QString str_size = QString::number(ui->DrawArea->width() / botsize) + " x " + QString::number(ui->DrawArea->height() / botsize) + " (" + QString::number(world->max_bot_count) + ")";
+        ui->sizeLabel->setText(str_size);
+        ui->bot_completion->setMaximum(world->max_bot_count);
+        ui->bot_completion->setFormat("%v/" + QString::number(world->max_bot_count) + " (%p%)");
     }
     updateWorld();
 
@@ -143,6 +147,7 @@ void MainWindow::new_world() {
     ui->kill_count->setText("0");
     ui->sizeLabel->setText("");
     ui->bot_count->display(0);
+    ui->bot_completion->setValue(0);
     this->setMinimumSize(0, 0);
     this->setMaximumSize(16777215, 16777215);
     scene->clear();
@@ -198,6 +203,8 @@ void MainWindow::render() {
     ui->generation->setText(QString::number(world->generation));
     ui->mutation_count->setText(QString::number(world->mutation_count));
     ui->kill_count->setText(QString::number(world->kills));
+    ui->bot_completion->setValue(bot_len);
+    ui->processing_time->setText(QString::number(world->processing_time) + " (мкс)");
     QColor botColor;
     world->bots_mutex.lock();
     bot_len = world->bots.size();
