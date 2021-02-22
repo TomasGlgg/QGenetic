@@ -200,7 +200,7 @@ void MainWindow::render() {
         }
     }
 
-    if (ui->draw_lines->isChecked()) {  // TODO: FIX!!!!!!!1111
+    if (ui->draw_lines->isChecked()) {
         uint current_height, coordinates_y;
         for (uint part = 0; part<=world->world_parts_count; ++part) {
             current_height = ui->DrawArea->height() - (world->part_lenght*part)*botsize;
@@ -214,20 +214,20 @@ void MainWindow::render() {
                 scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
         }
         /*uint last_energy_p = 0, last_energy_m = 0, energy;
-            for (uint i = world->max_y; i>0; --i) {
-                energy = world->getPhotosynthesisEnergy(i);
-                if (energy != last_energy_p) {
-                    scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_p), ui->DrawArea->width() - 40, ui->DrawArea->height()-i*botsize, QColor(255, 0, 0)));
-                    last_energy_p = energy;
-                    scene->addRect(ui->DrawArea->width() - 20, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
-                }
-                energy = world->getMineralsEnergy(i);
-                if (energy != last_energy_m) {
-                    scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_m), 0, ui->DrawArea->height()-i*botsize, QColor(255, 0, 0)));
-                    last_energy_m = energy;
-                    scene->addRect(0, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
-                }
-            }*/
+         for (uint i = world->max_y; i>0; --i) {
+             energy = world->getPhotosynthesisEnergy(i);
+             if (energy != last_energy_p) {
+                  scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_p), ui->DrawArea->width() - 40, ui->DrawArea->height()-i*botsize, QColor(255, 0, 0)));
+                  last_energy_p = energy;
+                  scene->addRect(ui->DrawArea->width() - 20, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
+              }
+              energy = world->getMineralsEnergy(i);
+              if (energy != last_energy_m) {
+                  scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_m), 0, ui->DrawArea->height()-i*botsize, QColor(255, 0, 0)));
+                  last_energy_m = energy;
+                  scene->addRect(0, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
+              }
+          }*/
 
     }
 }
