@@ -24,6 +24,11 @@ MainWindow::~MainWindow() {
 void MainWindow::initWorld(uint x, uint y) {
     world = new GeneticWorld();
     world->genome_len = ui->genome_len->value();
+    world->world_parts_count = ui->world_parts_count->value();
+    world->part_lenght = y/(world->world_parts_count);
+
+    y = (world->world_parts_count*world->part_lenght);
+
     world->max_x = x;
     world->max_y = y;
 
@@ -49,10 +54,9 @@ void MainWindow::updateWorld() {
     world->eat_power = max_energy/2;
     world->max_energy = max_energy;
     world->mutate_chance = ui->mutation_chance->value();
-    world->world_parts_count = ui->world_parts_count->value();
     world->start_world_energy = ui->start_world_energy->value();
     world->max_old = ui->max_old->value();
-    world->part_lenght = world->max_y/(world->world_parts_count);
+
 }
 
 void MainWindow::start() {
@@ -83,7 +87,7 @@ void MainWindow::start() {
     if (!worldinited) {
         initWorld(world_w, world_h);
         uint window_w = this->width();
-        uint window_h = botsize * world_h + (this->height() - ui->DrawArea->height());
+        uint window_h = botsize * world->max_y + (this->height() - ui->DrawArea->height());
         this->setMinimumSize(window_w, window_h);
         this->setMaximumSize(window_w, window_h);
     }
@@ -106,7 +110,6 @@ void MainWindow::stop() {
     ui->max_energy->setEnabled(true);
     ui->mutation_chance->setEnabled(true);
     ui->draw_lines->setEnabled(false);
-    ui->world_parts_count->setEnabled(true);
     ui->start_world_energy->setEnabled(true);
     ui->max_old->setEnabled(true);
 
@@ -129,6 +132,7 @@ void MainWindow::new_world() {
     ui->world_parts_count->setEnabled(true);
     ui->start_world_energy->setEnabled(true);
     ui->max_old->setEnabled(true);
+    ui->world_parts_count->setEnabled(true);
 
     ui->generation->setText("0");
     ui->mutation_count->setText("0");
@@ -196,18 +200,34 @@ void MainWindow::render() {
         }
     }
 
-    if (ui->draw_lines->isChecked()) {
+    if (ui->draw_lines->isChecked()) {  // TODO: FIX!!!!!!!1111
         uint current_height, coordinates_y;
         for (uint part = 0; part<=world->world_parts_count; ++part) {
-            current_height = (world->part_lenght*part)*botsize;
+            current_height = ui->DrawArea->height() - (world->part_lenght*part)*botsize;
 
             coordinates_y = (ui->DrawArea->height()/world->world_parts_count*part)/botsize;
             if (current_height != 0)
                 scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(QColor(128, 128, 128)));
-            if (part < world->start_world_energy)  // minerals
-                scene->addItem(textWidget(QString::number(world->getMineralsEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
-            if (part >= (world->world_parts_count - world->start_world_energy)) // photosynthesis
-                scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), 0, current_height, QColor(255, 255, 255)));
+            if (part <= world->start_world_energy)  // minerals
+               scene->addItem(textWidget(QString::number(world->getMineralsEnergy(coordinates_y)), 0, current_height, QColor(255, 255, 255)));
+            if (part > (world->world_parts_count - world->start_world_energy)) // photosynthesis
+                scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
         }
+        /*uint last_energy_p = 0, last_energy_m = 0, energy;
+            for (uint i = world->max_y; i>0; --i) {
+                energy = world->getPhotosynthesisEnergy(i);
+                if (energy != last_energy_p) {
+                    scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_p), ui->DrawArea->width() - 40, ui->DrawArea->height()-i*botsize, QColor(255, 0, 0)));
+                    last_energy_p = energy;
+                    scene->addRect(ui->DrawArea->width() - 20, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
+                }
+                energy = world->getMineralsEnergy(i);
+                if (energy != last_energy_m) {
+                    scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_m), 0, ui->DrawArea->height()-i*botsize, QColor(255, 0, 0)));
+                    last_energy_m = energy;
+                    scene->addRect(0, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
+                }
+            }*/
+
     }
 }

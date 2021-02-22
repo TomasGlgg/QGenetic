@@ -26,14 +26,14 @@ void GeneticWorld::deleteBot(uint index) {
 }
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
-    uint part = ceil(static_cast<float>(y) / static_cast<float>(part_lenght)) + 1;
+    uint part = ceil(static_cast<float>(y) / static_cast<float>(part_lenght));
     if (part > (world_parts_count - start_world_energy))
         return start_world_energy - (world_parts_count - part);
-    return part;
+    return 0;
 }
 
 uint GeneticWorld::getMineralsEnergy(uint y) {
-    uint part = ceil(static_cast<float>(y) / static_cast<float>(part_lenght)) + 1;
+    uint part = ceil(static_cast<float>(y) / static_cast<float>(part_lenght));
     if (part <= start_world_energy)
         return start_world_energy - part + 1;
     return 0;
@@ -199,7 +199,6 @@ void GeneticWorld::botStep(uint i) {
             oppositeBot(*bot, xy);
             if (findBot(xy)!=-1)
                 bot->iterator++;
-
             break;
         }
 
@@ -217,7 +216,7 @@ void GeneticWorld::botStep(uint i) {
         deleteBot(i);
     }
     bot->old++;
-    if (bot->old > max_old) deleteBot(i);
+    if (bot->old >= max_old) deleteBot(i);
     bot->iterator++;
     bot->iterator %= genome_len;
 }
