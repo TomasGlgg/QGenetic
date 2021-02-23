@@ -13,14 +13,16 @@
 
 
 enum Commands {
-    reproduction_command = -8,  // reproduction   = -8
-    eat_command,                // eat            = -7
-    check_command,              // check          = -6
-    minerals_command,           // minerals       = -5
-    photosynthesis_command,     // photosynthesis = -4
-    right_command,              // right          = -3
-    left_command,               // left           = -2
-    step_command                // step           = -1
+    share_command = -10,        // share_command    = -10
+    reproduction_command,       // reproduction     = -9
+    eat_command,                // eat              = -8
+    check_command,              // check            = -7
+    minerals_command,           // minerals         = -6
+    photosynthesis_command,     // photosynthesis   = -5
+    convert_minerals_command,   // convert minerals = -4
+    right_command,              // right            = -3
+    left_command,               // left             = -2
+    step_command                // step             = -1
 };
 
 class GeneticWorld : public QThread {
@@ -35,7 +37,8 @@ public:
     void stop();
 
     uint getPhotosynthesisEnergy(uint y);
-    uint getMineralsEnergy(uint y);
+    uint getMineralsCount(uint y);
+    uint aliveBotsCount();
 
     uint world_parts_count = 10;
     uint start_world_energy = 5;
@@ -46,6 +49,7 @@ public:
     uint eat_power = max_energy/2;
     uint max_old = 100;
     uint max_bot_count = max_x*max_y;
+    bool organic_enabled = true;
 
     int max_x, max_y;
     uint part_lenght;
@@ -62,15 +66,18 @@ public:
     bool run_flag;
 private:
     QList<uint> die_bots;
+    QList<uint> eaten_organic;
 
-    bool reproduction(Bot bot);
+    bool reproduction(Bot &bot);
     int* oppositeBot(Bot bot, int *xy);
     int findBot(int *xy);
     bool checkCoords(int *xy);
     int* translateCoords(int *xy);
     void botStep(uint i);
-    void deleteBot(uint index);
+    void killBot(uint index);
+    void eatOrganic(uint index);
     void clearDie();
+    void clearOrganic();
 };
 
 #endif // GENETICWORLD_H
