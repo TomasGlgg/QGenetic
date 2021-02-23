@@ -216,11 +216,13 @@ void MainWindow::render() {
 
     history.pop_front();
     history << QPointF(history[98].x()+1, bot_len);
+
     QwtPlotCurve *curve = new QwtPlotCurve();
     curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
     curve->setPen(Qt::red, 3);
     curve->setSamples(history);
     curve->attach(ui->historyPlot);
+    ui->historyPlot->setAxisScale(QwtPlot::xBottom, history[0].x(), history[99].x());
 
     QColor botColor;
     world->bots_mutex.lock();
