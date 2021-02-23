@@ -26,7 +26,8 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     GeneticWorld *world;
-    QTimer *timer;
+    QTimer *render_timer;
+    QTimer *graph_timer;
     QPolygonF history;
 
     uint botsize;
@@ -41,7 +42,8 @@ private:
     QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);
 
 private slots:
-    void render();
+    void render_graph();
+    void render_draw_area();
     void start();
     void stop();
     void new_world();

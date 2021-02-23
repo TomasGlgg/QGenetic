@@ -9,12 +9,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
     ui->DrawArea->setScene(scene);
-    timer = new QTimer(this);
+    render_timer = new QTimer(this);
+    graph_timer = new QTimer(this);
 
     connect(ui->startButton, SIGNAL(released()), this, SLOT(start()));
     connect(ui->stopButton, SIGNAL(released()), this, SLOT(stop()));
     connect(ui->newWorldButton, SIGNAL(released()), this, SLOT(new_world()));
-    connect(timer, SIGNAL(timeout()), this, SLOT(render()));
+
+    connect(render_timer, SIGNAL(timeout()), this, SLOT(render_draw_area()));
+    connect(graph_timer, SIGNAL(timeout()), this, SLOT(render_graph()));
 }
 
 MainWindow::~MainWindow() {
@@ -102,13 +105,15 @@ void MainWindow::start() {
     // starting
     world->process_delay = ui->process_delay->value();
     world->start();
-    timer->start(ui->timerInterval->value());
+    graph_timer->start(ui->graph_freq->value());
+    render_timer->start(ui->timerInterval->value());
     ui->status_led->setColor(QColor(0, 255, 0));
 }
 
 void MainWindow::stop() {
     world->stop();
-    timer->stop();
+    render_timer->stop();
+    graph_timer->stop();
     ui->startButton->setEnabled(true);
     ui->stopButton->setEnabled(false);
     ui->newWorldButton->setEnabled(true);
@@ -126,7 +131,7 @@ void MainWindow::stop() {
 
 void MainWindow::initGraph() {  // очистка графика
     history.clear();
-    for (int i = 0; i<100; i++) history << QPointF(i, 0);
+    for (int i = 0; i<ui->graph_count->value(); i++) history << QPointF(i, 0);
 }
 
 void MainWindow::new_world() {
@@ -195,12 +200,23 @@ QGraphicsTextItem* MainWindow::textWidget(QString text, uint x, uint y, QColor c
     return textItem;
 }
 
-void MainWindow::render() {
+void MainWindow::render_graph() {
+    history.pop_front();
+    history << QPointF(history[ui->graph_count->value()-2].x()+1, world->bots.size());
+    QwtPlotCurve *curve = new QwtPlotCurve();
+    curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
+    curve->setPen(Qt::red, 1);
+    curve->setSamples(history);
+    ui->historyPlot->detachItems();
+    curve->attach(ui->historyPlot);
+}
+
+void MainWindow::render_draw_area() {
     scene->clear();
     uint bot_len = world->bots.size();
     if (!bot_len) {
         world->run_flag = false;
-        timer->stop();
+        render_timer->stop();
         ui->newWorldButton->setEnabled(true);
         ui->stopButton->setEnabled(false);
         ui->status_led->setColor(QColor(255, 0, 0));
@@ -213,16 +229,6 @@ void MainWindow::render() {
     ui->kill_count->setText(QString::number(world->kills));
     ui->bot_completion->setValue(bot_len);
     ui->processing_time->setText(QString::number(world->processing_time) + " (мкс)");
-
-    history.pop_front();
-    history << QPointF(history[98].x()+1, bot_len);
-
-    QwtPlotCurve *curve = new QwtPlotCurve();
-    curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
-    curve->setPen(Qt::red, 3);
-    curve->setSamples(history);
-    curve->attach(ui->historyPlot);
-    ui->historyPlot->setAxisScale(QwtPlot::xBottom, history[0].x(), history[99].x());
 
     QColor botColor;
     world->bots_mutex.lock();
