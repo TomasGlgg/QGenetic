@@ -80,6 +80,13 @@ void MainWindow::start() {
     ui->max_old->setEnabled(false);
     ui->eat_k->setEnabled(false);
 
+    //graph
+    if (ui->groupBox_graph->isChecked()) {
+        ui->historyPlot->setEnabled(true);
+        graph_timer->start(ui->graph_freq->value());
+    }
+    ui->groupBox_graph->setEnabled(false);
+
 
     scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
@@ -105,7 +112,6 @@ void MainWindow::start() {
     // starting
     world->process_delay = ui->process_delay->value();
     world->start();
-    graph_timer->start(ui->graph_freq->value());
     render_timer->start(ui->timerInterval->value());
     ui->status_led->setColor(QColor(0, 255, 0));
 }
@@ -125,6 +131,11 @@ void MainWindow::stop() {
     ui->start_world_energy->setEnabled(true);
     ui->max_old->setEnabled(true);
     ui->eat_k->setEnabled(true);
+
+    //graph
+    ui->groupBox_graph->setEnabled(true);
+    ui->historyPlot->setEnabled(false);
+    ui->groupBox_graph->setEnabled(true);
 
     ui->status_led->setColor(QColor(255, 128, 0));
 }
@@ -152,6 +163,10 @@ void MainWindow::new_world() {
     ui->max_old->setEnabled(true);
     ui->world_parts_count->setEnabled(true);
     ui->eat_k->setEnabled(true);
+
+    //graph
+    ui->groupBox_graph->setEnabled(true);
+    ui->historyPlot->setEnabled(false);
 
     ui->generation->setText("0");
     ui->mutation_count->setText("0");

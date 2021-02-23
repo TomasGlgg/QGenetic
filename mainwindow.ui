@@ -220,6 +220,9 @@
           </item>
           <item row="4" column="0" colspan="2">
            <widget class="QGroupBox" name="groupBox_graph">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="title">
              <string>График количества ботов</string>
             </property>
@@ -643,7 +646,7 @@
        <item row="8" column="0" colspan="2">
         <widget class="QwtPlot" name="historyPlot">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
