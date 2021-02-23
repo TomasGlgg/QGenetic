@@ -97,6 +97,7 @@ void MainWindow::start() {
         ui->bot_completion->setFormat("%v/" + QString::number(world->max_bot_count) + " (%p%)");
     }
     updateWorld();
+    initGraph();
 
     // starting
     world->process_delay = ui->process_delay->value();
@@ -121,6 +122,11 @@ void MainWindow::stop() {
     ui->eat_k->setEnabled(true);
 
     ui->status_led->setColor(QColor(255, 128, 0));
+}
+
+void MainWindow::initGraph() {  // очистка графика
+    history.clear();
+    for (int i = 0; i<100; i++) history << QPointF(i, 0);
 }
 
 void MainWindow::new_world() {
@@ -148,6 +154,7 @@ void MainWindow::new_world() {
     ui->sizeLabel->setText("");
     ui->bot_count->display(0);
     ui->bot_completion->setValue(0);
+    ui->status_led->setColor(QColor(255, 128, 0));
     this->setMinimumSize(0, 0);
     this->setMaximumSize(16777215, 16777215);
     scene->clear();
@@ -192,6 +199,7 @@ void MainWindow::render() {
     scene->clear();
     uint bot_len = world->bots.size();
     if (!bot_len) {
+        world->run_flag = false;
         timer->stop();
         ui->newWorldButton->setEnabled(true);
         ui->stopButton->setEnabled(false);
@@ -205,6 +213,15 @@ void MainWindow::render() {
     ui->kill_count->setText(QString::number(world->kills));
     ui->bot_completion->setValue(bot_len);
     ui->processing_time->setText(QString::number(world->processing_time) + " (мкс)");
+
+    history.pop_front();
+    history << QPointF(history[98].x()+1, bot_len);
+    QwtPlotCurve *curve = new QwtPlotCurve();
+    curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
+    curve->setPen(Qt::red, 3);
+    curve->setSamples(history);
+    curve->attach(ui->historyPlot);
+
     QColor botColor;
     world->bots_mutex.lock();
     bot_len = world->bots.size();
@@ -225,6 +242,7 @@ void MainWindow::render() {
         }
     }
     world->bots_mutex.unlock();
+
 
     if (ui->draw_lines->isChecked()) {
         uint current_height, coordinates_y;

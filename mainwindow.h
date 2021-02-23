@@ -7,6 +7,8 @@
 #include <QGraphicsTextItem>
 
 #include <cmath>
+#include <qwt_plot_curve.h>
+#include <qwt_symbol.h>
 
 #include "geneticworld.h"
 
@@ -25,6 +27,7 @@ private:
     QGraphicsScene *scene;
     GeneticWorld *world;
     QTimer *timer;
+    QPolygonF history;
 
     uint botsize;
     bool worldinited = false;
@@ -34,6 +37,7 @@ private:
     QColor botColorByUsedGens(Bot *bot);
     void initWorld(uint x, uint y);
     void updateWorld();
+    void initGraph();
     QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);
 
 private slots:

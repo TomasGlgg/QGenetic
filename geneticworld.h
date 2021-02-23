@@ -59,9 +59,9 @@ public:
 
     QList<Bot*> bots;
     QMutex bots_mutex;
+    bool run_flag;
 private:
     QList<uint> die_bots;
-    bool run_flag;
 
     bool reproduction(Bot bot);
     int* oppositeBot(Bot bot, int *xy);

@@ -177,6 +177,16 @@
               </widget>
              </item>
              <item>
+              <widget class="QRadioButton" name="radio_used_gens">
+               <property name="text">
+                <string>использованных генов</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QRadioButton" name="radio_gens_type">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -188,7 +198,7 @@
                 <string>типов генов в геноме</string>
                </property>
                <property name="checked">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -202,13 +212,6 @@
                </property>
                <property name="text">
                 <string>кол-во энергии</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="radio_used_gens">
-               <property name="text">
-                <string>использованных генов</string>
                </property>
               </widget>
              </item>
@@ -260,7 +263,7 @@
              <number>1</number>
             </property>
             <property name="maximum">
-             <number>100</number>
+             <number>10000</number>
             </property>
             <property name="value">
              <number>30</number>
@@ -579,6 +582,32 @@
          </property>
         </widget>
        </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>График за-ия:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QwtPlot" name="historyPlot">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>160</width>
+           <height>200</height>
+          </size>
+         </property>
+         <property name="autoReplot">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -590,6 +619,11 @@
    <class>KLed</class>
    <extends>QWidget</extends>
    <header>kled.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QwtPlot</class>
+   <extends>QFrame</extends>
+   <header>qwt_plot.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
