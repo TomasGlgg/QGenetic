@@ -108,9 +108,9 @@ void MainWindow::start() {
         ui->sizeLabel->setText(str_size);
         ui->bot_completion->setMaximum(world->max_bot_count);
         ui->bot_completion->setFormat("%v/" + QString::number(world->max_bot_count) + " (%p%)");
+        initGraph();
     }
     updateWorld();
-    initGraph();
 
     // starting
     world->process_delay = ui->process_delay->value();
