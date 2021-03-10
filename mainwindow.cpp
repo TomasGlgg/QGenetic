@@ -98,10 +98,11 @@ void MainWindow::start() {
         uint world_w = ui->DrawArea->width() / botsize;
         uint world_h = ui->DrawArea->height() / botsize;
         initWorld(world_w, world_h);
-        uint window_w = this->width();
-        uint window_h = botsize * world->max_y + (this->height() - ui->DrawArea->height());
-        this->setMinimumSize(window_w, window_h);
-        this->setMaximumSize(window_w, window_h);
+
+        uint window_w = ui->dockWidget->width();
+        uint window_h = botsize * world->max_y + (ui->dockWidget->height() - ui->dockWidget->height());
+        ui->dockWidget->setMinimumSize(window_w, window_h);
+        ui->dockWidget->setMaximumSize(window_w, window_h);
 
         QString str_size = QString::number(ui->DrawArea->width() / botsize) + " x " + QString::number(ui->DrawArea->height() / botsize) + " (" + QString::number(world->max_bot_count) + ")";
         ui->sizeLabel->setText(str_size);
@@ -178,8 +179,8 @@ void MainWindow::new_world() {
     ui->bot_count->display(0);
     ui->bot_completion->setValue(0);
     ui->status_led->setColor(QColor(255, 128, 0));
-    this->setMinimumSize(0, 0);
-    this->setMaximumSize(16777215, 16777215);
+    ui->dockWidget->setMinimumSize(0, 0);
+    ui->dockWidget->setMaximumSize(16777215, 16777215);
     scene->clear();
     worldinited = false;
     delete world;
