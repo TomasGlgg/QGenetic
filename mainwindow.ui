@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1226</width>
-    <height>856</height>
+    <height>615</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -650,7 +650,7 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0" colspan="2">
+       <item row="9" column="0" colspan="2">
         <widget class="QwtPlot" name="historyPlot">
          <property name="enabled">
           <bool>false</bool>
@@ -671,6 +671,16 @@
           <bool>true</bool>
          </property>
         </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="KLed" name="process_time_led">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Зеленый&lt;/span&gt; цвет - мир успевает обрабатываться&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Красный&lt;/span&gt; цвет - мир не успевает обрабатываться&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QWidget" name="widget" native="true"/>
        </item>
       </layout>
      </widget>

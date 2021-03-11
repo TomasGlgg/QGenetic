@@ -40,15 +40,15 @@ public:
     uint getMineralsCount(uint y);
     uint aliveBotsCount();
 
-    uint world_parts_count = 10;
-    uint start_world_energy = 5;
-    float mutate_chance = 0.1;
-    uint process_delay = 1; // ms
-    uint genome_len = 10;
-    uint max_energy = 30;
-    uint eat_power = max_energy/2;
-    uint max_old = 100;
-    uint max_bot_count = max_x*max_y;
+    uint world_parts_count;
+    uint start_world_energy;
+    float mutate_chance;
+    uint process_delay;
+    uint genome_len;
+    uint max_energy;
+    uint eat_power;
+    uint max_old;
+    uint max_bot_count;
     bool organic_enabled = true;
 
     int max_x, max_y;

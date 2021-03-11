@@ -258,6 +258,11 @@ void MainWindow::render_draw_area() {
     }
     world->bots_mutex.unlock();
 
+    if (world->process_delay) {
+        if (world->processing_time >= world->process_delay) ui->process_time_led->setColor(QColor(255, 0, 0));
+        else ui->process_time_led->setColor(QColor(0, 255, 0));
+    } else ui->process_time_led->setColor(QColor(133, 133, 133));
+
     uint alive_bot_len = world->aliveBotsCount();
 
     if (!alive_bot_len) {
