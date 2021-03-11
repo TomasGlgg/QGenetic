@@ -106,7 +106,7 @@ void MainWindow::start() {
         ui->dockWidget->setMinimumSize(window_w, window_h);
         ui->dockWidget->setMaximumSize(window_w, window_h);
 
-        QString str_size = QString::number(ui->DrawArea->width() / botsize) + " x " + QString::number(ui->DrawArea->height() / botsize) + " (" + QString::number(world->max_bot_count) + ")";
+        QString str_size = QString::number(world->max_x) + " x " + QString::number(world->max_y) + " (" + QString::number(world->max_bot_count) + ")";
         ui->sizeLabel->setText(str_size);
         ui->bot_completion->setMaximum(world->max_bot_count);
         ui->bot_completion->setFormat("%v/" + QString::number(world->max_bot_count) + " (%p%)");
