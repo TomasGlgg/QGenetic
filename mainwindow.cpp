@@ -60,6 +60,7 @@ void MainWindow::updateWorld() {
     world->mutate_chance = ui->mutation_chance->value();
     world->start_world_energy = ui->start_world_energy->value();
     world->max_old = ui->max_old->value();
+    world->max_organic_old = ui->max_organic_old->value();
     world->organic_enabled = ui->organic->isChecked();
 
     ui->bot_completion->setMaximum(world->max_bot_count);
@@ -79,6 +80,7 @@ void MainWindow::start() {
     ui->world_parts_count->setEnabled(false);
     ui->start_world_energy->setEnabled(false);
     ui->max_old->setEnabled(false);
+    ui->max_organic_old->setEnabled(false);
     ui->eat_k->setEnabled(false);
     ui->organic->setEnabled(false);
 
@@ -133,6 +135,7 @@ void MainWindow::stop() {
     ui->draw_lines->setEnabled(false);
     ui->start_world_energy->setEnabled(true);
     ui->max_old->setEnabled(true);
+    ui->max_organic_old->setEnabled(true);
     ui->eat_k->setEnabled(true);
 
     //graph
@@ -237,6 +240,7 @@ void MainWindow::render_graph() {
 void MainWindow::render_draw_area() {
     scene->clear();
 
+    // bot render
     QColor botColor;
     world->bots_mutex.lock();
     uint bot_len = world->bots.size();
@@ -258,8 +262,9 @@ void MainWindow::render_draw_area() {
     }
     world->bots_mutex.unlock();
 
+    // process time led
     if (world->process_delay) {
-        if (world->processing_time >= world->process_delay) ui->process_time_led->setColor(QColor(255, 0, 0));
+        if (world->processing_time >= world->process_delay*1000) ui->process_time_led->setColor(QColor(255, 0, 0));
         else ui->process_time_led->setColor(QColor(0, 255, 0));
     } else ui->process_time_led->setColor(QColor(133, 133, 133));
 
@@ -275,6 +280,7 @@ void MainWindow::render_draw_area() {
         return;
     }
 
+    // ui info update
     ui->bot_count->display(QString::number(alive_bot_len));
     ui->generation->setText(QString::number(world->generation));
     ui->mutation_count->setText(QString::number(world->mutation_count));
@@ -282,7 +288,7 @@ void MainWindow::render_draw_area() {
     ui->bot_completion->setValue(alive_bot_len);
     ui->processing_time->setText(QString::number(world->processing_time) + " (мкс)");
 
-
+    // draw lines
     if (ui->draw_lines->isChecked()) {
         uint current_height, coordinates_y;
         for (uint part = 0; part<=world->world_parts_count; ++part) {

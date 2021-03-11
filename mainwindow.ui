@@ -122,6 +122,26 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_24">
+         <property name="text">
+          <string>Макс. продолж. жизни орг-ки</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QSpinBox" name="max_organic_old">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>16777215</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </item>
@@ -453,10 +473,10 @@
           <number>2</number>
          </property>
          <property name="maximum">
-          <number>1000000000</number>
+          <number>16777215</number>
          </property>
          <property name="value">
-          <number>100</number>
+          <number>1000</number>
          </property>
         </widget>
        </item>
@@ -676,6 +696,13 @@
         <widget class="KLed" name="process_time_led">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Зеленый&lt;/span&gt; цвет - мир успевает обрабатываться&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Красный&lt;/span&gt; цвет - мир не успевает обрабатываться&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="color">
+          <color>
+           <red>64</red>
+           <green>133</green>
+           <blue>79</blue>
+          </color>
          </property>
         </widget>
        </item>

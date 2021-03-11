@@ -141,8 +141,10 @@ bool GeneticWorld::reproduction(Bot &bot) {
 }
 
 void GeneticWorld::clearDie() {
-    for (uint index : die_bots)
+    for (uint index : die_bots) {
         bots[index]->type = ORGANIC;
+        bots[index]->old = 0;
+    }
 
     die_bots.clear();
 }
@@ -162,7 +164,7 @@ void GeneticWorld::botStep(uint i) {
     Bot *bot = bots[i];
     bot->old++;
     if (bot->type == ORGANIC) {
-        if (bot->old >= max_old * 2) {
+        if (bot->old >= max_organic_old) {
             eatOrganic(i);
             return;
         }
@@ -295,8 +297,8 @@ void GeneticWorld::run() {
     run_flag = true;
     while (run_flag) {
         if (process_delay) {
-            if (process_delay>processing_time/1000)
-                msleep(process_delay - (processing_time/1000));
+            if (process_delay*1000 > processing_time)
+                usleep(process_delay*1000 - processing_time);
         }
         auto start = std::chrono::steady_clock::now();
         for(uint i = 0; i != bots.size(); i++) {

@@ -48,6 +48,7 @@ public:
     uint max_energy;
     uint eat_power;
     uint max_old;
+    uint max_organic_old;
     uint max_bot_count;
     bool organic_enabled = true;
 
