@@ -275,8 +275,7 @@ uint GeneticWorld::aliveBotsCount() {
 void GeneticWorld::clearKilled() {
     Bot *bot;
     foreach (bot, killed_bots) {
-        assert(bots.contains(bot->hash));
-        bots.remove(bot->hash);
+        assert(bots.remove(bot->hash));
         delete bot;
 
     }

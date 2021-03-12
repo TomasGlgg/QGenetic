@@ -3,7 +3,7 @@
 
 #include <QThread>
 #include <QList>
-#include <QMap>
+#include <QHash>
 #include <QMutex>
 
 #include <cassert>
@@ -64,7 +64,7 @@ public:
 
     uint processing_time = 0;
 
-    QMap<ulong, Bot*> bots;
+    QHash<ulong, Bot*> bots;
     QMutex bots_mutex;
     bool run_flag;
 private:

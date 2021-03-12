@@ -348,7 +348,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="label_21">
             <property name="text">
-             <string>Частота об-ия (в мс)</string>
+             <string>Частота об-ия (мс)</string>
             </property>
            </widget>
           </item>
@@ -663,8 +663,8 @@
          </property>
          <property name="color">
           <color>
-           <red>170</red>
-           <green>85</green>
+           <red>255</red>
+           <green>165</green>
            <blue>0</blue>
           </color>
          </property>
@@ -699,9 +699,9 @@
          </property>
          <property name="color">
           <color>
-           <red>64</red>
+           <red>133</red>
            <green>133</green>
-           <blue>79</blue>
+           <blue>133</blue>
           </color>
          </property>
         </widget>

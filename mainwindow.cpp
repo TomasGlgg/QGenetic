@@ -182,6 +182,7 @@ void MainWindow::new_world() {
     ui->bot_count->display(0);
     ui->bot_completion->setValue(0);
     ui->status_led->setColor(QColor(255, 128, 0));
+    ui->process_time_led->setColor(QColor(123, 123, 123));
     ui->dockWidget->setMinimumSize(0, 0);
     ui->dockWidget->setMaximumSize(16777215, 16777215);
     scene->clear();
