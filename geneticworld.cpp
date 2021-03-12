@@ -7,12 +7,6 @@ GeneticWorld::~GeneticWorld() {
     bots.clear();
     killed_bots.clear();
 }
-GeneticWorld::GeneticWorld() {
-    setPriority(QThread::HighPriority);
-   // QList<Bot*> bots;
-    // < 0 - команды
-    // > 0 - goto
-}
 
 Bot *GeneticWorld::newBot(int x, int y) {
     Bot *new_bot = new Bot(genome_len, x, y);
@@ -284,6 +278,7 @@ void GeneticWorld::clearKilled() {
 
 
 void GeneticWorld::run() {
+    setPriority(QThread::HighPriority);
     run_flag = true;
     while (run_flag) {
         if (process_delay) {

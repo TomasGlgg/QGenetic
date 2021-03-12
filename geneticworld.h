@@ -33,7 +33,6 @@ protected:
     void run();
 
 public:
-    GeneticWorld();
     ~GeneticWorld();
     Bot *newBot(int x, int y);
     void stop();
