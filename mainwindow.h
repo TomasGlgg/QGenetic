@@ -28,7 +28,8 @@ private:
     GeneticWorld *world;
     QTimer *render_timer;
     QTimer *graph_timer;
-    QPolygonF history;
+    QPolygonF alive_bot_history;
+    QPolygonF organic_bot_history;
 
     uint botsize;
     bool worldinited = false;

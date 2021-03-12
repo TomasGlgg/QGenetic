@@ -3,8 +3,9 @@
 
 
 GeneticWorld::~GeneticWorld() {
+    qDeleteAll(bots);
     bots.clear();
-    die_bots.clear();
+    killed_bots.clear();
 }
 GeneticWorld::GeneticWorld() {
     setPriority(QThread::HighPriority);
@@ -13,24 +14,23 @@ GeneticWorld::GeneticWorld() {
     // > 0 - goto
 }
 
-Bot *GeneticWorld::newBot() {
-    Bot *new_bot = new Bot(genome_len);
-    bots.push_back(new_bot);
+Bot *GeneticWorld::newBot(int x, int y) {
+    Bot *new_bot = new Bot(genome_len, x, y);
+    ulong hash = new_bot->hash;
+    bots[hash] = new_bot;
     return new_bot;
 }
 
-void GeneticWorld::killBot(uint index) {
-    if (organic_enabled) {
-        if (std::find(die_bots.begin(), die_bots.end(), index) == die_bots.end())
-            die_bots.push_back(index);
-    } else {
-        eatOrganic(index);
-    }
+inline void GeneticWorld::killBot(Bot *bot) {
+    if (organic_enabled)
+        bot->type = ORGANIC;
+    else
+        eatOrganic(bot);
 }
 
-void GeneticWorld::eatOrganic(uint index) {
-    if (std::find(eaten_organic.begin(), eaten_organic.end(), index) == eaten_organic.end())
-        eaten_organic.push_back(index);
+inline void GeneticWorld::eatOrganic(Bot *bot) {
+    bot->type = KILLED;
+    killed_bots.push_back(bot);
 }
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
@@ -47,23 +47,16 @@ uint GeneticWorld::getMineralsCount(uint y) {
     return 0;
 }
 
-int GeneticWorld::findBot(int *xy) {
-    unsigned int bot_len = bots.size();
-    for(uint i = 0; i != bot_len; i++)
-        if (bots[i]->x==xy[0] && bots[i]->y==xy[1]) return i;
-    return -1;
-}
-
 int* GeneticWorld::translateCoords(int *xy) {
     if (xy[0]>=max_x) xy[0] = 0;
     if (xy[0]<0) xy[0] = max_x-1;
     return xy;
 }
 
-int* GeneticWorld::oppositeBot(Bot bot, int *xy) {
-   xy[0] = bot.x;
-   xy[1] = bot.y;
-   switch (bot.direction) {
+int* GeneticWorld::oppositeBot(Bot *bot, int *xy) {
+   xy[0] = bot->getX();
+   xy[1] = bot->getY();
+   switch (bot->direction) {
        case 0: {
            xy[1]++;
            break;
@@ -107,23 +100,21 @@ int* GeneticWorld::oppositeBot(Bot bot, int *xy) {
 
 bool GeneticWorld::checkCoords(int *xy) {
     if (xy[1] < 0 || xy[1] >= max_y) return false;
-    if (findBot(xy) != -1) return false;
-    return true;
+    ulong hash = hashxy(xy);
+    return !bots.contains(hash);
 }
 
 
-bool GeneticWorld::reproduction(Bot &bot) {
+bool GeneticWorld::reproduction(Bot *bot) {
     int xy[2];
     oppositeBot(bot, xy);
-    if (bot.energy<max_energy/2) return false;
-    bot.energy /= 2;
+    if (bot->energy<max_energy/2) return false;
+    bot->energy /= 2;
     if (!checkCoords(xy)) return false;
     bots_mutex.lock();
-    Bot *new_bot = newBot();
-    new_bot->direction = bot.direction;
-    new_bot->energy = bot.energy/2;
-    new_bot->x = xy[0];
-    new_bot->y = xy[1];
+    Bot *new_bot = newBot(xy[0], xy[1]);
+    new_bot->direction = bot->direction;
+    new_bot->energy = bot->energy/2;
 
     //copy genom and mutate
     int k;
@@ -131,73 +122,60 @@ bool GeneticWorld::reproduction(Bot &bot) {
         float random = rand()/(RAND_MAX + 1.);
         if (random<mutate_chance) {
             k = rand()%3-1; // [-1, 1]
-            new_bot->genome[i] = bot.genome[i] + k;
+            new_bot->genome[i] = bot->genome[i] + k;
             mutation_count++;
         } else
-            new_bot->genome[i] = bot.genome[i];
+            new_bot->genome[i] = bot->genome[i];
     }
     bots_mutex.unlock();
     return true;
 }
 
-void GeneticWorld::clearDie() {
-    for (uint index : die_bots) {
-        bots[index]->type = ORGANIC;
-        bots[index]->old = 0;
-    }
-
-    die_bots.clear();
-}
-
-void GeneticWorld::clearOrganic() {
-    std::sort(eaten_organic.begin(), eaten_organic.end(), [](const int a, const int b) {return a > b; });  // TODO: optimize (set)
+void GeneticWorld::moveBot(Bot *bot, int *xy) {
     bots_mutex.lock();
-    for (uint index : eaten_organic) {
-        delete bots[index];
-        bots.removeAt(index);
-    }
+    bots.remove(bot->hash);
+    bot->move(xy);
+    bots[bot->hash] = bot;
     bots_mutex.unlock();
-    eaten_organic.clear();
 }
 
-void GeneticWorld::botStep(uint i) {
-    Bot *bot = bots[i];
+void GeneticWorld::botStep(Bot *bot) {
     bot->old++;
     if (bot->type == ORGANIC) {
         if (bot->old >= max_organic_old) {
-            eatOrganic(i);
+            eatOrganic(bot);
             return;
         }
         int xy[2];
-        xy[0] = bot->x;
-        xy[1] = bot->y - 1;
-        if (checkCoords(xy)) {
-            bot->y--;
-        }
+        xy[0] = bot->getX();
+        xy[1] = bot->getY() - 1;
+        if (checkCoords(xy))
+            moveBot(bot, xy);
+
         return;
     }
 
     if (bot->energy>max_energy) {
         bot->energy = max_energy;
-        reproduction(*bot);
+        reproduction(bot);
     }
 
     uint command_index = bot->iterator;
     int command = bot->genome[command_index];
     switch (command) {
         case reproduction_command: {
-            if (!reproduction(*bot)) killBot(i);
+            if (!reproduction(bot)) killBot(bot);
             break;
         }
         case photosynthesis_command: {
             bot->used_photosynthesis++;
-            uint new_energy = getPhotosynthesisEnergy(bot->y);
+            uint new_energy = getPhotosynthesisEnergy(bot->getY());
             bot->energy += new_energy;
             break;
         }
         case minerals_command: {
             bot->used_minerals++;
-            uint new_minerals = getMineralsCount(bot->y);
+            uint new_minerals = getMineralsCount(bot->getY());
             bot->minerals += new_minerals;
             break;
         }
@@ -218,41 +196,44 @@ void GeneticWorld::botStep(uint i) {
         }
         case step_command: {
             int xy[2];
-            oppositeBot(*bot, xy);
-            if (checkCoords(xy)) {
-                bot->x = xy[0];
-                bot->y = xy[1];
-            }
+            oppositeBot(bot, xy);
+            if (checkCoords(xy))
+                moveBot(bot, xy);
+
             break;
         }
         case eat_command: {
             int xy[2];
-            oppositeBot(*bot, xy);
-            int targetindex = findBot(xy);
-            if (targetindex != -1) {
+            oppositeBot(bot, xy);
+            ulong target_hash = hashxy(xy);
+            if (bots.contains(target_hash)) {
                 bot->used_eat++;
-                if (bots[targetindex]->type == ORGANIC) {
-                    eatOrganic(targetindex);
-                    bot->energy += max_energy/2;
-                } else if (bots[targetindex]->energy > eat_power) {
-                    bots[targetindex]->energy -= eat_power;
-                    bot->energy += eat_power;
-                } else {
-                    bot->energy += bots[targetindex]->energy;
-                    killBot(targetindex);
-                    kills++;
+                Bot* target_bot = bots.value(target_hash);
+                if (target_bot->type != KILLED) {
+                    if (target_bot->type == ORGANIC) {
+                        eatOrganic(target_bot);
+                        bot->energy += max_energy/2;
+                    } else if (target_bot->energy > eat_power) {
+                        target_bot->energy -= eat_power;
+                        bot->energy += eat_power;
+                    } else {
+                        bot->energy += target_bot->energy;
+                        eatOrganic(target_bot);
+                        kills++;
+                    }
                 }
             }
             break;
         }
         case share_command: {
             int xy[2];
-            oppositeBot(*bot, xy);
-            int targetindex = findBot(xy);
-            if (targetindex != -1) {
-                if (bots[targetindex]->energy < bot->energy) {
-                    uint energy_delta = bot->energy - bots[targetindex]->energy;
-                    bots[targetindex]->energy += energy_delta;
+            oppositeBot(bot, xy);
+            ulong target_hash = hashxy(xy);
+            if (bots.contains(target_hash)) {
+                Bot* target_bot = bots.value(target_hash);
+                if (target_bot->energy < bot->energy) {
+                    uint energy_delta = bot->energy - target_bot->energy;
+                    target_bot->energy += energy_delta;
                     bot->energy -= energy_delta;
                 }
             }
@@ -260,11 +241,11 @@ void GeneticWorld::botStep(uint i) {
         }
         case check_command: {
             int xy[2];
-            oppositeBot(*bot, xy);
-            int targetindex = findBot(xy);
-            if (targetindex == -1) {
+            oppositeBot(bot, xy);
+            ulong target_hash = hashxy(xy);
+            if (!bots.contains(target_hash)) {
                 bot->iterator += 2;
-            } else if (bots[targetindex]->type == ORGANIC) {
+            } else if (bots[target_hash]->type == ORGANIC) {
                 bot->iterator++;
             }
             break;
@@ -277,19 +258,29 @@ void GeneticWorld::botStep(uint i) {
     }
     bot->energy--;
 
-    if (bot->energy<=0)
-        killBot(i);
+    if (bot->energy <= 0 || bot->old >= max_old)
+        killBot(bot);
 
-    if (bot->old >= max_old) killBot(i);
     bot->iterator++;
     bot->iterator %= genome_len;
 }
 
 uint GeneticWorld::aliveBotsCount() {
     uint count = 0;
-    for (Bot *bot : bots)
+    foreach (Bot *bot, bots)
         if (bot->type == ALIVE) count++;
     return count;
+}
+
+void GeneticWorld::clearKilled() {
+    Bot *bot;
+    foreach (bot, killed_bots) {
+        assert(bots.contains(bot->hash));
+        bots.remove(bot->hash);
+        delete bot;
+
+    }
+    killed_bots.clear();
 }
 
 
@@ -301,16 +292,15 @@ void GeneticWorld::run() {
                 usleep(process_delay*1000 - processing_time);
         }
         auto start = std::chrono::steady_clock::now();
-        for(uint i = 0; i != bots.size(); i++) {
-            botStep(i);
+
+        foreach (Bot *bot, bots) {
+            if (bot->type != KILLED)
+                botStep(bot);
         }
-
-        if (die_bots.size())
-            clearDie();
-        if (eaten_organic.size())
-            clearOrganic();
-
+        if (killed_bots.size())
+            clearKilled();
         generation++;
+
         auto end = std::chrono::steady_clock::now();
         processing_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     }

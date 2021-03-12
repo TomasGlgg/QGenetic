@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QList>
+#include <QMap>
 #include <QMutex>
 
 #include <cassert>
@@ -25,6 +26,7 @@ enum Commands {
     step_command                // step             = -1
 };
 
+
 class GeneticWorld : public QThread {
     Q_OBJECT
 protected:
@@ -33,7 +35,7 @@ protected:
 public:
     GeneticWorld();
     ~GeneticWorld();
-    Bot *newBot();
+    Bot *newBot(int x, int y);
     void stop();
 
     uint getPhotosynthesisEnergy(uint y);
@@ -62,23 +64,21 @@ public:
 
     uint processing_time = 0;
 
-    QList<Bot*> bots;
+    QMap<ulong, Bot*> bots;
     QMutex bots_mutex;
     bool run_flag;
 private:
-    QList<uint> die_bots;
-    QList<uint> eaten_organic;
+    QList<Bot*> killed_bots;
 
-    bool reproduction(Bot &bot);
-    int* oppositeBot(Bot bot, int *xy);
-    int findBot(int *xy);
+    void moveBot(Bot *bot, int *xy);
+    bool reproduction(Bot *bot);
+    int* oppositeBot(Bot *bot, int *xy);
     bool checkCoords(int *xy);
     int* translateCoords(int *xy);
-    void botStep(uint i);
-    void killBot(uint index);
-    void eatOrganic(uint index);
-    void clearDie();
-    void clearOrganic();
+    void botStep(Bot *bot);
+    inline void killBot(Bot *bot);
+    inline void eatOrganic(Bot *bot);
+    void clearKilled();
 };
 
 #endif // GENETICWORLD_H
