@@ -16,8 +16,8 @@ Bot *GeneticWorld::newBot(int x, int y) {
     return new_bot;
 }
 
-inline void GeneticWorld::killBot(Bot *bot) {
-    if (organic_enabled)
+inline void GeneticWorld::eatBot(Bot *bot, bool kill) {
+    if (organic_enabled && !kill)
         bot->type = ORGANIC;
     else
         eatOrganic(bot);
@@ -160,7 +160,7 @@ void GeneticWorld::botStep(Bot *bot) {
     int command = bot->genome[command_index];
     switch (command) {
         case reproduction_command: {
-            if (!reproduction(bot)) killBot(bot);
+            if (!reproduction(bot)) eatBot(bot);
             break;
         }
         case photosynthesis_command: {
@@ -214,7 +214,7 @@ void GeneticWorld::botStep(Bot *bot) {
                         bot->energy += eat_power;
                     } else {
                         bot->energy += target_bot->energy;
-                        eatOrganic(target_bot);
+                        eatBot(target_bot, true);
                         kills++;
                     }
                 }
@@ -255,7 +255,7 @@ void GeneticWorld::botStep(Bot *bot) {
     bot->energy--;
 
     if (bot->energy <= 0 || bot->old >= max_old)
-        killBot(bot);
+        eatBot(bot);
 
     bot->iterator++;
     bot->iterator %= genome_len;
