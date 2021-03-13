@@ -12,6 +12,7 @@ Bot *GeneticWorld::newBot(int x, int y) {
     Bot *new_bot = new Bot(genome_len, x, y);
     ulong hash = new_bot->hash;
     bots[hash] = new_bot;
+    alive_bots_count++;
     return new_bot;
 }
 
@@ -20,6 +21,7 @@ inline void GeneticWorld::killBot(Bot *bot) {
         bot->type = ORGANIC;
     else
         eatOrganic(bot);
+    alive_bots_count--;
 }
 
 inline void GeneticWorld::eatOrganic(Bot *bot) {
@@ -257,13 +259,6 @@ void GeneticWorld::botStep(Bot *bot) {
 
     bot->iterator++;
     bot->iterator %= genome_len;
-}
-
-uint GeneticWorld::aliveBotsCount() {
-    uint count = 0;
-    foreach (Bot *bot, bots)
-        if (bot->type == ALIVE) count++;
-    return count;
 }
 
 void GeneticWorld::clearKilled() {

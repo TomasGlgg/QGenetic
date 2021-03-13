@@ -39,7 +39,6 @@ public:
 
     uint getPhotosynthesisEnergy(uint y);
     uint getMineralsCount(uint y);
-    uint aliveBotsCount();
 
     uint world_parts_count;
     uint start_world_energy;
@@ -60,6 +59,7 @@ public:
     uint kills = 0;
     uint generation = 0;
     uint mutation_count = 0;
+    uint alive_bots_count = 0;
 
     uint processing_time = 0;
 

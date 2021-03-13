@@ -230,7 +230,7 @@ QGraphicsTextItem* MainWindow::textWidget(QString text, uint x, uint y, QColor c
 void MainWindow::render_graph() {
     alive_bot_history.pop_front();
     organic_bot_history.pop_front();
-    uint alive_bot_count = world->aliveBotsCount();
+    uint alive_bot_count = world->alive_bots_count;
     uint organic_bot_count = world->bots.size() - alive_bot_count;
     alive_bot_history << QPointF(alive_bot_history[ui->graph_count->value()-2].x()+1, alive_bot_count);
     organic_bot_history << QPointF(organic_bot_history[ui->graph_count->value()-2].x()+1, organic_bot_count);
@@ -281,7 +281,7 @@ void MainWindow::render_draw_area() {
         else ui->process_time_led->setColor(QColor(0, 255, 0));
     } else ui->process_time_led->setColor(QColor(133, 133, 133));
 
-    uint alive_bot_count = world->aliveBotsCount();
+    uint alive_bot_count = world->alive_bots_count;
     uint bot_count = world->bots.size();
 
     if (!alive_bot_count) {
