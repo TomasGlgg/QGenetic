@@ -39,7 +39,6 @@ private:
     QColor botColorByUsedGens(Bot *bot);
     void initWorld(uint x, uint y);
     void updateWorld();
-    void initGraph();
     QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);
 
 private slots:

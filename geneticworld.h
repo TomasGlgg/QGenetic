@@ -75,7 +75,7 @@ private:
     bool checkCoords(int *xy);
     int* translateCoords(int *xy);
     void botStep(Bot *bot);
-    inline void eatBot(Bot *bot, bool kill=false);
+    inline void eatBot(Bot *bot, bool noOrganic=false);
     inline void eatOrganic(Bot *bot);
     void clearKilled();
 };

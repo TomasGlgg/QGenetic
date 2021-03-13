@@ -108,7 +108,11 @@ void MainWindow::start() {
         ui->sizeLabel->setText(str_size);
         ui->bot_completion->setMaximum(world->max_bot_count);
         ui->bot_completion->setFormat("%v/" + QString::number(world->max_bot_count) + " (%p%)");
-        initGraph();
+
+        alive_bot_history.clear();
+        organic_bot_history.clear();
+        alive_bot_history << QPointF(0, 0);
+        organic_bot_history << QPointF(0, 0);
     }
     updateWorld();
 
@@ -142,13 +146,6 @@ void MainWindow::stop() {
     ui->groupBox_graph->setEnabled(true);
 
     ui->status_led->setColor(QColor(255, 128, 0));
-}
-
-void MainWindow::initGraph() {  // очистка графика
-    alive_bot_history.clear();
-    organic_bot_history.clear();
-    for (int i = 0; i<ui->graph_count->value(); i++) alive_bot_history << QPointF(i, 0);
-    for (int i = 0; i<ui->graph_count->value(); i++) organic_bot_history << QPointF(i, 0);
 }
 
 void MainWindow::new_world() {
@@ -228,12 +225,15 @@ QGraphicsTextItem* MainWindow::textWidget(QString text, uint x, uint y, QColor c
 }
 
 void MainWindow::render_graph() {
-    alive_bot_history.pop_front();
-    organic_bot_history.pop_front();
     uint alive_bot_count = world->alive_bots_count;
     uint organic_bot_count = world->bots.size() - alive_bot_count;
-    alive_bot_history << QPointF(alive_bot_history[ui->graph_count->value()-2].x()+1, alive_bot_count);
-    organic_bot_history << QPointF(organic_bot_history[ui->graph_count->value()-2].x()+1, organic_bot_count);
+    alive_bot_history << QPointF(alive_bot_history[alive_bot_history.size()-1].x()+1, alive_bot_count);
+    organic_bot_history << QPointF(organic_bot_history[organic_bot_history.size()-1].x()+1, organic_bot_count);
+
+    if (alive_bot_history.size() > ui->graph_count->value()) {
+        alive_bot_history.pop_front();
+        organic_bot_history.pop_front();
+    }
 
     QwtPlotCurve *alive_history_curve = new QwtPlotCurve();
     QwtPlotCurve *organic_history_curve = new QwtPlotCurve();

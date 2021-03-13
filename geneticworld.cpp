@@ -16,8 +16,8 @@ Bot *GeneticWorld::newBot(int x, int y) {
     return new_bot;
 }
 
-inline void GeneticWorld::eatBot(Bot *bot, bool kill) {
-    if (organic_enabled && !kill)
+inline void GeneticWorld::eatBot(Bot *bot, bool noOrganic) {
+    if (organic_enabled && !noOrganic)
         bot->type = ORGANIC;
     else
         eatOrganic(bot);
