@@ -169,6 +169,7 @@ void MainWindow::new_world() {
     ui->organic->setEnabled(true);
 
     //graph
+    ui->historyPlot->detachItems();
     ui->groupBox_graph->setEnabled(true);
     ui->historyPlot->setEnabled(false);
 
@@ -177,6 +178,7 @@ void MainWindow::new_world() {
     ui->kill_count->setText("0");
     ui->sizeLabel->setText("");
     ui->bot_count->display(0);
+    ui->processing_time->setText("0");
     ui->bot_completion->setValue(0);
     ui->status_led->setColor(QColor(255, 128, 0));
     ui->process_time_led->setColor(QColor(123, 123, 123));
