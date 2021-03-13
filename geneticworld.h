@@ -14,7 +14,8 @@
 
 
 enum Commands {
-    share_command = -10,        // share_command    = -10
+    check_my_energy = -11,
+    share_command,              // share_command    = -10
     reproduction_command,       // reproduction     = -9
     eat_command,                // eat              = -8
     check_command,              // check            = -7

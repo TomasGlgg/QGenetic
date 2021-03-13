@@ -105,7 +105,7 @@ bool GeneticWorld::reproduction(Bot *bot) {
     int xy[2];
     oppositeBot(bot, xy);
     if (bot->energy<max_energy/2) return false;
-    bot->energy /= 2;
+    bot->energy /= 3;
     if (!checkCoords(xy)) return false;
     bots_mutex.lock();
     Bot *new_bot = newBot(xy[0], xy[1]);
@@ -138,7 +138,7 @@ void GeneticWorld::moveBot(Bot *bot, int *xy) {
 void GeneticWorld::botStep(Bot *bot) {
     bot->old++;
     if (bot->type == ORGANIC) {
-        if (bot->old >= max_organic_old) {
+        if (bot->old >= max_organic_old + max_old) {
             eatOrganic(bot);
             return;
         }
@@ -151,10 +151,9 @@ void GeneticWorld::botStep(Bot *bot) {
         return;
     }
 
-    if (bot->energy>max_energy) {
-        bot->energy = max_energy;
+    if (bot->energy>max_energy)
         reproduction(bot);
-    }
+
 
     uint command_index = bot->iterator;
     int command = bot->genome[command_index];
@@ -208,7 +207,7 @@ void GeneticWorld::botStep(Bot *bot) {
                 if (target_bot->type != KILLED) {
                     if (target_bot->type == ORGANIC) {
                         eatOrganic(target_bot);
-                        bot->energy += max_energy/2;
+                        bot->energy += target_bot->energy/2;
                     } else if (target_bot->energy > eat_power) {
                         target_bot->energy -= eat_power;
                         bot->energy += eat_power;

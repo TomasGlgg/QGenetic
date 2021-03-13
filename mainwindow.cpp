@@ -285,6 +285,7 @@ void MainWindow::render_draw_area() {
 
     uint alive_bot_count = world->alive_bots_count;
     uint bot_count = world->bots.size();
+    assert(bot_count >= alive_bot_count);
 
     if (!alive_bot_count) {
         world->run_flag = false;
