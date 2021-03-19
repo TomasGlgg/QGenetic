@@ -273,14 +273,15 @@ void GeneticWorld::clearKilled() {
 
 void GeneticWorld::run() {
     setPriority(QThread::HighPriority);
+    QElapsedTimer startTime;
     run_flag = true;
     while (run_flag) {
         if (process_delay) {
             if (process_delay*1000 > processing_time)
                 usleep(process_delay*1000 - processing_time);
         }
-        auto start = std::chrono::steady_clock::now();
 
+        startTime.start();
         foreach (Bot *bot, bots) {
             if (bot->type != KILLED)
                 botStep(bot);
@@ -289,8 +290,7 @@ void GeneticWorld::run() {
             clearKilled();
         generation++;
 
-        auto end = std::chrono::steady_clock::now();
-        processing_time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        processing_time = startTime.nsecsElapsed()/1000;
     }
 }
 

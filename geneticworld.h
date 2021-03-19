@@ -5,10 +5,10 @@
 #include <QList>
 #include <QHash>
 #include <QMutex>
+#include <QElapsedTimer>
 
 #include <cassert>
 #include <cmath>
-#include <chrono>
 
 #include "botstruct.h"
 
