@@ -38,7 +38,7 @@ void MainWindow::initWorld(uint x, uint y) {
 
     Bot *newBot = world->newBot(10, y - 10);
     newBot->energy = ui->first_bot_energy->value();
-    newBot->direction = ui->firtst_bot_direction->currentIndex();
+    newBot->direction = ui->first_bot_direction->currentIndex();
 
     for (uint i = 0; i<world->genome_len; i++){
         if (i%2 == 0)
@@ -82,6 +82,9 @@ void MainWindow::start() {
     ui->max_organic_old->setEnabled(false);
     ui->eat_k->setEnabled(false);
     ui->organic->setEnabled(false);
+    ui->new_bot_energy->setEnabled(false);
+    ui->first_bot_energy->setEnabled(false);
+    ui->first_bot_direction->setEnabled(false);
 
     //graph
     if (ui->groupBox_graph->isChecked()) {
@@ -140,6 +143,7 @@ void MainWindow::stop() {
     ui->max_old->setEnabled(true);
     ui->max_organic_old->setEnabled(true);
     ui->eat_k->setEnabled(true);
+    ui->new_bot_energy->setEnabled(true);
 
     //graph
     ui->groupBox_graph->setEnabled(true);
@@ -168,6 +172,8 @@ void MainWindow::new_world() {
     ui->world_parts_count->setEnabled(true);
     ui->eat_k->setEnabled(true);
     ui->organic->setEnabled(true);
+    ui->first_bot_direction->setEnabled(true);
+    ui->first_bot_energy->setEnabled(true);
 
     //graph
     ui->historyPlot->detachItems();

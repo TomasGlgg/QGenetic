@@ -19,17 +19,19 @@ Bot *GeneticWorld::newBot(int x, int y) {
 }
 
 inline void GeneticWorld::eatBot(Bot *bot, bool noOrganic) {
-    if (organic_enabled && !noOrganic)
+    if (bot->type != ALIVE) return;
+    if (organic_enabled && !noOrganic) {
         bot->type = ORGANIC;
-    else
-        eatOrganic(bot);
-    alive_bots_count--;
+        alive_bots_count--;
+     } else {
+        if (eatOrganic(bot)) alive_bots_count--;
+    }
 }
 
-inline void GeneticWorld::eatOrganic(Bot *bot) {
-    if (bots.contains(bot->hash)) return;
+inline bool GeneticWorld::eatOrganic(Bot *bot) {
     bot->type = KILLED;
     killed_bots.push_back(bot);
+    return true;
 }
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
@@ -300,6 +302,7 @@ void GeneticWorld::run() {
         }
         if (killed_bots.size())
             clearKilled();
+        if (!organic_enabled) assert(bots.size() == alive_bots_count);
         generation++;
 
         processing_time = startTime.nsecsElapsed()/1000;

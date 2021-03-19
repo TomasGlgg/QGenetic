@@ -537,7 +537,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="firtst_bot_direction">
+           <widget class="QComboBox" name="first_bot_direction">
             <item>
              <property name="text">
               <string>Вверх</string>
