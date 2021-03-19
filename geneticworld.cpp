@@ -5,52 +5,52 @@
 GeneticWorld::~GeneticWorld() {
     qDeleteAll(bots);
     bots.clear();
-    killed_bots.clear();
+    killedBots.clear();
 }
 
 Bot *GeneticWorld::newBot(int x, int y) {
-    Bot *new_bot = new Bot(genome_len, x, y);
+    Bot *new_bot = new Bot(genomeLen, x, y);
     ulong hash = new_bot->hash;
-    bots_mutex.lock();
+    botsMutex.lock();
     bots[hash] = new_bot;
-    bots_mutex.unlock();
-    alive_bots_count++;
+    botsMutex.unlock();
+    aliveBotsCount++;
     return new_bot;
 }
 
 inline void GeneticWorld::eatBot(Bot *bot, bool noOrganic) {
     if (bot->type != ALIVE) return;
-    if (organic_enabled && !noOrganic) {
+    if (organicEnabled && !noOrganic) {
         bot->type = ORGANIC;
-        alive_bots_count--;
+        aliveBotsCount--;
      } else {
-        if (eatOrganic(bot)) alive_bots_count--;
+        if (eatOrganic(bot)) aliveBotsCount--;
     }
 }
 
 inline bool GeneticWorld::eatOrganic(Bot *bot) {
     bot->type = KILLED;
-    killed_bots.push_back(bot);
+    killedBots.push_back(bot);
     return true;
 }
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
-    uint part = ceil(static_cast<float>(y) / static_cast<float>(part_lenght));
-    if (part >= (world_parts_count - start_world_energy))
-        return start_world_energy - (world_parts_count - part);
+    uint part = ceil(static_cast<float>(y) / static_cast<float>(partLenght));
+    if (part >= (worldPartsCount - startWorldEnergy))
+        return startWorldEnergy - (worldPartsCount - part);
     return 0;
 }
 
 uint GeneticWorld::getMineralsCount(uint y) {
-    uint part = ceil(static_cast<float>(y) / static_cast<float>(part_lenght));
-    if (part <= start_world_energy)
-        return start_world_energy - part + 1;
+    uint part = ceil(static_cast<float>(y) / static_cast<float>(partLenght));
+    if (part <= startWorldEnergy)
+        return startWorldEnergy - part + 1;
     return 0;
 }
 
 int* GeneticWorld::translateCoords(int *xy) {
-    if (xy[0] >= max_x) xy[0] = 0;
-    if (xy[0] < 0) xy[0] = max_x-1;
+    if (xy[0] >= maxX) xy[0] = 0;
+    if (xy[0] < 0) xy[0] = maxX-1;
     return xy;
 }
 
@@ -100,7 +100,7 @@ int* GeneticWorld::oppositeBot(Bot *bot, int *xy) {
 }
 
 bool GeneticWorld::checkCoords(int *xy) {
-    if (xy[1] < 0 || xy[1] >= max_y) return false;
+    if (xy[1] < 0 || xy[1] >= maxY) return false;
     ulong hash = hashxy(xy);
     return !bots.contains(hash);
 }
@@ -109,20 +109,20 @@ bool GeneticWorld::checkCoords(int *xy) {
 bool GeneticWorld::reproduction(Bot *bot) {
     int xy[2];
     oppositeBot(bot, xy);
-    if (bot->energy<new_bot_energy) return false;
-    bot->energy -= new_bot_energy + 1;
+    if (bot->energy<newBotEnergy) return false;
+    bot->energy -= newBotEnergy + 1;
     if (!checkCoords(xy)) return false;
     Bot *new_bot = newBot(xy[0], xy[1]);
-    new_bot->energy = new_bot_energy;
+    new_bot->energy = newBotEnergy;
 
     //copy genom and mutate
     int k;
-    for (uint i = 0; i<genome_len; i++) {
+    for (uint i = 0; i<genomeLen; i++) {
         float random = rand()/(RAND_MAX + 1.);
-        if (random<mutate_chance) {
+        if (random<mutateChance) {
             k = rand()%3-1; // [-1, 1]
             new_bot->genome[i] = bot->genome[i] + k;
-            mutation_count++;
+            mutationCount++;
         } else
             new_bot->genome[i] = bot->genome[i];
     }
@@ -130,17 +130,17 @@ bool GeneticWorld::reproduction(Bot *bot) {
 }
 
 void GeneticWorld::moveBot(Bot *bot, int *xy) {
-    bots_mutex.lock();
+    botsMutex.lock();
     bots.remove(bot->hash);
     bot->move(xy);
     bots[bot->hash] = bot;
-    bots_mutex.unlock();
+    botsMutex.unlock();
 }
 
 void GeneticWorld::botStep(Bot *bot) {
     bot->old++;
     if (bot->type == ORGANIC) {
-        if (bot->old >= max_organic_old + max_old) {
+        if (bot->old >= maxOrganicOld + maxOld) {
             eatOrganic(bot);
             return;
         }
@@ -153,8 +153,8 @@ void GeneticWorld::botStep(Bot *bot) {
         return;
     }
 
-    if (bot->energy>max_energy) {
-        bot->energy = max_energy;
+    if (bot->energy>maxEnergy) {
+        bot->energy = maxEnergy;
         reproduction(bot);
     }
 
@@ -222,9 +222,9 @@ void GeneticWorld::botStep(Bot *bot) {
                 bot->used_eat++;
                 Bot* target_bot = bots.value(target_hash);
                 if (target_bot->type != KILLED) {
-                    if (target_bot->energy > steal_power) {
-                        target_bot->energy -= steal_power;
-                        bot->energy += steal_power;
+                    if (target_bot->energy > stealPower) {
+                        target_bot->energy -= stealPower;
+                        bot->energy += stealPower;
                     } else {
                         bot->energy += target_bot->energy;
                         eatBot(target_bot, true);
@@ -267,32 +267,32 @@ void GeneticWorld::botStep(Bot *bot) {
     }
     bot->energy--;
 
-    if (bot->energy <= 0 || bot->old >= max_old)
+    if (bot->energy <= 0 || bot->old >= maxOld)
         eatBot(bot);
 
     bot->iterator++;
-    bot->iterator %= genome_len;
+    bot->iterator %= genomeLen;
 }
 
 void GeneticWorld::clearKilled() {
     Bot *bot;
-    foreach (bot, killed_bots) {
+    foreach (bot, killedBots) {
         assert(bots.remove(bot->hash));
         delete bot;
 
     }
-    killed_bots.clear();
+    killedBots.clear();
 }
 
 
 void GeneticWorld::run() {
     setPriority(QThread::HighPriority);
     QElapsedTimer startTime;
-    run_flag = true;
-    while (run_flag) {
-        if (process_delay) {
-            if (process_delay*1000 > processing_time)
-                usleep(process_delay*1000 - processing_time);
+    runFlag = true;
+    while (runFlag) {
+        if (processDelay) {
+            if (processDelay*1000 > processingTime)
+                usleep(processDelay*1000 - processingTime);
         }
 
         startTime.start();
@@ -300,16 +300,16 @@ void GeneticWorld::run() {
             if (bot->type != KILLED)
                 botStep(bot);
         }
-        if (killed_bots.size())
+        if (killedBots.size())
             clearKilled();
-        if (!organic_enabled) assert(bots.size() == alive_bots_count);
+        if (!organicEnabled) assert(bots.size() == aliveBotsCount);
         generation++;
 
-        processing_time = startTime.nsecsElapsed()/1000;
+        processingTime = startTime.nsecsElapsed()/1000;
     }
 }
 
 
 void GeneticWorld::stop() {
-    run_flag = false;
+    runFlag = false;
 }

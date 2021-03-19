@@ -26,13 +26,13 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     GeneticWorld *world;
-    QTimer *render_timer;
-    QTimer *graph_timer;
-    QPolygonF alive_bot_history;
-    QPolygonF organic_bot_history;
+    QTimer *renderTimer;
+    QTimer *graphTimer;
+    QPolygonF aliveBotHistory;
+    QPolygonF organicBotHistory;
 
-    uint botsize;
-    bool worldinited = false;
+    uint botSize;
+    bool worldInited = false;
 
     QColor botColorByType(Bot *bot);
     QColor botColorByEnergy(Bot *bot);
@@ -46,6 +46,6 @@ private slots:
     void render_draw_area();
     void start();
     void stop();
-    void new_world();
+    void newWorld();
 };
 #endif // MAINWINDOW_H

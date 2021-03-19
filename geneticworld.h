@@ -42,35 +42,35 @@ public:
     uint getPhotosynthesisEnergy(uint y);
     uint getMineralsCount(uint y);
 
-    uint world_parts_count;
-    uint start_world_energy;
-    float mutate_chance;
-    uint process_delay;
-    uint genome_len;
-    uint max_energy;
-    uint new_bot_energy;
-    uint steal_power;
-    uint max_old;
-    uint max_organic_old;
-    uint max_bot_count;
-    bool organic_enabled = true;
+    uint worldPartsCount;
+    uint startWorldEnergy;
+    float mutateChance;
+    uint processDelay;
+    uint genomeLen;
+    uint maxEnergy;
+    uint newBotEnergy;
+    uint stealPower;
+    uint maxOld;
+    uint maxOrganicOld;
+    uint maxBotCount;
+    bool organicEnabled = true;
 
-    int max_x, max_y;
-    uint part_lenght;
+    int maxX, maxY;
+    uint partLenght;
 
     //statistic
     uint kills = 0;
     uint generation = 0;
-    uint mutation_count = 0;
-    uint alive_bots_count = 0;
+    uint mutationCount = 0;
+    uint aliveBotsCount = 0;
 
-    uint processing_time = 0;
+    uint processingTime = 0;
 
     QHash<ulong, Bot*> bots;
-    QMutex bots_mutex;
-    bool run_flag;
+    QMutex botsMutex;
+    bool runFlag;
 private:
-    QList<Bot*> killed_bots;
+    QList<Bot*> killedBots;
 
     void moveBot(Bot *bot, int *xy);
     bool reproduction(Bot *bot);
