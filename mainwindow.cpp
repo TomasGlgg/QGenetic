@@ -15,13 +15,21 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->startButton, SIGNAL(released()), this, SLOT(start()));
     connect(ui->stopButton, SIGNAL(released()), this, SLOT(stop()));
     connect(ui->newWorldButton, SIGNAL(released()), this, SLOT(newWorld()));
+    connect(ui->botEditorCheckBox, SIGNAL(stateChanged(int)), this, SLOT(checkBoxStateChanged(int)));
 
-    connect(renderTimer, SIGNAL(timeout()), this, SLOT(render_draw_area()));
-    connect(graphTimer, SIGNAL(timeout()), this, SLOT(render_graph()));
+    connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderDrawArea()));
+    connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
 }
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::checkBoxStateChanged(int state) {
+    if (state == Qt::Checked)
+        botEditorWindow->show();
+    else
+        botEditorWindow->close();
 }
 
 void MainWindow::initWorld(uint x, uint y) {
@@ -61,7 +69,8 @@ void MainWindow::updateWorld() {
     world->maxOrganicOld = ui->max_organic_old->value();
     world->organicEnabled = ui->organic->isChecked();
     world->newBotEnergy = ui->new_bot_energy->value();
-
+    world->processDelay = ui->process_delay->value();
+    world->organicEnergy = ui->organicEnergy->value();
     ui->bot_completion->setMaximum(world->maxBotCount);
 }
 
@@ -121,7 +130,6 @@ void MainWindow::start() {
     updateWorld();
 
     // starting
-    world->processDelay = ui->process_delay->value();
     world->start();
     renderTimer->start(ui->timerInterval->value());
     ui->status_led->setColor(QColor(0, 255, 0));
@@ -233,7 +241,7 @@ QGraphicsTextItem* MainWindow::textWidget(QString text, uint x, uint y, QColor c
     return textItem;
 }
 
-void MainWindow::render_graph() {
+void MainWindow::renderGraph() {
     uint aliveBotCount = world->aliveBotsCount;
     uint organicBotCount = world->bots.size() - aliveBotCount;
     aliveBotHistory << QPointF(aliveBotHistory[aliveBotHistory.size()-1].x()+1, aliveBotCount);
@@ -260,8 +268,28 @@ void MainWindow::render_graph() {
     organicHistoryCurve->attach(ui->historyPlot);
 }
 
-void MainWindow::render_draw_area() {
+void MainWindow::renderDrawArea() {
     scene->clear();
+
+    // process time led
+    if (world->processDelay) {
+        if (world->processingTime >= world->processDelay*1000) ui->process_time_led->setColor(QColor(255, 0, 0));
+        else ui->process_time_led->setColor(QColor(0, 255, 0));
+    } else ui->process_time_led->setColor(QColor(133, 133, 133));
+
+    uint aliveBotCount = world->aliveBotsCount;
+    uint botCount = world->bots.size();
+    assert(botCount >= aliveBotCount);
+
+    if (!aliveBotCount) {
+        world->runFlag = false;
+        renderTimer->stop();
+        graphTimer->stop();
+        ui->newWorldButton->setEnabled(true);
+        ui->stopButton->setEnabled(false);
+        ui->status_led->setColor(QColor(255, 0, 0));
+        return;
+    }
 
     // bot render
     QColor botColor;
@@ -283,26 +311,6 @@ void MainWindow::render_draw_area() {
         }
     }
     world->botsMutex.unlock();
-
-    // process time led
-    if (world->processDelay) {
-        if (world->processingTime >= world->processDelay*1000) ui->process_time_led->setColor(QColor(255, 0, 0));
-        else ui->process_time_led->setColor(QColor(0, 255, 0));
-    } else ui->process_time_led->setColor(QColor(133, 133, 133));
-
-    uint aliveBotCount = world->aliveBotsCount;
-    uint botCount = world->bots.size();
-    assert(botCount >= aliveBotCount);
-
-    if (!aliveBotCount) {
-        world->runFlag = false;
-        renderTimer->stop();
-        graphTimer->stop();
-        ui->newWorldButton->setEnabled(true);
-        ui->stopButton->setEnabled(false);
-        ui->status_led->setColor(QColor(255, 0, 0));
-        return;
-    }
 
     // ui info update
     ui->bot_count->display(QString::number(aliveBotCount));

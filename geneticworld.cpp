@@ -208,7 +208,7 @@ void GeneticWorld::botStep(Bot *bot) {
                 bot->used_eat++;
                 Bot* target_bot = bots.value(target_hash);
                 if (target_bot->type == ORGANIC) {
-                    bot->energy += 10;
+                    bot->energy += organicEnergy;
                     eatOrganic(target_bot);
                 }
             }
@@ -220,16 +220,19 @@ void GeneticWorld::botStep(Bot *bot) {
             ulong target_hash = hashxy(xy);
             if (bots.contains(target_hash)) {
                 bot->used_eat++;
-                Bot* target_bot = bots.value(target_hash);
-                if (target_bot->type != KILLED) {
-                    if (target_bot->energy > stealPower) {
-                        target_bot->energy -= stealPower;
-                        bot->energy += stealPower;
-                    } else {
-                        bot->energy += target_bot->energy;
-                        eatBot(target_bot, true);
+                Bot* targetBot = bots.value(target_hash);
+                if (targetBot->type != KILLED) {
+
+                    if (bot->minerals >= targetBot->minerals) {
+                        bot->minerals -= targetBot->minerals;
+                        bot->energy += targetBot->energy * stealPower;
+                        eatBot(targetBot, true);
                         kills++;
+                    } else {
+                        targetBot->minerals -= bot->minerals;
+                        bot->minerals = 0;
                     }
+
                 }
             }
             break;

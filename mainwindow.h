@@ -11,6 +11,8 @@
 #include <qwt_symbol.h>
 
 #include "geneticworld.h"
+#include "boteditor.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,10 +26,13 @@ public:
     ~MainWindow();
 private:
     Ui::MainWindow *ui;
+    botEditor *botEditorWindow = new botEditor();
     QGraphicsScene *scene;
     GeneticWorld *world;
+
     QTimer *renderTimer;
     QTimer *graphTimer;
+
     QPolygonF aliveBotHistory;
     QPolygonF organicBotHistory;
 
@@ -42,8 +47,9 @@ private:
     QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);
 
 private slots:
-    void render_graph();
-    void render_draw_area();
+    void checkBoxStateChanged(int state);
+    void renderGraph();
+    void renderDrawArea();
     void start();
     void stop();
     void newWorld();
