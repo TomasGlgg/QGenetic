@@ -11,7 +11,9 @@ GeneticWorld::~GeneticWorld() {
 Bot *GeneticWorld::newBot(int x, int y) {
     Bot *new_bot = new Bot(genome_len, x, y);
     ulong hash = new_bot->hash;
+    bots_mutex.lock();
     bots[hash] = new_bot;
+    bots_mutex.unlock();
     alive_bots_count++;
     return new_bot;
 }
@@ -107,7 +109,6 @@ bool GeneticWorld::reproduction(Bot *bot) {
     if (bot->energy<max_energy/2) return false;
     bot->energy /= 3;
     if (!checkCoords(xy)) return false;
-    bots_mutex.lock();
     Bot *new_bot = newBot(xy[0], xy[1]);
     new_bot->direction = bot->direction;
     new_bot->energy = bot->energy/2;
@@ -123,7 +124,6 @@ bool GeneticWorld::reproduction(Bot *bot) {
         } else
             new_bot->genome[i] = bot->genome[i];
     }
-    bots_mutex.unlock();
     return true;
 }
 
