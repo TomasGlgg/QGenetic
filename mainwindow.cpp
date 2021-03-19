@@ -53,13 +53,14 @@ void MainWindow::initWorld(uint x, uint y) {
 void MainWindow::updateWorld() {
     world->genome_len = ui->genome_len->value();
     uint max_energy = ui->max_energy->value();
-    world->eat_power = max_energy*ui->eat_k->value();
+    world->steal_power = max_energy*ui->eat_k->value();
     world->max_energy = max_energy;
     world->mutate_chance = ui->mutation_chance->value();
     world->start_world_energy = ui->start_world_energy->value();
     world->max_old = ui->max_old->value();
     world->max_organic_old = ui->max_organic_old->value();
     world->organic_enabled = ui->organic->isChecked();
+    world->new_bot_energy = ui->new_bot_energy->value();
 
     ui->bot_completion->setMaximum(world->max_bot_count);
 }
@@ -321,7 +322,7 @@ void MainWindow::render_draw_area() {
         }
 
 
-        uint last_energy_p = 0, last_energy_m = 0, energy;
+        /*uint last_energy_p = 0, last_energy_m = 0, energy;
          for (uint i = world->max_y; i>0; --i) {
              energy = world->getPhotosynthesisEnergy(i);
              if (energy != last_energy_p) {
@@ -335,7 +336,7 @@ void MainWindow::render_draw_area() {
                   last_energy_m = energy;
                   scene->addRect(0, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
               }
-          }
+        }*/
 
     }
 }

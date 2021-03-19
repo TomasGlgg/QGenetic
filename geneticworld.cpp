@@ -27,6 +27,7 @@ inline void GeneticWorld::eatBot(Bot *bot, bool noOrganic) {
 }
 
 inline void GeneticWorld::eatOrganic(Bot *bot) {
+    if (bots.contains(bot->hash)) return;
     bot->type = KILLED;
     killed_bots.push_back(bot);
 }
@@ -46,8 +47,8 @@ uint GeneticWorld::getMineralsCount(uint y) {
 }
 
 int* GeneticWorld::translateCoords(int *xy) {
-    if (xy[0]>=max_x) xy[0] = 0;
-    if (xy[0]<0) xy[0] = max_x-1;
+    if (xy[0] >= max_x) xy[0] = 0;
+    if (xy[0] < 0) xy[0] = max_x-1;
     return xy;
 }
 
@@ -106,12 +107,11 @@ bool GeneticWorld::checkCoords(int *xy) {
 bool GeneticWorld::reproduction(Bot *bot) {
     int xy[2];
     oppositeBot(bot, xy);
-    if (bot->energy<max_energy/2) return false;
-    bot->energy /= 3;
+    if (bot->energy<new_bot_energy) return false;
+    bot->energy -= new_bot_energy + 1;
     if (!checkCoords(xy)) return false;
     Bot *new_bot = newBot(xy[0], xy[1]);
-    new_bot->direction = bot->direction;
-    new_bot->energy = bot->energy/2;
+    new_bot->energy = new_bot_energy;
 
     //copy genom and mutate
     int k;
@@ -151,9 +151,10 @@ void GeneticWorld::botStep(Bot *bot) {
         return;
     }
 
-    if (bot->energy>max_energy)
+    if (bot->energy>max_energy) {
+        bot->energy = max_energy;
         reproduction(bot);
-
+    }
 
     uint command_index = bot->iterator;
     int command = bot->genome[command_index];
@@ -204,13 +205,24 @@ void GeneticWorld::botStep(Bot *bot) {
             if (bots.contains(target_hash)) {
                 bot->used_eat++;
                 Bot* target_bot = bots.value(target_hash);
+                if (target_bot->type == ORGANIC) {
+                    bot->energy += 10;
+                    eatOrganic(target_bot);
+                }
+            }
+            break;
+        }
+        case steal_command: {
+            int xy[2];
+            oppositeBot(bot, xy);
+            ulong target_hash = hashxy(xy);
+            if (bots.contains(target_hash)) {
+                bot->used_eat++;
+                Bot* target_bot = bots.value(target_hash);
                 if (target_bot->type != KILLED) {
-                    if (target_bot->type == ORGANIC) {
-                        eatOrganic(target_bot);
-                        bot->energy += target_bot->energy/2;
-                    } else if (target_bot->energy > eat_power) {
-                        target_bot->energy -= eat_power;
-                        bot->energy += eat_power;
+                    if (target_bot->energy > steal_power) {
+                        target_bot->energy -= steal_power;
+                        bot->energy += steal_power;
                     } else {
                         bot->energy += target_bot->energy;
                         eatBot(target_bot, true);

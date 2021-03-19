@@ -14,10 +14,11 @@
 
 
 enum Commands {
-    check_my_energy = -11,
-    share_command,              // share_command    = -10
-    reproduction_command,       // reproduction     = -9
-    eat_command,                // eat              = -8
+    check_my_energy = -12,      // check my energy  = -12
+    share_command,              // share command    = -11
+    reproduction_command,       // reproduction     = -10
+    eat_command,                // eat              = -9
+    steal_command,              // steal command    = -8
     check_command,              // check            = -7
     minerals_command,           // minerals         = -6
     photosynthesis_command,     // photosynthesis   = -5
@@ -47,7 +48,8 @@ public:
     uint process_delay;
     uint genome_len;
     uint max_energy;
-    uint eat_power;
+    uint new_bot_energy;
+    uint steal_power;
     uint max_old;
     uint max_organic_old;
     uint max_bot_count;
