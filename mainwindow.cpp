@@ -37,8 +37,8 @@ void MainWindow::initWorld(uint x, uint y) {
     world->max_bot_count = x*y;
 
     Bot *newBot = world->newBot(10, y - 10);
-    newBot->energy = 10;
-    newBot->direction = 2;
+    newBot->energy = ui->first_bot_energy->value();
+    newBot->direction = ui->firtst_bot_direction->currentIndex();
 
     for (uint i = 0; i<world->genome_len; i++){
         if (i%2 == 0)
@@ -99,8 +99,8 @@ void MainWindow::start() {
         uint world_h = ui->DrawArea->height() / botsize;
         initWorld(world_w, world_h);
 
-        uint window_w = ui->dockWidget->width();
-        uint window_h = botsize * world->max_y + (ui->dockWidget->height() - ui->dockWidget->height());
+        uint window_w = botsize * world->max_x;
+        uint window_h = botsize * world->max_y;
         ui->dockWidget->setMinimumSize(window_w, window_h);
         ui->dockWidget->setMaximumSize(window_w, window_h);
 
@@ -311,17 +311,17 @@ void MainWindow::render_draw_area() {
         for (uint part = 0; part<=world->world_parts_count; ++part) {
             current_height = ui->DrawArea->height() - (world->part_lenght*part)*botsize;
 
-            coordinates_y = (ui->DrawArea->height()/world->world_parts_count*part)/botsize;
+            coordinates_y = world->part_lenght * part;
             if (current_height != 0)
                 scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(QColor(128, 128, 128)));
             if (part <= world->start_world_energy)  // minerals
                scene->addItem(textWidget(QString::number(world->getMineralsCount(coordinates_y)), 0, current_height, QColor(255, 255, 255)));
-            if (part > (world->world_parts_count - world->start_world_energy)) // photosynthesis
+            if (part >= (world->world_parts_count - world->start_world_energy)) // photosynthesis
                 scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
         }
 
 
-        /*uint last_energy_p = 0, last_energy_m = 0, energy;
+        uint last_energy_p = 0, last_energy_m = 0, energy;
          for (uint i = world->max_y; i>0; --i) {
              energy = world->getPhotosynthesisEnergy(i);
              if (energy != last_energy_p) {
@@ -329,13 +329,13 @@ void MainWindow::render_draw_area() {
                   last_energy_p = energy;
                   scene->addRect(ui->DrawArea->width() - 20, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
               }
-              energy = world->getMineralsEnergy(i);
+              energy = world->getMineralsCount(i);
               if (energy != last_energy_m) {
                   scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_m), 0, ui->DrawArea->height()-i*botsize, QColor(255, 0, 0)));
                   last_energy_m = energy;
                   scene->addRect(0, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
               }
-          }*/
+          }
 
     }
 }

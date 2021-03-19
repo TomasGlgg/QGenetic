@@ -33,7 +33,7 @@ inline void GeneticWorld::eatOrganic(Bot *bot) {
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
     uint part = ceil(static_cast<float>(y) / static_cast<float>(part_lenght));
-    if (part > (world_parts_count - start_world_energy))
+    if (part >= (world_parts_count - start_world_energy))
         return start_world_energy - (world_parts_count - part);
     return 0;
 }
@@ -176,11 +176,11 @@ void GeneticWorld::botStep(Bot *bot) {
         }
         case convert_minerals_command: {
             bot->energy += bot->minerals/4;
-            bot->minerals = 0;
+            bot->minerals = bot->minerals%4;
             break;
         }
         case left_command: {
-            if (bot->direction==0) bot->direction = 7;
+            if (bot->direction == 0) bot->direction = 7;
             else bot->direction--;
             break;
         }

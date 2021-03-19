@@ -22,7 +22,7 @@ public:
     QList<int> genome;
     ulong hash;
 
-    uint direction;
+    uint direction = 0;
     uint energy;
     uint minerals = 0;
     uint iterator = 0;
