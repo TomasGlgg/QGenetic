@@ -48,4 +48,6 @@ private slots:
     void botKilled();
 };
 
+QStringList numberProgression(uint max);
+
 #endif // BOTEDITOR_H

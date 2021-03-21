@@ -177,8 +177,8 @@ void GeneticWorld::botStep(Bot *bot) {
             break;
         }
         case commands::convert_minerals_command: {
-            bot->energy += bot->minerals/4;
-            bot->minerals = bot->minerals%4;
+            bot->energy += bot->minerals/mineralPrice;
+            bot->minerals = bot->minerals%mineralPrice;
             break;
         }
         case commands::left_command: {

@@ -8,6 +8,8 @@ BotEditor::BotEditor(QWidget *parent) :
     ui->setupUi(this);
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(render()));
+
+    ui->tableWidget->setHorizontalHeaderLabels(numberProgression(columntCount));
 }
 
 BotEditor::~BotEditor()
@@ -45,6 +47,9 @@ void BotEditor::loadBot(Bot *bot) {
     connect(bot, SIGNAL(botKilled()), this, SLOT(botKilled()));
     inited = true;
     enableUI();
+    uint rowCount = ceil(static_cast<float>(bot->genome.size()) / static_cast<float>(columntCount));
+    ui->tableWidget->setRowCount(rowCount);
+    ui->tableWidget->setVerticalHeaderLabels(numberProgression(rowCount));
 }
 
 void BotEditor::startMon() {
@@ -66,7 +71,6 @@ void BotEditor::single() {
 }
 
 void BotEditor::render() {
-    ui->tableWidget->setRowCount(ceil(static_cast<float>(bot->genome.size()) / static_cast<float>(columntCount)));
     for (uint genIndex = 0; genIndex < (uint)bot->genome.size(); genIndex++) {
         uint columntIndex = genIndex%columntCount;
         uint rowIndex = floor(static_cast<float>(genIndex) / static_cast<float>(columntCount));
@@ -106,4 +110,10 @@ ulong BotEditor::botHash() {
 void BotEditor::closeEvent(QCloseEvent *event) {
     stopMon();
     QWidget::closeEvent(event);
+}
+
+QStringList numberProgression(uint max) {
+    QStringList result;
+    for (uint i = 0; i<max; i++) result << QString::number(i);
+    return result;
 }

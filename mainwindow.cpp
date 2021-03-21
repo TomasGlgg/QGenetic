@@ -85,6 +85,7 @@ void MainWindow::updateWorldSettings() {
     world->newBotEnergy = ui->new_bot_energy->value();
     world->processDelay = ui->process_delay->value();
     world->organicEnergy = ui->organicEnergy->value();
+    world->mineralPrice = ui->mineralPrice->value();
     ui->bot_completion->setMaximum(world->maxBotCount);
 }
 
@@ -109,6 +110,7 @@ void MainWindow::start() {
     ui->first_bot_energy->setEnabled(false);
     ui->first_bot_direction->setEnabled(false);
     ui->organicEnergy->setEnabled(false);
+    ui->mineralPrice->setEnabled(false);
 
     //graph
     if (ui->groupBox_graph->isChecked()) {
@@ -169,6 +171,7 @@ void MainWindow::stop() {
     ui->eat_k->setEnabled(true);
     ui->new_bot_energy->setEnabled(true);
     ui->organicEnergy->setEnabled(true);
+    ui->mineralPrice->setEnabled(true);
 
     //graph
     ui->groupBox_graph->setEnabled(true);
@@ -203,6 +206,7 @@ void MainWindow::newWorld() {
     ui->organic->setEnabled(true);
     ui->first_bot_direction->setEnabled(true);
     ui->first_bot_energy->setEnabled(true);
+    ui->mineralPrice->setEnabled(true);
 
     //graph
     ui->historyPlot->detachItems();

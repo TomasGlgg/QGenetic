@@ -39,6 +39,7 @@ public:
     uint maxOrganicOld;
     uint maxBotCount;
     uint organicEnergy;
+    uint mineralPrice;
     bool organicEnabled = true;
 
     int maxX, maxY;
