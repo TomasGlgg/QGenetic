@@ -1,12 +1,10 @@
 #include "botstruct.h"
 
 
-Bot::Bot(uint genome_len, int _x, int _y) {
+Bot::Bot(uint genome_len, uint x, uint y): x(x), y(y) {
     for (uint i = 0; i<genome_len; i++) {
         genome.push_back(0);
     }
-    x = _x;
-    y = _y;
     hashxy(this);
 }
 
@@ -14,17 +12,23 @@ Bot::~Bot() {
     genome.clear();
 }
 
-int Bot::getX() { return x; }
-int Bot::getY() { return y; }
+void Bot::genomeInited() {
+    mineralsCount = std::count(genome.begin(), genome.end(), commands::minerals_command);
+    photosynthesisCount = std::count(genome.begin(), genome.end(), commands::photosynthesis_command);
+    eatCount = std::count(genome.begin(), genome.end(), commands::eat_command);
+}
 
-void Bot::move(int *xy) {
+uint Bot::getX() { return x; }
+uint Bot::getY() { return y; }
+
+void Bot::move(uint *xy) {
     assert(type != KILLED);
     x = xy[0];
     y = xy[1];
     hashxy(this);
 }
 
-ulong hashxy(int x, int y) {
+ulong hashxy(int x,int y) {
     ulong result = x;
     result = result << 16 | y;
     return result;

@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QTimer>
 #include <QGraphicsTextItem>
+#include <QGraphicsSceneMouseEvent>
 
 #include <cmath>
 #include <qwt_plot_curve.h>
@@ -12,11 +13,43 @@
 
 #include "geneticworld.h"
 #include "boteditor.h"
+#include "botstruct.h"
 
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
+
+
+class MouseHandlerItem : public QObject, public QGraphicsItem
+{
+    Q_OBJECT
+private:
+    uint w = 0, h = 0;
+public:
+    explicit MouseHandlerItem(QObject *parent = 0) : QObject(parent), QGraphicsItem() {
+        setPos(0, 0);
+    }
+    explicit MouseHandlerItem(uint w = 0, uint h = 0, QObject *parent = 0) : QObject(parent), QGraphicsItem() {
+        this->w = w;
+        this->h = h;
+    }
+    QRectF boundingRect() const {
+        return QRectF(0,0,w,h);
+    }
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+        Q_UNUSED(painter);
+        Q_UNUSED(option);
+        Q_UNUSED(widget);
+    }
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) {
+        emit mousePress(mapToScene(event->pos()));
+    }
+
+signals:
+    void mousePress(QPointF position);
+};
+
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -26,9 +59,10 @@ public:
     ~MainWindow();
 private:
     Ui::MainWindow *ui;
-    botEditor *botEditorWindow = new botEditor();
+    BotEditor *botEditorWindow;
     QGraphicsScene *scene;
     GeneticWorld *world;
+    MouseHandlerItem *mousePressHandler;
 
     QTimer *renderTimer;
     QTimer *graphTimer;
@@ -44,14 +78,16 @@ private:
     QColor botColorByUsedGens(Bot *bot);
     void initWorld(uint x, uint y);
     void updateWorld();
-    QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);
 
 private slots:
     void checkBoxStateChanged(int state);
+    void mousePress(QPointF position);
     void renderGraph();
-    void renderDrawArea();
+    void renderUI();
     void start();
     void stop();
     void newWorld();
 };
+
+QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color);
 #endif // MAINWINDOW_H

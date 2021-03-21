@@ -1,6 +1,9 @@
 #ifndef BOTSTRUCT_H
 #define BOTSTRUCT_H
+
 #include <QList>
+
+#include "commands.h"
 
 enum BotType {
     ALIVE,
@@ -10,14 +13,15 @@ enum BotType {
 
 class Bot {
 private:
-    int x, y;
+    uint x, y;
 public:
-    Bot(uint genome_len, int x, int y);
+    Bot(uint genome_len, uint x, uint y);
     ~Bot();
 
-    void move(int *xy);
-    int getX();
-    int getY();
+    void move(uint *xy);
+    uint getX();
+    uint getY();
+    void genomeInited();
 
     QList<int> genome;
     ulong hash;
@@ -30,6 +34,7 @@ public:
     uint type = ALIVE;
 
     uint used_photosynthesis = 0, used_minerals = 0, used_eat = 0;
+    uint mineralsCount = 0, photosynthesisCount = 0, eatCount = 0;
 };
 
 

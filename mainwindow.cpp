@@ -8,16 +8,18 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     scene = new QGraphicsScene(this);
-    ui->DrawArea->setScene(scene);
+    botEditorWindow = new BotEditor();
     renderTimer = new QTimer(this);
     graphTimer = new QTimer(this);
+
+    ui->DrawArea->setScene(scene);
 
     connect(ui->startButton, SIGNAL(released()), this, SLOT(start()));
     connect(ui->stopButton, SIGNAL(released()), this, SLOT(stop()));
     connect(ui->newWorldButton, SIGNAL(released()), this, SLOT(newWorld()));
     connect(ui->botEditorCheckBox, SIGNAL(stateChanged(int)), this, SLOT(checkBoxStateChanged(int)));
 
-    connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderDrawArea()));
+    connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderUI()));
     connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
 }
 
@@ -26,10 +28,26 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::checkBoxStateChanged(int state) {
-    if (state == Qt::Checked)
+    if (state == Qt::Checked) {
         botEditorWindow->show();
-    else
+        if (renderTimer->isActive()) botEditorWindow->startMon();
+    } else {
         botEditorWindow->close();
+        botEditorWindow->stopMon();
+    }
+}
+
+void MainWindow::mousePress(QPointF position) {
+    uint position_x = position.x();
+    uint position_y = ui->DrawArea->height() - position.y();
+    int botX = floor(static_cast<float>(position_x) / static_cast<float>(botSize));
+    int botY = floor(static_cast<float>(position_y) / static_cast<float>(botSize)) + 1;
+
+    ulong botHash = hashxy(botX, botY);
+    if (world->bots.contains(botHash)) {
+        Bot *bot = world->bots.value(botHash);
+        botEditorWindow->loadBot(bot);
+    }
 }
 
 void MainWindow::initWorld(uint x, uint y) {
@@ -50,11 +68,11 @@ void MainWindow::initWorld(uint x, uint y) {
 
     for (uint i = 0; i<world->genomeLen; i++){
         if (i%2 == 0)
-            newBot->genome[i] = left_command;
+            newBot->genome[i] = commands::left_command;
         else if (i%2==1)
-            newBot->genome[i] = photosynthesis_command;
+            newBot->genome[i] = commands::photosynthesis_command;
     }
-
+    newBot->genomeInited();
     worldInited = true;
 }
 
@@ -94,6 +112,7 @@ void MainWindow::start() {
     ui->new_bot_energy->setEnabled(false);
     ui->first_bot_energy->setEnabled(false);
     ui->first_bot_direction->setEnabled(false);
+    ui->organicEnergy->setEnabled(false);
 
     //graph
     if (ui->groupBox_graph->isChecked()) {
@@ -103,7 +122,6 @@ void MainWindow::start() {
     ui->groupBox_graph->setEnabled(false);
 
 
-    scene->setSceneRect(0, 0, ui->DrawArea->width(), ui->DrawArea->height());
 
     // world
     if (!worldInited) {
@@ -112,6 +130,7 @@ void MainWindow::start() {
         uint worldH = ui->DrawArea->height() / botSize;
         initWorld(worldW, worldH);
 
+        scene->setSceneRect(0, botSize, ui->DrawArea->width(), ui->DrawArea->height());
         uint windowW = botSize * world->maxX;
         uint windowH = botSize * world->maxY;
         ui->dockWidget->setMinimumSize(windowW, windowH);
@@ -132,6 +151,7 @@ void MainWindow::start() {
     // starting
     world->start();
     renderTimer->start(ui->timerInterval->value());
+    botEditorWindow->startMon();
     ui->status_led->setColor(QColor(0, 255, 0));
 }
 
@@ -152,6 +172,7 @@ void MainWindow::stop() {
     ui->max_organic_old->setEnabled(true);
     ui->eat_k->setEnabled(true);
     ui->new_bot_energy->setEnabled(true);
+    ui->organicEnergy->setEnabled(true);
 
     //graph
     ui->groupBox_graph->setEnabled(true);
@@ -159,6 +180,10 @@ void MainWindow::stop() {
     ui->groupBox_graph->setEnabled(true);
 
     ui->status_led->setColor(QColor(255, 128, 0));
+    botEditorWindow->stopMon();
+    mousePressHandler = new MouseHandlerItem(ui->DrawArea->width(), ui->DrawArea->height());
+    scene->addItem(mousePressHandler);
+    connect(mousePressHandler, SIGNAL(mousePress(QPointF)), this, SLOT(mousePress(QPointF)));
 }
 
 void MainWindow::newWorld() {
@@ -206,14 +231,10 @@ void MainWindow::newWorld() {
 
 QColor MainWindow::botColorByType(Bot *bot) {
     if (bot->type == ORGANIC) return QColor(133, 133, 133);
-    uint mineralsCount = std::count(bot->genome.begin(), bot->genome.end(), minerals_command);
-    uint photosynthesisCount = std::count(bot->genome.begin(), bot->genome.end(), photosynthesis_command);
-    uint eat_count = std::count(bot->genome.begin(), bot->genome.end(), eat_command);
-    float total_number = mineralsCount + photosynthesisCount + eat_count;
-
-    uint B = mineralsCount/total_number * 255;
-    uint G = photosynthesisCount/total_number * 255;
-    uint R = eat_count/total_number * 255;
+    float total_number = bot->mineralsCount + bot->photosynthesisCount + bot->eatCount;
+    uint B = bot->mineralsCount/total_number * 255;
+    uint G = bot->photosynthesisCount/total_number * 255;
+    uint R = bot->eatCount/total_number * 255;
     return QColor(R, G, B);
 }
 
@@ -232,13 +253,6 @@ QColor MainWindow::botColorByUsedGens(Bot *bot) {
     uint G = bot->used_photosynthesis/totalNumber * 255;
     uint R = bot->used_eat/totalNumber * 255;
     return QColor(R, G, B);
-}
-
-QGraphicsTextItem* MainWindow::textWidget(QString text, uint x, uint y, QColor color) {
-    QGraphicsTextItem *textItem = new QGraphicsTextItem(text);
-    textItem->setPos(x, y);
-    textItem->setDefaultTextColor(color);
-    return textItem;
 }
 
 void MainWindow::renderGraph() {
@@ -268,7 +282,14 @@ void MainWindow::renderGraph() {
     organicHistoryCurve->attach(ui->historyPlot);
 }
 
-void MainWindow::renderDrawArea() {
+QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color) {
+    QGraphicsTextItem *textItem = new QGraphicsTextItem(text);
+    textItem->setPos(x, y);
+    textItem->setDefaultTextColor(color);
+    return textItem;
+}
+
+void MainWindow::renderUI() {
     scene->clear();
 
     // process time led
@@ -281,10 +302,11 @@ void MainWindow::renderDrawArea() {
     uint botCount = world->bots.size();
     assert(botCount >= aliveBotCount);
 
-    if (!aliveBotCount) {
+    if (!aliveBotCount) {  // all bots died
         world->runFlag = false;
         renderTimer->stop();
         graphTimer->stop();
+        botEditorWindow->stopMon();
         ui->newWorldButton->setEnabled(true);
         ui->stopButton->setEnabled(false);
         ui->status_led->setColor(QColor(255, 0, 0));
@@ -337,18 +359,18 @@ void MainWindow::renderDrawArea() {
 
 
         /*uint last_energy_p = 0, last_energy_m = 0, energy;
-         for (uint i = world->max_y; i>0; --i) {
+         for (uint i = world->maxY; i>0; --i) {
              energy = world->getPhotosynthesisEnergy(i);
              if (energy != last_energy_p) {
-                  scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_p), ui->DrawArea->width() - 40, ui->DrawArea->height()-i*botsize, QColor(255, 0, 0)));
+                  scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_p), ui->DrawArea->width() - 40, ui->DrawArea->height()-i*botSize, QColor(255, 0, 0)));
                   last_energy_p = energy;
-                  scene->addRect(ui->DrawArea->width() - 20, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
+                  scene->addRect(ui->DrawArea->width() - 20, ui->DrawArea->height()-i*botSize, 1, 1, QPen(QColor(255, 0, 0)));
               }
               energy = world->getMineralsCount(i);
               if (energy != last_energy_m) {
-                  scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_m), 0, ui->DrawArea->height()-i*botsize, QColor(255, 0, 0)));
+                  scene->addItem(textWidget(QString::number(energy) + " " + QString::number(last_energy_m), 0, ui->DrawArea->height()-i*botSize, QColor(255, 0, 0)));
                   last_energy_m = energy;
-                  scene->addRect(0, ui->DrawArea->height()-i*botsize, 1, 1, QPen(QColor(255, 0, 0)));
+                  scene->addRect(0, ui->DrawArea->height()-i*botSize, 1, 1, QPen(QColor(255, 0, 0)));
               }
         }*/
 

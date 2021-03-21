@@ -28,6 +28,7 @@ SOURCES += \
 HEADERS += \
     boteditor.h \
     botstruct.h \
+    commands.h \
     geneticworld.h \
     mainwindow.h
 
