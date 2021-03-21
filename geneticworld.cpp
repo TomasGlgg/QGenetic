@@ -10,7 +10,7 @@ GeneticWorld::~GeneticWorld() {
 
 Bot *GeneticWorld::newBot(uint x, uint y) {
     Bot *new_bot = new Bot(genomeLen, x, y);
-    ulong hash = new_bot->hash;
+    ulong hash = new_bot->getHash();
     botsMutex.lock();
     bots[hash] = new_bot;
     botsMutex.unlock();
@@ -127,15 +127,15 @@ bool GeneticWorld::reproduction(Bot *bot) {
         } else
             new_bot->genome[i] = bot->genome[i];
     }
-    new_bot->genomeInited();
+    new_bot->genomeInit();
     return true;
 }
 
 void GeneticWorld::moveBot(Bot *bot, int *xy) {
     botsMutex.lock();
-    bots.remove(bot->hash);
+    bots.remove(bot->getHash());
     bot->move((uint*)xy);
-    bots[bot->hash] = bot;
+    bots[bot->getHash()] = bot;
     botsMutex.unlock();
 }
 
@@ -279,7 +279,7 @@ void GeneticWorld::botStep(Bot *bot) {
 void GeneticWorld::clearKilled() {
     Bot *bot;
     foreach (bot, killedBots) {
-        assert(bots.remove(bot->hash));
+        assert(bots.remove(bot->getHash()));
         delete bot;
 
     }

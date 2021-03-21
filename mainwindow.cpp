@@ -47,6 +47,7 @@ void MainWindow::mousePress(QPointF position) {
     if (world->bots.contains(botHash)) {
         Bot *bot = world->bots.value(botHash);
         botEditorWindow->loadBot(bot);
+        botEditorWindow->single();
     }
 }
 
@@ -69,14 +70,14 @@ void MainWindow::initWorld(uint x, uint y) {
     for (uint i = 0; i<world->genomeLen; i++){
         if (i%2 == 0)
             newBot->genome[i] = commands::left_command;
-        else if (i%2==1)
+        else if (i%2 == 1)
             newBot->genome[i] = commands::photosynthesis_command;
     }
-    newBot->genomeInited();
+    newBot->genomeInit();
     worldInited = true;
 }
 
-void MainWindow::updateWorld() {
+void MainWindow::updateWorldSettings() {
     world->genomeLen = ui->genome_len->value();
     uint maxEnergy = ui->max_energy->value();
     world->stealPower = maxEnergy*ui->eat_k->value();
@@ -146,7 +147,7 @@ void MainWindow::start() {
         aliveBotHistory << QPointF(0, 0);
         organicBotHistory << QPointF(0, 0);
     }
-    updateWorld();
+    updateWorldSettings();
 
     // starting
     world->start();
@@ -230,7 +231,8 @@ void MainWindow::newWorld() {
 }
 
 QColor MainWindow::botColorByType(Bot *bot) {
-    if (bot->type == ORGANIC) return QColor(133, 133, 133);
+    if (bot->getHash() == botEditorWindow->botHash()) return QColor(Qt::magenta);  // if bot is monited
+    if (bot->type == ORGANIC) return QColor(Qt::gray);
     float total_number = bot->mineralsCount + bot->photosynthesisCount + bot->eatCount;
     uint B = bot->mineralsCount/total_number * 255;
     uint G = bot->photosynthesisCount/total_number * 255;
@@ -239,16 +241,18 @@ QColor MainWindow::botColorByType(Bot *bot) {
 }
 
 inline QColor MainWindow::botColorByEnergy(Bot *bot) {
-    if (bot->type == ORGANIC) return QColor(133, 133, 133);
+    if (bot->getHash() == botEditorWindow->botHash()) return QColor(Qt::blue);  // if bot is monited
+    if (bot->type == ORGANIC) return QColor(Qt::gray);
     uint color = (static_cast<float>(bot->energy)/static_cast<float>(world->maxEnergy))*255;
     if (color > 255) color = 255;
     return QColor(255, 255-color, 0);
 }
 
 QColor MainWindow::botColorByUsedGens(Bot *bot) {
-    if (bot->type == ORGANIC) return QColor(133, 133, 133);
+    if (bot->getHash() == botEditorWindow->botHash()) return QColor(Qt::magenta);  // if bot is monited
+    if (bot->type == ORGANIC) return QColor(Qt::gray);
     float totalNumber = bot->used_eat + bot->used_minerals + bot->used_photosynthesis;
-    if (!totalNumber) return QColor(255, 255, 255);
+    if (!totalNumber) return QColor(Qt::white);
     uint B = bot->used_minerals/totalNumber * 255;
     uint G = bot->used_photosynthesis/totalNumber * 255;
     uint R = bot->used_eat/totalNumber * 255;
@@ -375,4 +379,16 @@ void MainWindow::renderUI() {
         }*/
 
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    botEditorWindow->stopMon();
+    botEditorWindow->close();
+    renderTimer->stop();
+    graphTimer->stop();
+    if (worldInited) {
+        world->runFlag = false;
+        world->wait();
+    }
+    QWidget::closeEvent(event);
 }

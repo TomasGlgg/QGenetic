@@ -24,6 +24,9 @@ public:
     void loadBot(Bot *bot);
     void startMon();
     void stopMon();
+    void single();
+
+    ulong botHash();
 
 private:
     Ui::BotEditor *ui;
@@ -35,8 +38,12 @@ private:
     bool inited = false;
     bool monitoring = false;
 
+    void disableUI();
+    void enableUI();
+
 private slots:
     void render();
+    void botKilled();
 };
 
 #endif // BOTEDITOR_H

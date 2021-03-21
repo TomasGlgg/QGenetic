@@ -15,9 +15,22 @@ BotEditor::~BotEditor()
     delete ui;
 }
 
+void BotEditor::disableUI() {
+    ui->tableWidget->setEnabled(false);
+    ui->energy->setEnabled(false);
+}
+
+void BotEditor::enableUI() {
+    ui->tableWidget->setEnabled(true);
+    ui->energy->setEnabled(true);
+}
+
 void BotEditor::loadBot(Bot *bot) {
     this->bot = bot;
+    bot->monitoring = true;
+    connect(bot, SIGNAL(botKilled()), this, SLOT(botKilled()));
     inited = true;
+    enableUI();
 }
 
 void BotEditor::startMon() {
@@ -34,6 +47,10 @@ void BotEditor::stopMon() {
     }
 }
 
+void BotEditor::single() {
+    timer->singleShot(0, this, SLOT(render()));
+}
+
 void BotEditor::render() {
     ui->tableWidget->setRowCount(ceil(static_cast<float>(bot->genome.size()) / static_cast<float>(columntCount)));
     for (uint genIndex = 0; genIndex < (uint)bot->genome.size(); genIndex++) {
@@ -46,4 +63,19 @@ void BotEditor::render() {
         spinBox->setValue(genValue);
         ui->tableWidget->setCellWidget(rowIndex, columntIndex, spinBox);
     }
+
+    ui->energy->setValue(bot->energy);
+}
+
+
+void BotEditor::botKilled() {
+    bot = nullptr;
+    stopMon();
+    inited = false;
+    disableUI();
+}
+
+ulong BotEditor::botHash() {
+    if (!inited) return 0;
+    return bot->getHash();
 }

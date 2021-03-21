@@ -77,7 +77,9 @@ private:
     QColor botColorByEnergy(Bot *bot);
     QColor botColorByUsedGens(Bot *bot);
     void initWorld(uint x, uint y);
-    void updateWorld();
+    void updateWorldSettings();
+
+    void closeEvent(QCloseEvent *event);
 
 private slots:
     void checkBoxStateChanged(int state);

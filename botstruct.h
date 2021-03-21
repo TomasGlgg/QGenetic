@@ -1,6 +1,7 @@
 #ifndef BOTSTRUCT_H
 #define BOTSTRUCT_H
 
+#include <QObject>
 #include <QList>
 
 #include "commands.h"
@@ -11,20 +12,23 @@ enum BotType {
     KILLED
 };
 
-class Bot {
+class Bot : public QObject {
+    Q_OBJECT
 private:
     uint x, y;
+    ulong hash;
+
 public:
     Bot(uint genome_len, uint x, uint y);
-    ~Bot();
+    virtual ~Bot();
 
     void move(uint *xy);
     uint getX();
     uint getY();
-    void genomeInited();
+    ulong getHash();
+    void genomeInit();
 
     QList<int> genome;
-    ulong hash;
 
     uint direction = 0;
     uint energy;
@@ -35,6 +39,11 @@ public:
 
     uint used_photosynthesis = 0, used_minerals = 0, used_eat = 0;
     uint mineralsCount = 0, photosynthesisCount = 0, eatCount = 0;
+
+    bool monitoring = false;
+
+signals:
+    void botKilled();
 };
 
 
