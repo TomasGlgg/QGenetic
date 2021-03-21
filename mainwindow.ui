@@ -191,9 +191,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="botEditorCheckBox">
+        <widget class="QPushButton" name="openBotEditorButton">
          <property name="text">
-          <string>Редактор бота</string>
+          <string>Открыть редактор</string>
          </property>
         </widget>
        </item>

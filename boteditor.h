@@ -41,6 +41,8 @@ private:
     void disableUI();
     void enableUI();
 
+    void closeEvent(QCloseEvent *event);
+
 private slots:
     void render();
     void botKilled();

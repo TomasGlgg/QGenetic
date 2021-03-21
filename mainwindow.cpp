@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->startButton, SIGNAL(released()), this, SLOT(start()));
     connect(ui->stopButton, SIGNAL(released()), this, SLOT(stop()));
     connect(ui->newWorldButton, SIGNAL(released()), this, SLOT(newWorld()));
-    connect(ui->botEditorCheckBox, SIGNAL(stateChanged(int)), this, SLOT(checkBoxStateChanged(int)));
+    connect(ui->openBotEditorButton, SIGNAL(released()), this, SLOT(openBotEditor()));
 
     connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderUI()));
     connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
@@ -27,14 +27,9 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::checkBoxStateChanged(int state) {
-    if (state == Qt::Checked) {
-        botEditorWindow->show();
-        if (renderTimer->isActive()) botEditorWindow->startMon();
-    } else {
-        botEditorWindow->close();
-        botEditorWindow->stopMon();
-    }
+void MainWindow::openBotEditor() {
+    botEditorWindow->show();
+    if (renderTimer->isActive()) botEditorWindow->startMon();
 }
 
 void MainWindow::mousePress(QPointF position) {

@@ -17,12 +17,26 @@ BotEditor::~BotEditor()
 
 void BotEditor::disableUI() {
     ui->tableWidget->setEnabled(false);
+    ui->type->setEnabled(false);
     ui->energy->setEnabled(false);
+    ui->old->setEnabled(false);
+    ui->iterator->setEnabled(false);
+    ui->minerals->setEnabled(false);
+    ui->photosynthesisUsed->setEnabled(false);
+    ui->mineralsUsed->setEnabled(false);
+    ui->eatStealUsed->setEnabled(false);
 }
 
 void BotEditor::enableUI() {
     ui->tableWidget->setEnabled(true);
+    ui->type->setEnabled(true);
     ui->energy->setEnabled(true);
+    ui->old->setEnabled(true);
+    ui->iterator->setEnabled(true);
+    ui->minerals->setEnabled(true);
+    ui->photosynthesisUsed->setEnabled(true);
+    ui->mineralsUsed->setEnabled(true);
+    ui->eatStealUsed->setEnabled(true);
 }
 
 void BotEditor::loadBot(Bot *bot) {
@@ -81,9 +95,15 @@ void BotEditor::botKilled() {
     stopMon();
     inited = false;
     disableUI();
+    ui->type->setCurrentIndex(KILLED);
 }
 
 ulong BotEditor::botHash() {
     if (!inited) return 0;
     return bot->getHash();
+}
+
+void BotEditor::closeEvent(QCloseEvent *event) {
+    stopMon();
+    QWidget::closeEvent(event);
 }

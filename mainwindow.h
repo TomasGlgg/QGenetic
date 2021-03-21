@@ -82,7 +82,7 @@ private:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void checkBoxStateChanged(int state);
+    void openBotEditor();
     void mousePress(QPointF position);
     void renderGraph();
     void renderUI();
