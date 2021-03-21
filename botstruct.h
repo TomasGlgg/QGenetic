@@ -37,8 +37,8 @@ public:
     uint old = 0;
     uint type = ALIVE;
 
-    uint used_photosynthesis = 0, used_minerals = 0, used_eat = 0;
-    uint mineralsCount = 0, photosynthesisCount = 0, eatCount = 0;
+    uint usedPhotosynthesis = 0, usedMinerals = 0, usedEat = 0;     // used gens
+    uint mineralsCount = 0, photosynthesisCount = 0, eatCount = 0;  // gen count
 
     bool monitoring = false;
 

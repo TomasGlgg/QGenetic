@@ -251,11 +251,11 @@ inline QColor MainWindow::botColorByEnergy(Bot *bot) {
 QColor MainWindow::botColorByUsedGens(Bot *bot) {
     if (bot->getHash() == botEditorWindow->botHash()) return QColor(Qt::magenta);  // if bot is monited
     if (bot->type == ORGANIC) return QColor(Qt::gray);
-    float totalNumber = bot->used_eat + bot->used_minerals + bot->used_photosynthesis;
+    float totalNumber = bot->usedEat + bot->usedMinerals + bot->usedPhotosynthesis;
     if (!totalNumber) return QColor(Qt::white);
-    uint B = bot->used_minerals/totalNumber * 255;
-    uint G = bot->used_photosynthesis/totalNumber * 255;
-    uint R = bot->used_eat/totalNumber * 255;
+    uint B = bot->usedMinerals/totalNumber * 255;
+    uint G = bot->usedPhotosynthesis/totalNumber * 255;
+    uint R = bot->usedEat/totalNumber * 255;
     return QColor(R, G, B);
 }
 

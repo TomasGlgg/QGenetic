@@ -64,7 +64,15 @@ void BotEditor::render() {
         ui->tableWidget->setCellWidget(rowIndex, columntIndex, spinBox);
     }
 
+    // update info
     ui->energy->setValue(bot->energy);
+    ui->iterator->setValue(bot->iterator);
+    ui->old->setValue(bot->old);
+    ui->minerals->setValue(bot->minerals);
+    ui->photosynthesisUsed->setText(QString::number(bot->usedPhotosynthesis));
+    ui->mineralsUsed->setText(QString::number(bot->usedMinerals));
+    ui->eatStealUsed->setText(QString::number(bot->usedEat));
+    ui->type->setCurrentIndex(bot->type);
 }
 
 

@@ -165,13 +165,13 @@ void GeneticWorld::botStep(Bot *bot) {
             break;
         }
         case commands::photosynthesis_command: {
-            bot->used_photosynthesis++;
+            bot->usedPhotosynthesis++;
             uint new_energy = getPhotosynthesisEnergy(bot->getY());
             bot->energy += new_energy;
             break;
         }
         case commands::minerals_command: {
-            bot->used_minerals++;
+            bot->usedMinerals++;
             uint new_minerals = getMineralsCount(bot->getY());
             bot->minerals += new_minerals;
             break;
@@ -204,7 +204,7 @@ void GeneticWorld::botStep(Bot *bot) {
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
             if (bots.contains(target_hash)) {
-                bot->used_eat++;
+                bot->usedEat++;
                 Bot* target_bot = bots.value(target_hash);
                 if (target_bot->type == ORGANIC) {
                     bot->energy += organicEnergy;
@@ -218,7 +218,7 @@ void GeneticWorld::botStep(Bot *bot) {
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
             if (bots.contains(target_hash)) {
-                bot->used_eat++;
+                bot->usedEat++;
                 Bot* targetBot = bots.value(target_hash);
                 if (targetBot->type != KILLED) {
 
