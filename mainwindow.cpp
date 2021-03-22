@@ -4,9 +4,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-{
+    , ui(new Ui::MainWindow) {
     ui->setupUi(this);
+
     scene = new QGraphicsScene(this);
     botEditorWindow = new BotEditor();
     renderTimer = new QTimer(this);
@@ -97,6 +97,7 @@ void MainWindow::updateWorldSettings() {
     world->processDelay = ui->process_delay->value();
     world->organicEnergy = ui->organicEnergy->value();
     world->mineralPrice = ui->mineralPrice->value();
+    world->reproductionPrice = ui->reproductionPrice->value();
     ui->bot_completion->setMaximum(world->maxBotCount);
 }
 
@@ -122,6 +123,7 @@ void MainWindow::start() {
     ui->first_bot_direction->setEnabled(false);
     ui->organicEnergy->setEnabled(false);
     ui->mineralPrice->setEnabled(false);
+    ui->reproductionPrice->setEnabled(false);
 
     //graph
     if (ui->groupBox_graph->isChecked()) {
@@ -182,6 +184,7 @@ void MainWindow::stop() {
     ui->new_bot_energy->setEnabled(true);
     ui->organicEnergy->setEnabled(true);
     ui->mineralPrice->setEnabled(true);
+    ui->reproductionPrice->setEnabled(true);
 
     //graph
     ui->groupBox_graph->setEnabled(true);
@@ -216,6 +219,7 @@ void MainWindow::newWorld() {
     ui->first_bot_direction->setEnabled(true);
     ui->first_bot_energy->setEnabled(true);
     ui->mineralPrice->setEnabled(true);
+    ui->reproductionPrice->setEnabled(true);
 
     //graph
     ui->historyPlot->detachItems();

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1226</width>
-    <height>623</height>
+    <height>664</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,6 +21,9 @@
   </property>
   <property name="windowTitle">
    <string>Генетический мир</string>
+  </property>
+  <property name="whatsThis">
+   <string/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -510,7 +513,7 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0" colspan="2">
+       <item row="9" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_7">
          <property name="title">
           <string>Настройка первого бота</string>
@@ -641,6 +644,26 @@
         <widget class="QSpinBox" name="mineralPrice">
          <property name="value">
           <number>4</number>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_30">
+         <property name="text">
+          <string>Стоимость репродукции</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QSpinBox" name="reproductionPrice">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10000</number>
+         </property>
+         <property name="value">
+          <number>80</number>
          </property>
         </widget>
        </item>
@@ -828,6 +851,9 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="whatsThis">
+          <string>График количества ботов и органики</string>
+         </property>
          <property name="autoReplot">
           <bool>true</bool>
          </property>
@@ -883,6 +909,9 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="whatsThis">
+        <string>Для того, что бы выделить бота, остановите симуляцию</string>
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>

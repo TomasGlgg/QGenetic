@@ -110,8 +110,8 @@ inline bool GeneticWorld::checkCoords(int *xy) {
 bool GeneticWorld::reproduction(Bot *bot) {
     int xy[2];
     oppositeBot(bot, xy);
-    if (bot->energy<newBotEnergy) return false;
-    bot->energy -= newBotEnergy + 1;
+    if (bot->energy<reproductionPrice) return false;
+    bot->energy -= reproductionPrice;
     if (!checkCoords(xy)) return false;
     Bot *new_bot = newBot(xy[0], xy[1]);
     new_bot->energy = newBotEnergy;
@@ -220,8 +220,7 @@ void GeneticWorld::botStep(Bot *bot) {
             if (bots.contains(target_hash)) {
                 bot->usedEat++;
                 Bot* targetBot = bots.value(target_hash);
-                if (targetBot->type != KILLED) {
-
+                if (targetBot->type == ALIVE) {
                     if (bot->minerals >= targetBot->minerals) {
                         bot->minerals -= targetBot->minerals;
                         bot->energy += targetBot->energy * stealPower;
@@ -231,7 +230,6 @@ void GeneticWorld::botStep(Bot *bot) {
                         targetBot->minerals -= bot->minerals;
                         bot->minerals = 0;
                     }
-
                 }
             }
             break;
