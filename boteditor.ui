@@ -19,6 +19,9 @@
      <property name="horizontalScrollBarPolicy">
       <enum>Qt::ScrollBarAsNeeded</enum>
      </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::CurrentChanged</set>
+     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>

@@ -6,15 +6,65 @@ BotEditor::BotEditor(QWidget *parent) :
     ui(new Ui::BotEditor)
 {
     ui->setupUi(this);
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(render()));
+    infoUpdateTimer = new QTimer(this);
+    tableUpdateTimer = new QTimer(this);
+    connect(infoUpdateTimer, SIGNAL(timeout()), this, SLOT(renderInfo()));
 
-    ui->tableWidget->setHorizontalHeaderLabels(numberProgression(columntCount));
+    tableSignalMapper = new QSignalMapper(this);
+    infoSignalMapper = new QSignalMapper(this);
+
+    connect(ui->type, SIGNAL(currentIndexChanged(int)), infoSignalMapper, SLOT(map()));
+    infoSignalMapper->setMapping(ui->type, 0);
+    connect(ui->energy, SIGNAL(valueChanged(int)), infoSignalMapper, SLOT(map()));
+    infoSignalMapper->setMapping(ui->energy, 1);
+    connect(ui->old, SIGNAL(valueChanged(int)), infoSignalMapper, SLOT(map()));
+    infoSignalMapper->setMapping(ui->old, 2);
+    connect(ui->iterator, SIGNAL(valueChanged(int)), infoSignalMapper, SLOT(map()));
+    infoSignalMapper->setMapping(ui->iterator, 3);
+    connect(ui->minerals, SIGNAL(valueChanged(int)), infoSignalMapper, SLOT(map()));
+    infoSignalMapper->setMapping(ui->minerals, 4);
+
+    connect(tableSignalMapper, SIGNAL(mapped(int)), this, SLOT(botGenomeEdited(int)));
+    connect(infoSignalMapper, SIGNAL(mapped(int)), this, SLOT(botInfoEdited(int)));
+
+    ui->tableWidget->setHorizontalHeaderLabels(progression(columntCount));
 }
 
 BotEditor::~BotEditor()
 {
     delete ui;
+}
+
+void BotEditor::botInfoEdited(int index) {
+    switch (index) {
+        case 0: {
+            bot->type = ui->type->currentIndex();
+            break;
+        }
+        case 1: {
+            bot->energy = ui->energy->value();
+            break;
+        }
+        case 2: {
+            bot->old = ui->old->value();
+            break;
+        }
+        case 3: {
+            bot->iterator = ui->iterator->value();
+            break;
+        }
+        case 4: {
+            bot->minerals = ui->minerals->value();
+            break;
+        }
+    }
+}
+
+void BotEditor::botGenomeEdited(int genomeIndex) {
+    uint rowIndex = floor(static_cast<float>(genomeIndex) / static_cast<float>(columntCount));
+    uint columnIndex = genomeIndex%columntCount;
+    uint newValue = ((QSpinBox*)ui->tableWidget->cellWidget(rowIndex, columnIndex))->value();
+    bot->genome[genomeIndex] = newValue;
 }
 
 void BotEditor::disableUI() {
@@ -49,40 +99,48 @@ void BotEditor::loadBot(Bot *bot) {
     enableUI();
     uint rowCount = ceil(static_cast<float>(bot->genome.size()) / static_cast<float>(columntCount));
     ui->tableWidget->setRowCount(rowCount);
-    ui->tableWidget->setVerticalHeaderLabels(numberProgression(rowCount));
+    ui->tableWidget->setVerticalHeaderLabels(progression(rowCount));
 }
 
 void BotEditor::startMon() {
-    if (inited && !monitoring) {
-        timer->start(1000);
+    if (inited && !monitoring) {  // TODO: move to ui
+        infoSignalMapper->blockSignals(false);
+        infoUpdateTimer->start(100);    // info  - 0.1 s
+        tableUpdateTimer->start(1000);  // table - 1 s
         monitoring = true;
     }
 }
 
 void BotEditor::stopMon() {
     if (monitoring) {
-        timer->stop();
+        infoUpdateTimer->stop();
+        tableUpdateTimer->stop();
         monitoring = false;
     }
 }
 
 void BotEditor::single() {
-    timer->singleShot(0, this, SLOT(render()));
+    infoUpdateTimer->singleShot(0, this, SLOT(renderInfo()));
+    tableUpdateTimer->singleShot(0, this, SLOT(renderTable()));
 }
 
-void BotEditor::render() {
-    for (uint genIndex = 0; genIndex < (uint)bot->genome.size(); genIndex++) {
-        uint columntIndex = genIndex%columntCount;
-        uint rowIndex = floor(static_cast<float>(genIndex) / static_cast<float>(columntCount));
+void BotEditor::renderTable() {
+    for (uint genomeIndex = 0; genomeIndex < (uint)bot->genome.size(); genomeIndex++) {
+        uint columntIndex = genomeIndex%columntCount;
+        uint rowIndex = floor(static_cast<float>(genomeIndex) / static_cast<float>(columntCount));
 
         QSpinBox *spinBox = new QSpinBox();
-        int genValue = bot->genome[genIndex];
+        int genValue = bot->genome[genomeIndex];
         spinBox->setMinimum(INT_MIN);
         spinBox->setValue(genValue);
         ui->tableWidget->setCellWidget(rowIndex, columntIndex, spinBox);
+        connect(spinBox, SIGNAL(valueChanged(int)), tableSignalMapper, SLOT(map()));
+        tableSignalMapper->setMapping(spinBox, genomeIndex);
     }
+}
 
-    // update info
+void BotEditor::renderInfo() {
+    infoSignalMapper->blockSignals(true);
     ui->energy->setValue(bot->energy);
     ui->iterator->setValue(bot->iterator);
     ui->old->setValue(bot->old);
@@ -91,10 +149,12 @@ void BotEditor::render() {
     ui->mineralsUsed->setText(QString::number(bot->usedMinerals));
     ui->eatStealUsed->setText(QString::number(bot->usedEat));
     ui->type->setCurrentIndex(bot->type);
+    infoSignalMapper->blockSignals(false);
 }
 
 
 void BotEditor::botKilled() {
+    infoSignalMapper->blockSignals(true);
     bot = nullptr;
     stopMon();
     inited = false;
@@ -112,7 +172,7 @@ void BotEditor::closeEvent(QCloseEvent *event) {
     QWidget::closeEvent(event);
 }
 
-QStringList numberProgression(uint max) {
+QStringList progression(uint max) {
     QStringList result;
     for (uint i = 0; i<max; i++) result << QString::number(i);
     return result;

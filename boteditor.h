@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QTimer>
 #include <QSpinBox>
+#include <QSignalMapper>
 
 #include <cmath>
 
@@ -30,7 +31,10 @@ public:
 
 private:
     Ui::BotEditor *ui;
-    QTimer *timer;
+    QSignalMapper *tableSignalMapper;
+    QSignalMapper *infoSignalMapper;
+    QTimer *infoUpdateTimer;
+    QTimer *tableUpdateTimer;
     Bot *bot;
 
     uint columntCount = 10;
@@ -44,10 +48,14 @@ private:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void render();
+    void renderInfo();
+    void renderTable();
+
     void botKilled();
+    void botInfoEdited(int index);
+    void botGenomeEdited(int genomeIndex);
 };
 
-QStringList numberProgression(uint max);
+QStringList progression(uint max);
 
 #endif // BOTEDITOR_H

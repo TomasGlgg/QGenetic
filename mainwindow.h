@@ -78,10 +78,11 @@ private:
     QColor botColorByUsedGens(Bot *bot);
     void initWorld(uint x, uint y);
     void updateWorldSettings();
-
+    void startMouseHandler();
     void closeEvent(QCloseEvent *event);
 
 private slots:
+    void renderTypeChanged();
     void openBotEditor();
     void mousePress(QPointF position);
     void renderGraph();

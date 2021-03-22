@@ -19,12 +19,21 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->newWorldButton, SIGNAL(released()), this, SLOT(newWorld()));
     connect(ui->openBotEditorButton, SIGNAL(released()), this, SLOT(openBotEditor()));
 
+    connect(ui->radio_used_gens, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
+    connect(ui->radio_gens_type, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
+    connect(ui->radio_energy_count, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
+
     connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderUI()));
     connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
 }
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::renderTypeChanged() {
+    renderUI();
+    startMouseHandler();
 }
 
 void MainWindow::openBotEditor() {
@@ -44,6 +53,8 @@ void MainWindow::mousePress(QPointF position) {
         botEditorWindow->loadBot(bot);
         botEditorWindow->single();
     }
+    renderUI();
+    startMouseHandler();
 }
 
 void MainWindow::initWorld(uint x, uint y) {
@@ -120,7 +131,6 @@ void MainWindow::start() {
     ui->groupBox_graph->setEnabled(false);
 
 
-
     // world
     if (!worldInited) {
         botSize = ui->bot_size->value();
@@ -178,11 +188,10 @@ void MainWindow::stop() {
     ui->historyPlot->setEnabled(false);
     ui->groupBox_graph->setEnabled(true);
 
+    renderUI();  // render last
     ui->status_led->setColor(QColor(255, 128, 0));
     botEditorWindow->stopMon();
-    mousePressHandler = new MouseHandlerItem(ui->DrawArea->width(), ui->DrawArea->height());
-    scene->addItem(mousePressHandler);
-    connect(mousePressHandler, SIGNAL(mousePress(QPointF)), this, SLOT(mousePress(QPointF)));
+    startMouseHandler();
 }
 
 void MainWindow::newWorld() {
@@ -227,6 +236,12 @@ void MainWindow::newWorld() {
     scene->clear();
     worldInited = false;
     delete world;
+}
+
+void MainWindow::startMouseHandler() {
+    mousePressHandler = new MouseHandlerItem(ui->DrawArea->width(), ui->DrawArea->height());
+    scene->addItem(mousePressHandler);
+    connect(mousePressHandler, SIGNAL(mousePress(QPointF)), this, SLOT(mousePress(QPointF)));
 }
 
 QColor MainWindow::botColorByType(Bot *bot) {
@@ -354,7 +369,7 @@ void MainWindow::renderUI() {
             coordinates_y = world->partLenght * part;
             if (current_height != 0)
                 scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(QColor(128, 128, 128)));
-            if (part <= world->startWorldEnergy)  // minerals
+            if (part < world->startWorldEnergy)  // minerals
                scene->addItem(textWidget(QString::number(world->getMineralsCount(coordinates_y)), 0, current_height, QColor(255, 255, 255)));
             if (part >= (world->worldPartsCount - world->startWorldEnergy)) // photosynthesis
                 scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
