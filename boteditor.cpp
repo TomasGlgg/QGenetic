@@ -1,6 +1,7 @@
 #include "boteditor.h"
 #include "ui_boteditor.h"
 
+
 BotEditor::BotEditor(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::BotEditor)
@@ -163,7 +164,7 @@ void BotEditor::botKilled() {
 }
 
 ulong BotEditor::botHash() {
-    if (!inited) return 0;
+    if (!inited) return ULONG_MAX;
     return bot->getHash();
 }
 
