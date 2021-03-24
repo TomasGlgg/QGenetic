@@ -27,7 +27,8 @@ public:
     void stopMon();
     void single();
 
-    ulong botHash();
+    Bot* getBot();
+
 
 private:
     Ui::BotEditor *ui;
@@ -50,6 +51,8 @@ private:
 private slots:
     void renderInfo();
     void renderTable();
+
+    void resetSelection();
 
     void botKilled();
     void botInfoEdited(int index);

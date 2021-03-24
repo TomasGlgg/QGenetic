@@ -249,7 +249,7 @@ void MainWindow::startMouseHandler() {
 }
 
 QColor MainWindow::botColorByType(Bot *bot) {
-    if (bot->getHash() == botEditorWindow->botHash()) return QColor(Qt::magenta);  // if bot is monited
+    if (bot == botEditorWindow->getBot()) return QColor(Qt::magenta);  // if bot is monited
     if (bot->type == ORGANIC) return QColor(Qt::gray);
     float total_number = bot->mineralsCount + bot->photosynthesisCount + bot->eatCount;
     uint B = bot->mineralsCount/total_number * 255;
@@ -259,7 +259,7 @@ QColor MainWindow::botColorByType(Bot *bot) {
 }
 
 inline QColor MainWindow::botColorByEnergy(Bot *bot) {
-    if (bot->getHash() == botEditorWindow->botHash()) return QColor(Qt::blue);  // if bot is monited
+    if (bot == botEditorWindow->getBot()) return QColor(Qt::blue);  // if bot is monited
     if (bot->type == ORGANIC) return QColor(Qt::gray);
     uint color = (static_cast<float>(bot->energy)/static_cast<float>(world->maxEnergy))*255;
     if (color > 255) color = 255;
@@ -267,7 +267,7 @@ inline QColor MainWindow::botColorByEnergy(Bot *bot) {
 }
 
 QColor MainWindow::botColorByUsedGens(Bot *bot) {
-    if (bot->getHash() == botEditorWindow->botHash()) return QColor(Qt::magenta);  // if bot is monited
+    if (bot == botEditorWindow->getBot()) return QColor(Qt::magenta);  // if bot is monited
     if (bot->type == ORGANIC) return QColor(Qt::gray);
     float totalNumber = bot->usedEat + bot->usedMinerals + bot->usedPhotosynthesis;
     if (!totalNumber) return QColor(Qt::white);

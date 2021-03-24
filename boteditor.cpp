@@ -4,8 +4,7 @@
 
 BotEditor::BotEditor(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::BotEditor)
-{
+    ui(new Ui::BotEditor) {
     ui->setupUi(this);
     infoUpdateTimer = new QTimer(this);
     tableUpdateTimer = new QTimer(this);
@@ -28,12 +27,23 @@ BotEditor::BotEditor(QWidget *parent) :
     connect(tableSignalMapper, SIGNAL(mapped(int)), this, SLOT(botGenomeEdited(int)));
     connect(infoSignalMapper, SIGNAL(mapped(int)), this, SLOT(botInfoEdited(int)));
 
+    connect(ui->resetSelectionButton, SIGNAL(clicked()), this, SLOT(resetSelection()));
+
     ui->tableWidget->setHorizontalHeaderLabels(progression(columntCount));
+    ui->splitter->setStretchFactor(0, 0);
+    ui->splitter->setStretchFactor(1, 1);
+    ui->splitter->setStretchFactor(2, 0);
 }
 
-BotEditor::~BotEditor()
-{
+BotEditor::~BotEditor() {
     delete ui;
+}
+
+void BotEditor::resetSelection() {
+    stopMon();
+    disconnect(bot, SIGNAL(botKilled()));
+    inited = false;
+    bot = nullptr;
 }
 
 void BotEditor::botInfoEdited(int index) {
@@ -163,9 +173,8 @@ void BotEditor::botKilled() {
     ui->type->setCurrentIndex(KILLED);
 }
 
-ulong BotEditor::botHash() {
-    if (!inited) return ULONG_MAX;
-    return bot->getHash();
+Bot* BotEditor::getBot() {
+    return bot;
 }
 
 void BotEditor::closeEvent(QCloseEvent *event) {

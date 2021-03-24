@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1226</width>
-    <height>664</height>
+    <height>665</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -808,33 +808,7 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
-        <widget class="KLed" name="status_led">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Зеленый&lt;/span&gt; цвет - мир работает&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff8000;&quot;&gt;Оранжевый&lt;/span&gt; цвет - мир остановлен&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Красный&lt;/span&gt; цвет - все боты погибли&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="statusTip">
-          <string/>
-         </property>
-         <property name="whatsThis">
-          <string/>
-         </property>
-         <property name="accessibleDescription">
-          <string/>
-         </property>
-         <property name="shape">
-          <enum>KLed::Circular</enum>
-         </property>
-         <property name="color">
-          <color>
-           <red>255</red>
-           <green>165</green>
-           <blue>0</blue>
-          </color>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0" colspan="2">
+       <item row="10" column="0" colspan="2">
         <widget class="QwtPlot" name="historyPlot">
          <property name="enabled">
           <bool>false</bool>
@@ -859,22 +833,57 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="1">
-        <widget class="KLed" name="process_time_led">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Зеленый&lt;/span&gt; цвет - мир успевает обрабатываться&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Красный&lt;/span&gt; цвет - мир не успевает обрабатываться&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="color">
-          <color>
-           <red>133</red>
-           <green>133</green>
-           <blue>133</blue>
-          </color>
-         </property>
-        </widget>
-       </item>
        <item row="8" column="0">
         <widget class="QWidget" name="widget" native="true"/>
+       </item>
+       <item row="7" column="1">
+        <widget class="QGroupBox" name="groupBox_8">
+         <property name="title">
+          <string/>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="KLed" name="status_led">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Зеленый&lt;/span&gt; цвет - мир работает&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff8000;&quot;&gt;Оранжевый&lt;/span&gt; цвет - мир остановлен&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Красный&lt;/span&gt; цвет - все боты погибли&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string/>
+            </property>
+            <property name="accessibleDescription">
+             <string/>
+            </property>
+            <property name="shape">
+             <enum>KLed::Circular</enum>
+            </property>
+            <property name="color">
+             <color>
+              <red>255</red>
+              <green>165</green>
+              <blue>0</blue>
+             </color>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="KLed" name="process_time_led">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Зеленый&lt;/span&gt; цвет - мир успевает обрабатываться&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Красный&lt;/span&gt; цвет - мир не успевает обрабатываться&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="color">
+             <color>
+              <red>133</red>
+              <green>133</green>
+              <blue>133</blue>
+             </color>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
