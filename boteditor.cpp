@@ -44,29 +44,25 @@ void BotEditor::resetSelection() {
     disconnect(bot, SIGNAL(botKilled()));
     inited = false;
     bot = nullptr;
+    disableUI();
 }
 
 void BotEditor::botInfoEdited(int index) {
     switch (index) {
         case 0: {
-            bot->type = ui->type->currentIndex();
-            break;
+            bot->type = ui->type->currentIndex(); break;
         }
         case 1: {
-            bot->energy = ui->energy->value();
-            break;
+            bot->energy = ui->energy->value(); break;
         }
         case 2: {
-            bot->old = ui->old->value();
-            break;
+            bot->old = ui->old->value(); break;
         }
         case 3: {
-            bot->iterator = ui->iterator->value();
-            break;
+            bot->iterator = ui->iterator->value(); break;
         }
         case 4: {
-            bot->minerals = ui->minerals->value();
-            break;
+            bot->minerals = ui->minerals->value(); break;
         }
     }
 }
@@ -88,6 +84,9 @@ void BotEditor::disableUI() {
     ui->photosynthesisUsed->setEnabled(false);
     ui->mineralsUsed->setEnabled(false);
     ui->eatStealUsed->setEnabled(false);
+
+    ui->infoDelayUpdate->setEnabled(true);
+    ui->tableDelayUpdate->setEnabled(true);
 }
 
 void BotEditor::enableUI() {
@@ -100,6 +99,9 @@ void BotEditor::enableUI() {
     ui->photosynthesisUsed->setEnabled(true);
     ui->mineralsUsed->setEnabled(true);
     ui->eatStealUsed->setEnabled(true);
+
+    ui->infoDelayUpdate->setEnabled(false);
+    ui->tableDelayUpdate->setEnabled(false);
 }
 
 void BotEditor::loadBot(Bot *bot) {
@@ -116,8 +118,8 @@ void BotEditor::loadBot(Bot *bot) {
 void BotEditor::startMon() {
     if (inited && !monitoring) {  // TODO: move to ui
         infoSignalMapper->blockSignals(false);
-        infoUpdateTimer->start(100);    // info  - 0.1 s
-        tableUpdateTimer->start(1000);  // table - 1 s
+        infoUpdateTimer->start(ui->infoDelayUpdate->value());
+        tableUpdateTimer->start(ui->tableDelayUpdate->value());
         monitoring = true;
     }
 }
@@ -169,8 +171,8 @@ void BotEditor::botKilled() {
     bot = nullptr;
     stopMon();
     inited = false;
-    disableUI();
     ui->type->setCurrentIndex(KILLED);
+    disableUI();
 }
 
 Bot* BotEditor::getBot() {
