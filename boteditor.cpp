@@ -138,6 +138,10 @@ void BotEditor::single() {
 }
 
 void BotEditor::renderTable() {
+    if (bot->type == ORGANIC) {
+        ui->tableWidget->setEnabled(false);
+        return;
+    }
     for (uint genomeIndex = 0; genomeIndex < (uint)bot->genome.size(); genomeIndex++) {
         uint columntIndex = genomeIndex%columntCount;
         uint rowIndex = floor(static_cast<float>(genomeIndex) / static_cast<float>(columntCount));
