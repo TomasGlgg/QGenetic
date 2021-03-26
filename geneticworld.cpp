@@ -264,22 +264,22 @@ void GeneticWorld::botStep(Bot *bot) {
 
         case commands::check_my_energy: {
             bot->iterator++;
-            int checkableEnergy = bot->genome[bot->iterator];
+            int checkableEnergy = bot->genome[bot->iterator%genomeLen];
             if (bot->energy >= checkableEnergy) bot->iterator++;
             break;
         }
 
         case commands::check_my_level: {
             bot->iterator++;
-            int checkableLevel = bot->genome[bot->iterator];
+            int checkableLevel = bot->genome[bot->iterator%genomeLen];
             uint currentPart = botPart(bot);
-            if (currentPart <= checkableLevel) bot->iterator++;
+            if (currentPart >= checkableLevel) bot->iterator++;
             break;
         }
 
         case commands::check_my_minerals: {
             bot->iterator++;
-            int checkableMinerals = bot->genome[bot->iterator];
+            int checkableMinerals = bot->genome[bot->iterator%genomeLen];
             if (bot->minerals >= checkableMinerals) bot->iterator++;
             break;
         }
