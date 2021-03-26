@@ -320,8 +320,8 @@ void MainWindow::renderUI() {
         else ui->process_time_led->setColor(QColor(0, 255, 0));
     } else ui->process_time_led->setColor(QColor(133, 133, 133));
 
-    uint aliveBotCount = world->aliveBotsCount;
     uint botCount = world->bots.size();
+    uint aliveBotCount = world->aliveBotsCount;
     assert(botCount >= aliveBotCount);
 
     if (!aliveBotCount) {  // all bots died

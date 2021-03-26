@@ -35,6 +35,10 @@ inline bool GeneticWorld::eatOrganic(Bot *bot) {
     return true;
 }
 
+uint GeneticWorld::botPart(Bot *bot) {
+    return floor(static_cast<float>(bot->getY()) / static_cast<float>(partLenght));
+}
+
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
     uint part = floor(static_cast<float>(y) / static_cast<float>(partLenght));
     if (part >= (worldPartsCount - startWorldEnergy))
@@ -157,8 +161,7 @@ void GeneticWorld::botStep(Bot *bot) {
         reproduction(bot);
     }
 
-    uint command_index = bot->iterator;
-    int command = bot->genome[command_index];
+    int command = bot->genome[bot->iterator];
     switch (command) {
         case commands::reproduction_command: {
             if (!reproduction(bot)) eatBot(bot);
@@ -196,7 +199,6 @@ void GeneticWorld::botStep(Bot *bot) {
             oppositeBot(bot, xy);
             if (checkCoords(xy))
                 moveBot(bot, xy);
-
             break;
         }
         case commands::eat_command: {
@@ -257,6 +259,28 @@ void GeneticWorld::botStep(Bot *bot) {
             } else if (bots[target_hash]->type == ORGANIC) {
                 bot->iterator++;
             }
+            break;
+        }
+
+        case commands::check_my_energy: {
+            bot->iterator++;
+            int checkableEnergy = bot->genome[bot->iterator];
+            if (bot->energy >= checkableEnergy) bot->iterator++;
+            break;
+        }
+
+        case commands::check_my_level: {
+            bot->iterator++;
+            int checkableLevel = bot->genome[bot->iterator];
+            uint currentPart = botPart(bot);
+            if (currentPart <= checkableLevel) bot->iterator++;
+            break;
+        }
+
+        case commands::check_my_minerals: {
+            bot->iterator++;
+            int checkableMinerals = bot->genome[bot->iterator];
+            if (bot->minerals >= checkableMinerals) bot->iterator++;
             break;
         }
 

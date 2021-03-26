@@ -60,6 +60,7 @@ public:
 private:
     QList<Bot*> killedBots;
 
+    uint botPart(Bot *bot);
     void moveBot(Bot *bot, int *xy);
     bool reproduction(Bot *bot);
     int* oppositeBot(Bot *bot, int *xy);

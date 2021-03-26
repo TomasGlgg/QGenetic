@@ -4,7 +4,9 @@
 
 namespace commands {
     enum Commands {
-        check_my_energy = -12,      // check my energy  = -12
+        check_my_minerals = -14,    // check my minerals= -14
+        check_my_level,             // check my level   = -13
+        check_my_energy,            // check my energy  = -12
         share_command,              // share command    = -11
         reproduction_command,       // reproduction     = -10
         eat_command,                // eat              = -9
