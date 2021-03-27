@@ -4,7 +4,8 @@
 
 namespace commands {
     enum Commands {
-        check_my_minerals = -14,    // check my minerals= -14
+        mutate = -15,               // mutate genome
+        check_my_minerals,          // check my minerals= -14
         check_my_level,             // check my level   = -13
         check_my_energy,            // check my energy  = -12
         share_command,              // share command    = -11

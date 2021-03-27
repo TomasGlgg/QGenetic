@@ -122,8 +122,9 @@ bool GeneticWorld::reproduction(Bot *bot) {
 
     //copy genom and mutate
     int k;
+    float random;
     for (uint i = 0; i<genomeLen; i++) {
-        float random = rand()/(RAND_MAX + 1.);
+        random = rand()/(RAND_MAX + 1.);
         if (random<mutateChance) {
             k = rand()%3-1; // [-1, 1]
             new_bot->genome[i] = bot->genome[i] + k;
@@ -153,6 +154,18 @@ void GeneticWorld::organicStep(Bot *bot) {
     xy[1] = bot->getY() - 1;
     if (checkCoords(xy))
         moveBot(bot, xy);
+}
+
+void GeneticWorld::mutateBotGenome(Bot *bot) {
+    int k;
+    float random;
+    for (uint i = 0; i<genomeLen; i++) {
+        random = rand()/(RAND_MAX + 1.);
+        if (random<mutateChance) {
+            k = rand()%3-1; // [-1, 1]
+            bot->genome[i] += k;
+        }
+    }
 }
 
 void GeneticWorld::botStep(Bot *bot) {
@@ -281,6 +294,12 @@ void GeneticWorld::botStep(Bot *bot) {
             bot->iterator++;
             int checkableMinerals = bot->genome[bot->iterator%genomeLen];
             if (bot->minerals >= checkableMinerals) bot->iterator++;
+            break;
+        }
+
+        case commands::mutate: {
+            mutateBotGenome(bot);
+            bot->energy += 2;
             break;
         }
 
