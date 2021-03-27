@@ -56,8 +56,9 @@ public:
 
     QHash<ulong, Bot*> bots;
     QMutex botsMutex;
-    bool runFlag;
+
 private:
+    bool runFlag;
     QList<Bot*> killedBots;
 
     void mutateBotGenome(Bot *bot);

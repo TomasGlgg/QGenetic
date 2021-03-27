@@ -286,6 +286,7 @@ void GeneticWorld::botStep(Bot *bot) {
             bot->iterator++;
             int checkableLevel = bot->genome[bot->iterator%genomeLen];
             uint currentPart = botPart(bot);
+            assert(currentPart <= worldPartsCount);
             if (currentPart >= checkableLevel) bot->iterator++;
             break;
         }
@@ -299,7 +300,7 @@ void GeneticWorld::botStep(Bot *bot) {
 
         case commands::mutate: {
             mutateBotGenome(bot);
-            bot->energy += 2;
+            bot->energy += 3;
             break;
         }
 

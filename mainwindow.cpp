@@ -61,7 +61,7 @@ void MainWindow::initWorld(uint x, uint y) {
     world = new GeneticWorld();
     world->genomeLen = ui->genome_len->value();
     world->worldPartsCount = ui->world_parts_count->value();
-    world->partLenght = y/(world->worldPartsCount);
+    world->partLenght = floor(static_cast<float>(y)/static_cast<float>(world->worldPartsCount));
 
     y = (world->worldPartsCount*world->partLenght);
 
@@ -140,11 +140,11 @@ void MainWindow::start() {
         uint worldH = ui->DrawArea->height() / botSize;
         initWorld(worldW, worldH);
 
-        scene->setSceneRect(0, botSize, ui->DrawArea->width(), ui->DrawArea->height());
         uint windowW = botSize * world->maxX;
         uint windowH = botSize * world->maxY;
-        ui->dockWidget->setMinimumSize(windowW, windowH);
-        ui->dockWidget->setMaximumSize(windowW, windowH);
+        ui->DrawArea->setMinimumSize(windowW, windowH);
+        ui->DrawArea->setMaximumSize(windowW, windowH);
+        scene->setSceneRect(0, botSize, ui->DrawArea->width(), ui->DrawArea->height());
 
         QString strSize = QString::number(world->maxX) + " x " + QString::number(world->maxY) + " (" + QString::number(world->maxBotCount) + ")";
         ui->sizeLabel->setText(strSize);
@@ -325,7 +325,7 @@ void MainWindow::renderUI() {
     assert(botCount >= aliveBotCount);
 
     if (!aliveBotCount) {  // all bots died
-        world->runFlag = false;
+        world->stop();
         renderTimer->stop();
         graphTimer->stop();
         botEditorWindow->stopMon();
@@ -374,9 +374,9 @@ void MainWindow::renderUI() {
             if (current_height != 0)
                 scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(QColor(128, 128, 128)));
             if (part < world->startWorldEnergy)  // minerals
-               scene->addItem(textWidget(QString::number(world->getMineralsCount(coordinates_y)), 0, current_height, QColor(255, 255, 255)));
+               scene->addItem(textWidget(QString::number(world->getMineralsCount(coordinates_y)), 0, current_height - 25, QColor(255, 255, 255)));
             if (part >= (world->worldPartsCount - world->startWorldEnergy)) // photosynthesis
-                scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height, QColor(255, 255, 255)));
+                scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height - 25, QColor(255, 255, 255)));
         }
 
 
@@ -405,7 +405,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     renderTimer->stop();
     graphTimer->stop();
     if (worldInited) {
-        world->runFlag = false;
+        world->stop();
         world->wait();
     }
     QWidget::closeEvent(event);
