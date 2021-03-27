@@ -270,7 +270,7 @@ QColor MainWindow::botColorByType(Bot *bot) {
 inline QColor MainWindow::botColorByEnergy(Bot *bot) {
     if (bot == botEditorWindow->getBot()) return QColor(Qt::blue);  // if bot is monited
     if (bot->type == ORGANIC) return QColor(Qt::gray);
-    uint color = floorDivision(bot->energy, world->maxEnergy)*255;
+    uint color = static_cast<float>(bot->energy) / static_cast<float>(world->maxEnergy)*255;
     if (color > 255) color = 255;
     return QColor(255, 255-color, 0);
 }
