@@ -1,6 +1,7 @@
 #include "botstruct.h"
 
 
+
 Bot::Bot(uint genome_len, uint x, uint y): x(x), y(y) {
     for (uint i = 0; i<genome_len; i++) {
         genome.push_back(0);

@@ -2,6 +2,11 @@
 #include "ui_boteditor.h"
 
 
+inline int floorDivision(int x, int y) {
+    return floor(static_cast<float>(x) / static_cast<float>(y));
+}
+
+
 BotEditor::BotEditor(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::BotEditor) {
@@ -68,7 +73,7 @@ void BotEditor::botInfoEdited(int index) {
 }
 
 void BotEditor::botGenomeEdited(int genomeIndex) {
-    uint rowIndex = floor(static_cast<float>(genomeIndex) / static_cast<float>(columntCount));
+    uint rowIndex = floorDivision(genomeIndex, columntCount);
     uint columnIndex = genomeIndex%columntCount;
     uint newValue = ((QSpinBox*)ui->tableWidget->cellWidget(rowIndex, columnIndex))->value();
     bot->genome[genomeIndex] = newValue;
@@ -144,7 +149,7 @@ void BotEditor::renderTable() {
     }
     for (uint genomeIndex = 0; genomeIndex < (uint)bot->genome.size(); genomeIndex++) {
         uint columntIndex = genomeIndex%columntCount;
-        uint rowIndex = floor(static_cast<float>(genomeIndex) / static_cast<float>(columntCount));
+        uint rowIndex = floorDivision(genomeIndex, columntCount);
 
         QSpinBox *spinBox = new QSpinBox();
         int genValue = bot->genome[genomeIndex];

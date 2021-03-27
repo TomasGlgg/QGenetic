@@ -2,6 +2,11 @@
 #include "ui_mainwindow.h"
 
 
+inline int floorDivision(int x, int y) {
+    return floor(static_cast<float>(x) / static_cast<float>(y));
+}
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow) {
@@ -44,8 +49,8 @@ void MainWindow::openBotEditor() {
 void MainWindow::mousePress(QPointF position) {
     uint position_x = position.x();
     uint position_y = ui->DrawArea->height() - position.y();
-    int botX = floor(static_cast<float>(position_x) / static_cast<float>(botSize));
-    int botY = floor(static_cast<float>(position_y) / static_cast<float>(botSize)) + 1;
+    int botX = floorDivision(position_x, botSize);
+    int botY = floorDivision(position_y, botSize) + 1;
 
     ulong botHash = hashxy(botX, botY);
     if (world->bots.contains(botHash)) {
@@ -61,7 +66,7 @@ void MainWindow::initWorld(uint x, uint y) {
     world = new GeneticWorld();
     world->genomeLen = ui->genome_len->value();
     world->worldPartsCount = ui->world_parts_count->value();
-    world->partLenght = floor(static_cast<float>(y)/static_cast<float>(world->worldPartsCount));
+    world->partLenght = floorDivision(y, world->worldPartsCount);
 
     y = (world->worldPartsCount*world->partLenght);
 
@@ -144,6 +149,8 @@ void MainWindow::start() {
         uint windowH = botSize * world->maxY;
         ui->DrawArea->setMinimumSize(windowW, windowH);
         ui->DrawArea->setMaximumSize(windowW, windowH);
+        ui->dockWidget->setMinimumSize(ui->dockWidget->width(), ui->dockWidget->height());
+        ui->dockWidget->setMaximumSize(ui->dockWidget->width(), ui->dockWidget->height());
         scene->setSceneRect(0, botSize, ui->DrawArea->width(), ui->DrawArea->height());
 
         QString strSize = QString::number(world->maxX) + " x " + QString::number(world->maxY) + " (" + QString::number(world->maxBotCount) + ")";
@@ -235,6 +242,8 @@ void MainWindow::newWorld() {
     ui->bot_completion->setValue(0);
     ui->status_led->setColor(QColor(255, 128, 0));
     ui->process_time_led->setColor(QColor(123, 123, 123));
+    ui->DrawArea->setMinimumSize(0, 0);
+    ui->DrawArea->setMaximumSize(16777215, 16777215);
     ui->dockWidget->setMinimumSize(0, 0);
     ui->dockWidget->setMaximumSize(16777215, 16777215);
     scene->clear();
@@ -261,7 +270,7 @@ QColor MainWindow::botColorByType(Bot *bot) {
 inline QColor MainWindow::botColorByEnergy(Bot *bot) {
     if (bot == botEditorWindow->getBot()) return QColor(Qt::blue);  // if bot is monited
     if (bot->type == ORGANIC) return QColor(Qt::gray);
-    uint color = (static_cast<float>(bot->energy)/static_cast<float>(world->maxEnergy))*255;
+    uint color = floorDivision(bot->energy, world->maxEnergy)*255;
     if (color > 255) color = 255;
     return QColor(255, 255-color, 0);
 }

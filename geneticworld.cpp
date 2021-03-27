@@ -1,6 +1,10 @@
 #include "geneticworld.h"
 
 
+inline int floorDivision(int x, int y) {
+    return floor(static_cast<float>(x) / static_cast<float>(y));
+}
+
 
 GeneticWorld::~GeneticWorld() {
     qDeleteAll(bots);
@@ -36,18 +40,18 @@ inline bool GeneticWorld::eatOrganic(Bot *bot) {
 }
 
 uint GeneticWorld::botPart(Bot *bot) {
-    return floor(static_cast<float>(bot->getY()) / static_cast<float>(partLenght));
+    return floorDivision(bot->getY(), partLenght);
 }
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
-    uint part = floor(static_cast<float>(y) / static_cast<float>(partLenght));
+    uint part = floorDivision(y, partLenght);
     if (part >= (worldPartsCount - startWorldEnergy))
         return startWorldEnergy - (worldPartsCount - part) + 1;
     return 0;
 }
 
 uint GeneticWorld::getMineralsCount(uint y) {
-    uint part = floor(static_cast<float>(y) / static_cast<float>(partLenght));
+    uint part = floorDivision(y, partLenght);
     if (part <= startWorldEnergy)
         return startWorldEnergy - part;
     return 0;
