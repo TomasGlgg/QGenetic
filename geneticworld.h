@@ -6,6 +6,7 @@
 #include <QHash>
 #include <QMutex>
 #include <QElapsedTimer>
+#include <QtConcurrent/QtConcurrentMap>
 
 #include <cassert>
 #include <cmath>
@@ -13,6 +14,11 @@
 #include "botstruct.h"
 #include "commands.h"
 
+
+struct MoveBotStruct {
+    Bot *bot;
+    int *xy;
+};
 
 class GeneticWorld : public QThread {
     Q_OBJECT
@@ -60,9 +66,15 @@ public:
     QHash<ulong, Bot*> bots;
     QMutex botsMutex;
 
+    void process(Bot *bot);
 private:
     bool runFlag;
     QList<Bot*> killedBots;
+    QMutex killedBotsMutex;
+    QList<MoveBotStruct> moveBotStructs;
+    QMutex moveBotStructsMutex;
+    QList<Bot*> reproductionList;
+    QMutex reproductionListMutex;
 
     void mutateBotGenome(Bot *bot);
     uint botPart(Bot *bot);
@@ -75,7 +87,6 @@ private:
     void botStep(Bot *bot);
     inline void eatBot(Bot *bot, bool noOrganic=false);
     inline bool eatOrganic(Bot *bot);
-    void clearKilled();
 };
 
 #endif // GENETICWORLD_H

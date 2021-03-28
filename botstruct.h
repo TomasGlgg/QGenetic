@@ -22,7 +22,7 @@ public:
     Bot(uint genome_len, uint x, uint y);
     virtual ~Bot();
 
-    void move(uint *xy);
+    ulong move(uint *xy);
     uint getX();
     uint getY();
     ulong getHash();

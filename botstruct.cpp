@@ -25,11 +25,11 @@ uint Bot::getX() { return x; }
 uint Bot::getY() { return y; }
 ulong Bot::getHash() { return hash; }
 
-void Bot::move(uint *xy) {
-    assert(type != KILLED);
+ulong Bot::move(uint *xy) {
     x = xy[0];
     y = xy[1];
     hash = hashxy(this);
+    return hash;
 }
 
 ulong hashxy(int x,int y) {

@@ -337,21 +337,6 @@ void MainWindow::renderUI() {
         else ui->process_time_led->setColor(QColor(0, 255, 0));
     } else ui->process_time_led->setColor(QColor(133, 133, 133));
 
-    uint botCount = world->bots.size();
-    uint aliveBotCount = world->aliveBotsCount;
-    assert(botCount >= aliveBotCount);
-
-    if (!aliveBotCount) {  // all bots died
-        world->stop();
-        renderTimer->stop();
-        graphTimer->stop();
-        botEditorWindow->stopMon();
-        ui->newWorldButton->setEnabled(true);
-        ui->stopButton->setEnabled(false);
-        ui->status_led->setColor(QColor(255, 0, 0));
-        return;
-    }
-
     // bot render
     QColor botColor;
     world->botsMutex.lock();
@@ -371,7 +356,21 @@ void MainWindow::renderUI() {
             scene->addRect(bot->getX() * botSize, ui->DrawArea->height() - (bot->getY() * botSize), botSize-1, botSize-1, QPen(botColor), QBrush(botColor));
         }
     }
+    uint botCount = world->bots.size();
+    uint aliveBotCount = world->aliveBotsCount;
     world->botsMutex.unlock();
+    //assert(botCount >= aliveBotCount);
+
+    if (!aliveBotCount) {  // all bots died
+        world->stop();
+        renderTimer->stop();
+        graphTimer->stop();
+        botEditorWindow->stopMon();
+        ui->newWorldButton->setEnabled(true);
+        ui->stopButton->setEnabled(false);
+        ui->status_led->setColor(QColor(255, 0, 0));
+        return;
+    }
 
     // ui info update
     ui->bot_count->display(QString::number(aliveBotCount));

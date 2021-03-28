@@ -35,7 +35,9 @@ inline void GeneticWorld::eatBot(Bot *bot, bool noOrganic) {
 
 inline bool GeneticWorld::eatOrganic(Bot *bot) {
     bot->type = KILLED;
+    killedBotsMutex.lock();
     killedBots.push_back(bot);
+    killedBotsMutex.unlock();
     return true;
 }
 
@@ -116,36 +118,22 @@ inline bool GeneticWorld::checkCoords(int *xy) {
 
 
 bool GeneticWorld::reproduction(Bot *bot) {
-    int xy[2];
-    oppositeBot(bot, xy);
     if (bot->energy<reproductionPrice) return false;
     bot->energy -= reproductionPrice;
+    int xy[2];
+    oppositeBot(bot, xy);
     if (!checkCoords(xy)) return false;
-    Bot *new_bot = newBot(xy[0], xy[1]);
-    new_bot->energy = newBotEnergy;
-
-    //copy genom and mutate
-    int k;
-    float random;
-    for (uint i = 0; i<genomeLen; i++) {
-        random = rand()/(RAND_MAX + 1.);
-        if (random<mutateChance) {
-            k = rand()%3-1; // [-1, 1]
-            new_bot->genome[i] = bot->genome[i] + k;
-            mutationCount++;
-        } else
-            new_bot->genome[i] = bot->genome[i];
-    }
-    new_bot->genomeInit();
+    reproductionListMutex.lock();
+    reproductionList.push_back(bot);
+    reproductionListMutex.unlock();
     return true;
 }
 
 void GeneticWorld::moveBot(Bot *bot, int *xy) {
-    botsMutex.lock();
-    bots.remove(bot->getHash());
-    bot->move((uint*)xy);
-    bots[bot->getHash()] = bot;
-    botsMutex.unlock();
+    MoveBotStruct moveBotStruct{bot, xy};
+    moveBotStructsMutex.lock();
+    moveBotStructs.push_back(moveBotStruct);
+    moveBotStructsMutex.unlock();
 }
 
 void GeneticWorld::organicStep(Bot *bot) {
@@ -332,14 +320,19 @@ void GeneticWorld::botStep(Bot *bot) {
     bot->iterator %= genomeLen;
 }
 
-void GeneticWorld::clearKilled() {
-    Bot *bot;
-    foreach (bot, killedBots) {
-        assert(bots.remove(bot->getHash()));
-        delete bot;
 
+void GeneticWorld::process(Bot *bot) {
+    bot->old++;
+    switch (bot->type) {
+        case ALIVE: {
+            botStep(bot);
+            break;
+        }
+        case ORGANIC: {
+            organicStep(bot);
+            break;
+        }
     }
-    killedBots.clear();
 }
 
 
@@ -354,21 +347,54 @@ void GeneticWorld::run() {
         }
 
         startTime.start();
-        foreach (Bot *bot, bots) {
-            bot->old++;
-            switch (bot->type) {
-                case ALIVE: {
-                    botStep(bot);
-                    break;
-                }
-                case ORGANIC: {
-                    organicStep(bot);
-                    break;
-                }
+        QtConcurrent::map(bots.begin(), bots.end(), std::bind([](GeneticWorld *world, Bot *bot) {
+                              world->process(bot);
+                          }, this, std::placeholders::_1)).waitForFinished();
+
+        if (moveBotStructs.size()) {
+            botsMutex.lock();
+            foreach (MoveBotStruct moveStruct, moveBotStructs) {
+                bots.remove(moveStruct.bot->getHash());
+                bots[moveStruct.bot->move((uint*)moveStruct.xy)] = moveStruct.bot;
+
             }
+            botsMutex.unlock();
+            moveBotStructs.clear();
         }
-        if (killedBots.size())
-            clearKilled();
+
+        if (reproductionList.size()) {
+            foreach (Bot *bot, reproductionList) {
+                int xy[2];
+                oppositeBot(bot, xy);
+                Bot *new_bot = newBot(xy[0], xy[1]);
+                new_bot->energy = newBotEnergy;
+
+
+                int k;
+                float random;
+                for (uint i = 0; i<genomeLen; i++) {
+                    random = rand()/(RAND_MAX + 1.);
+                    if (random<mutateChance) {
+                        k = rand()%3-1; // [-1, 1]
+                        new_bot->genome[i] = bot->genome[i] + k;
+                        mutationCount++;
+                    } else
+                        new_bot->genome[i] = bot->genome[i];
+                }
+                new_bot->genomeInit();
+            }
+            reproductionList.clear();
+        }
+
+        if (killedBots.size()) {
+            foreach (Bot *bot, killedBots) {
+                assert(bots.remove(bot->getHash()));
+                delete bot;
+
+            }
+            killedBots.clear();
+        }
+
         if (!organicEnabled) assert((uint)bots.size() == aliveBotsCount);
         generation++;
 
