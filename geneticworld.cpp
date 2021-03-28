@@ -45,15 +45,15 @@ uint GeneticWorld::botPart(Bot *bot) {
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
     uint part = floorDivision(y, partLenght);
-    if (part >= (worldPartsCount - startWorldEnergy))
-        return startWorldEnergy - (worldPartsCount - part) + 1;
+    if (part >= (worldPartsCount - startWorldPhotosynthesisEnergy))
+        return startWorldPhotosynthesisEnergy - (worldPartsCount - part) + 1;
     return 0;
 }
 
 uint GeneticWorld::getMineralsCount(uint y) {
     uint part = floorDivision(y, partLenght);
-    if (part <= startWorldEnergy)
-        return startWorldEnergy - part;
+    if (startWorldMinerals > mineralsPartDecrement*part)
+        return startWorldMinerals - mineralsPartDecrement*part;
     return 0;
 }
 
@@ -290,7 +290,6 @@ void GeneticWorld::botStep(Bot *bot) {
             bot->iterator++;
             int checkableLevel = bot->genome[bot->iterator%genomeLen];
             uint currentPart = botPart(bot);
-            assert(currentPart <= worldPartsCount);
             if (currentPart >= checkableLevel) bot->iterator++;
             break;
         }
@@ -299,6 +298,17 @@ void GeneticWorld::botStep(Bot *bot) {
             bot->iterator++;
             int checkableMinerals = bot->genome[bot->iterator%genomeLen];
             if (bot->minerals >= checkableMinerals) bot->iterator++;
+            break;
+        }
+
+        case commands::check_target_minerals: {
+            int xy[2];
+            oppositeBot(bot, xy);
+            ulong target_hash = hashxy(xy);
+            if (bots.contains(target_hash)) {
+                uint target_minerals = bots.value(target_hash)->minerals;
+                if (target_minerals > bot->minerals) bot->iterator++;
+            }
             break;
         }
 

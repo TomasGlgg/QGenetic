@@ -94,7 +94,9 @@ void MainWindow::updateWorldSettings() {
     world->stealPower = maxEnergy*ui->eat_k->value();
     world->maxEnergy = maxEnergy;
     world->mutateChance = ui->mutation_chance->value();
-    world->startWorldEnergy = ui->start_world_energy->value();
+    world->startWorldPhotosynthesisEnergy = ui->startWorldPhotosynthesis->value();
+    world->startWorldMinerals = ui->starWorldMinerals->value();
+    world->mineralsPartDecrement = ui->mineralsPartDecrement->value();
     world->maxOld = ui->max_old->value();
     world->maxOrganicOld = ui->max_organic_old->value();
     world->organicEnabled = ui->organic->isChecked();
@@ -118,7 +120,9 @@ void MainWindow::start() {
     ui->mutation_chance->setEnabled(false);
     ui->draw_lines->setEnabled(true);
     ui->world_parts_count->setEnabled(false);
-    ui->start_world_energy->setEnabled(false);
+    ui->startWorldPhotosynthesis->setEnabled(false);
+    ui->starWorldMinerals->setEnabled(false);
+    ui->mineralsPartDecrement->setEnabled(false);
     ui->max_old->setEnabled(false);
     ui->max_organic_old->setEnabled(false);
     ui->eat_k->setEnabled(false);
@@ -184,7 +188,9 @@ void MainWindow::stop() {
     ui->max_energy->setEnabled(true);
     ui->mutation_chance->setEnabled(true);
     ui->draw_lines->setEnabled(false);
-    ui->start_world_energy->setEnabled(true);
+    ui->startWorldPhotosynthesis->setEnabled(true);
+    ui->starWorldMinerals->setEnabled(true);
+    ui->mineralsPartDecrement->setEnabled(true);
     ui->max_old->setEnabled(true);
     ui->max_organic_old->setEnabled(true);
     ui->eat_k->setEnabled(true);
@@ -218,7 +224,9 @@ void MainWindow::newWorld() {
     ui->mutation_chance->setEnabled(true);
     ui->draw_lines->setEnabled(false);
     ui->world_parts_count->setEnabled(true);
-    ui->start_world_energy->setEnabled(true);
+    ui->startWorldPhotosynthesis->setEnabled(true);
+    ui->starWorldMinerals->setEnabled(true);
+    ui->mineralsPartDecrement->setEnabled(true);
     ui->max_old->setEnabled(true);
     ui->world_parts_count->setEnabled(true);
     ui->eat_k->setEnabled(true);
@@ -360,8 +368,6 @@ void MainWindow::renderUI() {
     } else if (ui->radio_used_gens->isChecked()) {
         foreach (Bot *bot, world->bots) {
             botColor = botColorByUsedGens(bot);
-            if (bot->getY() <= 0)
-                uint a = ui->DrawArea->height() - (bot->getY() * botSize);
             scene->addRect(bot->getX() * botSize, ui->DrawArea->height() - (bot->getY() * botSize), botSize-1, botSize-1, QPen(botColor), QBrush(botColor));
         }
     }
@@ -384,9 +390,9 @@ void MainWindow::renderUI() {
             coordinates_y = world->partLenght * part;
             if (current_height != 0)
                 scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(QColor(128, 128, 128)));
-            if (part < world->startWorldEnergy)  // minerals
+            if (world->startWorldMinerals > world->mineralsPartDecrement*part)  // minerals
                scene->addItem(textWidget(QString::number(world->getMineralsCount(coordinates_y)), 0, current_height - 25, QColor(255, 255, 255)));
-            if (part >= (world->worldPartsCount - world->startWorldEnergy)) // photosynthesis
+            if (part >= (world->worldPartsCount - world->startWorldPhotosynthesisEnergy)) // photosynthesis
                 scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height - 25, QColor(255, 255, 255)));
         }
 

@@ -28,7 +28,10 @@ public:
     uint getMineralsCount(uint y);
 
     uint worldPartsCount;
-    uint startWorldEnergy;
+    uint startWorldPhotosynthesisEnergy;
+    uint startWorldMinerals;
+    uint mineralsPartDecrement;
+
     float mutateChance;
     uint processDelay;
     uint genomeLen;
