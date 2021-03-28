@@ -151,7 +151,7 @@ void MainWindow::start() {
         ui->DrawArea->setMaximumSize(windowW, windowH);
         ui->dockWidget->setMinimumSize(ui->dockWidget->width(), ui->dockWidget->height());
         ui->dockWidget->setMaximumSize(ui->dockWidget->width(), ui->dockWidget->height());
-        scene->setSceneRect(0, botSize, ui->DrawArea->width(), ui->DrawArea->height());
+        scene->setSceneRect(0, botSize*2, ui->DrawArea->width(), ui->DrawArea->height());
 
         QString strSize = QString::number(world->maxX) + " x " + QString::number(world->maxY) + " (" + QString::number(world->maxBotCount) + ")";
         ui->sizeLabel->setText(strSize);
@@ -270,7 +270,7 @@ QColor MainWindow::botColorByType(Bot *bot) {
 inline QColor MainWindow::botColorByEnergy(Bot *bot) {
     if (bot == botEditorWindow->getBot()) return QColor(Qt::blue);  // if bot is monited
     if (bot->type == ORGANIC) return QColor(Qt::gray);
-    uint color = static_cast<float>(bot->energy) / static_cast<float>(world->maxEnergy)*255;
+    uint color = static_cast<float>(bot->energy) / static_cast<float>(world->maxEnergy) * 255;
     if (color > 255) color = 255;
     return QColor(255, 255-color, 0);
 }
@@ -360,6 +360,8 @@ void MainWindow::renderUI() {
     } else if (ui->radio_used_gens->isChecked()) {
         foreach (Bot *bot, world->bots) {
             botColor = botColorByUsedGens(bot);
+            if (bot->getY() <= 0)
+                uint a = ui->DrawArea->height() - (bot->getY() * botSize);
             scene->addRect(bot->getX() * botSize, ui->DrawArea->height() - (bot->getY() * botSize), botSize-1, botSize-1, QPen(botColor), QBrush(botColor));
         }
     }
