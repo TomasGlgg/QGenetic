@@ -15,7 +15,7 @@ Bot::~Bot() {
         emit botKilled();
 }
 
-void Bot::genomeInit() {
+void Bot::genomeStatisticInit() {
     mineralsCount = std::count(genome.begin(), genome.end(), commands::minerals_command);
     photosynthesisCount = std::count(genome.begin(), genome.end(), commands::photosynthesis_command);
     eatCount = std::count(genome.begin(), genome.end(), commands::eat_command);

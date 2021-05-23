@@ -136,7 +136,7 @@ bool GeneticWorld::reproduction(Bot *bot) {
         } else
             new_bot->genome[i] = bot->genome[i];
     }
-    new_bot->genomeInit();
+    new_bot->genomeStatisticInit();
     return true;
 }
 
@@ -161,22 +161,26 @@ void GeneticWorld::organicStep(Bot *bot) {
 }
 
 void GeneticWorld::mutateBotGenome(Bot *bot) {
+    mutateBotGenome(bot, mutateChance);
+}
+
+void GeneticWorld::mutateBotGenome(Bot *bot, float chance) {
     int k;
     float random;
     for (uint i = 0; i<genomeLen; i++) {
         random = rand()/(RAND_MAX + 1.);
-        if (random<mutateChance) {
+        if (random<chance) {
             k = rand()%3-1; // [-1, 1]
             bot->genome[i] += k;
         }
     }
+    bot->genomeStatisticInit();
 }
 
 void GeneticWorld::botStep(Bot *bot) {
-    if (bot->energy>maxEnergy) {
-        bot->energy = maxEnergy;
+    if (bot->energy>=maxEnergy)
         reproduction(bot);
-    }
+
 
     int command = bot->genome[bot->iterator];
     switch (command) {
@@ -197,6 +201,7 @@ void GeneticWorld::botStep(Bot *bot) {
             break;
         }
         case commands::convert_minerals_command: {
+            if (bot->minerals <= 0) break;
             bot->energy += bot->minerals/mineralPrice;
             bot->minerals = bot->minerals%mineralPrice;
             break;
@@ -242,7 +247,7 @@ void GeneticWorld::botStep(Bot *bot) {
                 if (targetBot->type == ALIVE) {
                     if (bot->minerals >= targetBot->minerals) {
                         bot->minerals -= targetBot->minerals;
-                        bot->energy += targetBot->energy * stealPower;
+                        bot->energy += targetBot->energy * eatK;
                         eatBot(targetBot, true);
                         kills++;
                     } else {
@@ -306,7 +311,7 @@ void GeneticWorld::botStep(Bot *bot) {
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
             if (bots.contains(target_hash)) {
-                uint target_minerals = bots.value(target_hash)->minerals;
+                int target_minerals = bots.value(target_hash)->minerals;
                 if (target_minerals > bot->minerals) bot->iterator++;
             }
             break;
@@ -316,6 +321,13 @@ void GeneticWorld::botStep(Bot *bot) {
             mutateBotGenome(bot);
             bot->energy += 3;
             break;
+        }
+
+        case commands::mutate_attack: {
+            int xy[2];
+            oppositeBot(bot, xy);
+            ulong target_hash = hashxy(xy);
+            if (bots.contains(target_hash)) mutateBotGenome(bots.value(target_hash), mutateAttackChance);
         }
 
         default: {  // unconditional transfer
@@ -355,7 +367,6 @@ void GeneticWorld::run() {
 
         startTime.start();
         foreach (Bot *bot, bots) {
-            bot->old++;
             switch (bot->type) {
                 case ALIVE: {
                     botStep(bot);
@@ -366,6 +377,7 @@ void GeneticWorld::run() {
                     break;
                 }
             }
+            bot->old++;
         }
         if (killedBots.size())
             clearKilled();

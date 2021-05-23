@@ -37,7 +37,6 @@ public:
     uint genomeLen;
     uint maxEnergy;
     uint newBotEnergy;
-    uint stealPower;
     uint maxOld;
     uint maxOrganicOld;
     uint maxBotCount;
@@ -45,6 +44,10 @@ public:
     uint mineralPrice;
     uint reproductionPrice;
     bool organicEnabled = true;
+
+    // commands settings
+    float eatK;
+    float mutateAttackChance;
 
     int maxX, maxY;
     uint partLenght;
@@ -65,6 +68,7 @@ private:
     QList<Bot*> killedBots;
 
     void mutateBotGenome(Bot *bot);
+    void mutateBotGenome(Bot *bot, float chance);
     uint botPart(Bot *bot);
     void moveBot(Bot *bot, int *xy);
     bool reproduction(Bot *bot);

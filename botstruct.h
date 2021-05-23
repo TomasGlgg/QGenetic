@@ -26,13 +26,13 @@ public:
     uint getX();
     uint getY();
     ulong getHash();
-    void genomeInit();
+    void genomeStatisticInit();
 
     QList<int> genome;
 
     uint direction = 0;
-    uint energy;
-    uint minerals = 0;
+    int energy;
+    int minerals = 0;
     uint iterator = 0;
     uint old = 0;
     uint type = ALIVE;

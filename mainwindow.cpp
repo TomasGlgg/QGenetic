@@ -74,25 +74,23 @@ void MainWindow::initWorld(uint x, uint y) {
     world->maxY = y;
     world->maxBotCount = x*y;
 
-    Bot *newBot = world->newBot(10, y - 10);
+    Bot *newBot = world->newBot(10, 10);
     newBot->energy = ui->first_bot_energy->value();
     newBot->direction = ui->first_bot_direction->currentIndex();
 
     for (uint i = 0; i<world->genomeLen; i++){
         if (i%2 == 0)
-            newBot->genome[i] = commands::left_command;
+            newBot->genome[i] = commands::minerals_command;
         else if (i%2 == 1)
-            newBot->genome[i] = commands::photosynthesis_command;
+            newBot->genome[i] = commands::convert_minerals_command;
     }
-    newBot->genomeInit();
+    newBot->genomeStatisticInit();
     worldInited = true;
 }
 
 void MainWindow::updateWorldSettings() {
     world->genomeLen = ui->genome_len->value();
-    uint maxEnergy = ui->max_energy->value();
-    world->stealPower = maxEnergy*ui->eat_k->value();
-    world->maxEnergy = maxEnergy;
+    world->maxEnergy = ui->max_energy->value();
     world->mutateChance = ui->mutation_chance->value();
     world->startWorldPhotosynthesisEnergy = ui->startWorldPhotosynthesis->value();
     world->startWorldMinerals = ui->starWorldMinerals->value();
@@ -106,6 +104,9 @@ void MainWindow::updateWorldSettings() {
     world->mineralPrice = ui->mineralPrice->value();
     world->reproductionPrice = ui->reproductionPrice->value();
     ui->bot_completion->setMaximum(world->maxBotCount);
+
+    world->eatK = ui->eat_k->value();
+    world->mutateAttackChance = ui->mutateAttackChance->value();
 }
 
 void MainWindow::start() {
@@ -235,6 +236,8 @@ void MainWindow::newWorld() {
     ui->first_bot_energy->setEnabled(true);
     ui->mineralPrice->setEnabled(true);
     ui->reproductionPrice->setEnabled(true);
+    ui->new_bot_energy->setEnabled(true);
+    ui->organicEnergy->setEnabled(true);
 
     //graph
     ui->historyPlot->detachItems();

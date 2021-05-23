@@ -4,7 +4,8 @@
 
 namespace commands {
     enum Commands {
-        mutate = -16,               // mutate genome         = -16
+        mutate_attack = -17,        // mutate attack         = -17
+        mutate,                     // mutate genome         = -16
         check_target_minerals,      // check target minerals = -15
         check_my_minerals,          // check my minerals     = -14
         check_my_level,             // check my level        = -13
