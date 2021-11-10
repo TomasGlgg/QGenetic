@@ -24,9 +24,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->newWorldButton, SIGNAL(released()), this, SLOT(newWorld()));
     connect(ui->openBotEditorButton, SIGNAL(released()), this, SLOT(openBotEditor()));
 
-    connect(ui->radio_used_gens, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
-    connect(ui->radio_gens_type, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
-    connect(ui->radio_energy_count, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
+    connect(ui->radioColorByUsedGens, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
+    connect(ui->radioColorByGensType, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
+    connect(ui->radioColorByEnergyCount, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
+    connect(ui->radioColorByOld, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
 
     connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderUI()));
     connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
@@ -134,6 +135,7 @@ void MainWindow::start() {
     ui->organicEnergy->setEnabled(false);
     ui->mineralPrice->setEnabled(false);
     ui->reproductionPrice->setEnabled(false);
+    ui->mutateAttackChance->setEnabled(false);
 
     //graph
     if (ui->groupBox_graph->isChecked()) {
@@ -199,6 +201,7 @@ void MainWindow::stop() {
     ui->organicEnergy->setEnabled(true);
     ui->mineralPrice->setEnabled(true);
     ui->reproductionPrice->setEnabled(true);
+    ui->mutateAttackChance->setEnabled(true);
 
     //graph
     ui->groupBox_graph->setEnabled(true);
@@ -238,6 +241,7 @@ void MainWindow::newWorld() {
     ui->reproductionPrice->setEnabled(true);
     ui->new_bot_energy->setEnabled(true);
     ui->organicEnergy->setEnabled(true);
+    ui->mutateAttackChance->setEnabled(true);
 
     //graph
     ui->historyPlot->detachItems();
@@ -269,7 +273,7 @@ void MainWindow::startMouseHandler() {
 }
 
 QColor MainWindow::botColorByType(Bot *bot) {
-    if (bot == botEditorWindow->getBot()) return QColor(Qt::magenta);  // if bot is monited
+    if (bot == botEditorWindow->getBot()) return QColor(Qt::magenta);  // if bot is monitored
     if (bot->type == ORGANIC) return QColor(Qt::gray);
     float total_number = bot->mineralsCount + bot->photosynthesisCount + bot->eatCount;
     uint B = bot->mineralsCount/total_number * 255;
@@ -278,8 +282,8 @@ QColor MainWindow::botColorByType(Bot *bot) {
     return QColor(R, G, B);
 }
 
-inline QColor MainWindow::botColorByEnergy(Bot *bot) {
-    if (bot == botEditorWindow->getBot()) return QColor(Qt::blue);  // if bot is monited
+QColor MainWindow::botColorByEnergy(Bot *bot) {
+    if (bot == botEditorWindow->getBot()) return QColor(Qt::blue);  // if bot is monitored
     if (bot->type == ORGANIC) return QColor(Qt::gray);
     uint color = static_cast<float>(bot->energy) / static_cast<float>(world->maxEnergy) * 255;
     if (color > 255) color = 255;
@@ -287,7 +291,7 @@ inline QColor MainWindow::botColorByEnergy(Bot *bot) {
 }
 
 QColor MainWindow::botColorByUsedGens(Bot *bot) {
-    if (bot == botEditorWindow->getBot()) return QColor(Qt::magenta);  // if bot is monited
+    if (bot == botEditorWindow->getBot()) return QColor(Qt::magenta);  // if bot is monitored
     if (bot->type == ORGANIC) return QColor(Qt::gray);
     float totalNumber = bot->usedEat + bot->usedMinerals + bot->usedPhotosynthesis;
     if (!totalNumber) return QColor(Qt::white);
@@ -295,6 +299,14 @@ QColor MainWindow::botColorByUsedGens(Bot *bot) {
     uint G = bot->usedPhotosynthesis/totalNumber * 255;
     uint R = bot->usedEat/totalNumber * 255;
     return QColor(R, G, B);
+}
+
+QColor MainWindow::botColorByOld(Bot *bot) {
+    if (bot == botEditorWindow->getBot()) return QColor(Qt::blue);  // if bot is monitored
+    if (bot->type == ORGANIC) return QColor(Qt::gray);
+    uint color = static_cast<float>(bot->old) / static_cast<float>(world->maxOld) * 255;
+    if (color > 255) color = 255;
+    return QColor(255, 255-color, 0);
 }
 
 void MainWindow::renderGraph() {
@@ -356,25 +368,25 @@ void MainWindow::renderUI() {
     }
 
     // bot render
-    QColor botColor;
-    world->botsMutex.lock();
-    if (ui->radio_gens_type->isChecked()) {
-        foreach (Bot *bot, world->bots) {
-            botColor = botColorByType(bot);
-            scene->addRect(bot->getX() * botSize, ui->DrawArea->height() - (bot->getY() * botSize), botSize-1, botSize-1, QPen(botColor), QBrush(botColor));
-        }
-    } else if (ui->radio_energy_count->isChecked()) {
-        foreach (Bot *bot, world->bots) {
-            botColor = botColorByEnergy(bot);
-            scene->addRect(bot->getX() * botSize, ui->DrawArea->height() - (bot->getY() * botSize), botSize-1, botSize-1, QPen(botColor), QBrush(botColor));
-        }
-    } else if (ui->radio_used_gens->isChecked()) {
-        foreach (Bot *bot, world->bots) {
-            botColor = botColorByUsedGens(bot);
-            scene->addRect(bot->getX() * botSize, ui->DrawArea->height() - (bot->getY() * botSize), botSize-1, botSize-1, QPen(botColor), QBrush(botColor));
-        }
+    std::function<QColor (MainWindow*, Bot*)> getColor;
+
+    if (ui->radioColorByGensType->isChecked())
+        getColor = &MainWindow::botColorByType;
+    else if (ui->radioColorByEnergyCount->isChecked())
+        getColor = &MainWindow::botColorByOld;
+    else if (ui->radioColorByUsedGens->isChecked())
+        getColor = &MainWindow::botColorByUsedGens;
+    else if (ui->radioColorByOld->isChecked())
+        getColor = &MainWindow::botColorByOld;
+    else
+        assert(false);
+
+    //world->botsMutex.lock();
+    foreach (Bot *bot, world->bots) {
+        QColor botColor = getColor(this, bot);
+        scene->addRect(bot->getX() * botSize, ui->DrawArea->height() - (bot->getY() * botSize), botSize-1, botSize-1, QPen(botColor), QBrush(botColor));
     }
-    world->botsMutex.unlock();
+    //world->botsMutex.unlock();
 
     // ui info update
     ui->bot_count->display(QString::number(aliveBotCount));

@@ -76,6 +76,7 @@ private:
     QColor botColorByType(Bot *bot);
     QColor botColorByEnergy(Bot *bot);
     QColor botColorByUsedGens(Bot *bot);
+    QColor botColorByOld(Bot *bot);
     void initWorld(uint x, uint y);
     void updateWorldSettings();
     void startMouseHandler();

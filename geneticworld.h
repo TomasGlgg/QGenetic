@@ -14,12 +14,19 @@
 #include "commands.h"
 
 
+enum TimeOfTheYear {
+    WINTER,
+    SPRING,
+    SUMMER,
+    AUTUMN,
+};
+
 class GeneticWorld : public QThread {
     Q_OBJECT
 protected:
     void run();
 
-public:
+public:  // settings
     ~GeneticWorld();
     Bot *newBot(uint x, uint y);
     void stop();
@@ -62,6 +69,8 @@ public:
 
     QHash<ulong, Bot*> bots;
     QMutex botsMutex;
+
+    TimeOfTheYear timeOfTheYear = SUMMER;
 
 private:
     bool runFlag;
