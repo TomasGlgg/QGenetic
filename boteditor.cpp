@@ -8,8 +8,8 @@ inline int floorDivision(int x, int y) {
 
 
 BotEditor::BotEditor(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::BotEditor) {
+        QDialog(parent),
+        ui(new Ui::BotEditor) {
     ui->setupUi(this);
     infoUpdateTimer = new QTimer(this);
     tableUpdateTimer = new QTimer(this);

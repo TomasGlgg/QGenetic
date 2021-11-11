@@ -16,7 +16,7 @@ QT_END_NAMESPACE
 
 class BotEditor : public QDialog
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     explicit BotEditor(QWidget *parent = nullptr);

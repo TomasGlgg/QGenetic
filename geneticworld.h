@@ -14,13 +14,6 @@
 #include "commands.h"
 
 
-enum TimeOfTheYear {
-    WINTER,
-    SPRING,
-    SUMMER,
-    AUTUMN,
-};
-
 class GeneticWorld : public QThread {
     Q_OBJECT
 protected:
@@ -37,7 +30,7 @@ public:  // settings
     uint worldPartsCount;
     uint startWorldPhotosynthesisEnergy;
     uint startWorldMinerals;
-    uint mineralsPartDecrement;
+    uint mineralsPartSize;
 
     float mutateChance;
     uint processDelay;
@@ -69,8 +62,6 @@ public:  // settings
 
     QHash<ulong, Bot*> bots;
     QMutex botsMutex;
-
-    TimeOfTheYear timeOfTheYear = SUMMER;
 
 private:
     bool runFlag;

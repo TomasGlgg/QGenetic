@@ -52,10 +52,11 @@ uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
 
 uint GeneticWorld::getMineralsCount(uint y) {
     uint part = floorDivision(y, partLenght);
-    if (startWorldMinerals > mineralsPartDecrement*part)
-        return startWorldMinerals - mineralsPartDecrement*part;
+    if (part < mineralsPartSize*startWorldMinerals)
+        return startWorldMinerals-floorDivision(part, mineralsPartSize);
     return 0;
 }
+
 
 int* GeneticWorld::translateCoords(int *xy) {
     if (xy[0] >= maxX) xy[0] = 0;
@@ -202,8 +203,8 @@ void GeneticWorld::botStep(Bot *bot) {
         }
         case commands::convert_minerals_command: {
             if (bot->minerals <= 0) break;
-            bot->energy += bot->minerals/mineralPrice;
-            bot->minerals = bot->minerals%mineralPrice;
+            bot->energy += mineralPrice;
+            bot->minerals--;
             break;
         }
         case commands::left_command: {

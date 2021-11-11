@@ -6,14 +6,14 @@
 #include <QTimer>
 #include <QGraphicsTextItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QHBoxLayout>
 
 #include <cmath>
-#include <qwt_plot_curve.h>
-#include <qwt_symbol.h>
 
 #include "geneticworld.h"
 #include "boteditor.h"
 #include "botstruct.h"
+#include "kled.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -23,7 +23,7 @@ QT_END_NAMESPACE
 
 class MouseHandlerItem : public QObject, public QGraphicsItem
 {
-    Q_OBJECT
+Q_OBJECT
 private:
     uint w = 0, h = 0;
 public:
@@ -52,7 +52,7 @@ signals:
 
 
 class MainWindow : public QMainWindow {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -63,6 +63,9 @@ private:
     QGraphicsScene *scene;
     GeneticWorld *world;
     MouseHandlerItem *mousePressHandler;
+
+    KLed *status_led;
+    KLed *process_time_led;
 
     QTimer *renderTimer;
     QTimer *graphTimer;
@@ -86,7 +89,7 @@ private slots:
     void renderTypeChanged();
     void openBotEditor();
     void mousePress(QPointF position);
-    void renderGraph();
+    //void renderGraph();
     void renderUI();
     void start();
     void stop();

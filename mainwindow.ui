@@ -100,7 +100,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_3">
        <attribute name="title">
@@ -373,19 +373,19 @@
            <number>100</number>
           </property>
           <property name="value">
-           <number>15</number>
+           <number>3</number>
           </property>
          </widget>
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="label_32">
           <property name="text">
-           <string>Декремент минералов для части мира</string>
+           <string>Размер части минералов</string>
           </property>
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QSpinBox" name="mineralsPartDecrement">
+         <widget class="QSpinBox" name="mineralsPartSize">
           <property name="maximum">
            <number>100</number>
           </property>
@@ -895,48 +895,55 @@
         </widget>
        </item>
        <item row="7" column="1">
-        <widget class="QGroupBox" name="groupBox_8">
+        <widget class="QGroupBox" name="statusGroupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string/>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="KLed" name="status_led">
+           <widget class="QWidget" name="process_time_led" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>15</width>
+              <height>15</height>
+             </size>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Зеленый&lt;/span&gt; цвет - мир работает&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff8000;&quot;&gt;Оранжевый&lt;/span&gt; цвет - мир остановлен&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Красный&lt;/span&gt; цвет - все боты погибли&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="statusTip">
              <string/>
             </property>
-            <property name="whatsThis">
-             <string/>
-            </property>
-            <property name="accessibleDescription">
-             <string/>
-            </property>
-            <property name="shape">
-             <enum>KLed::Circular</enum>
-            </property>
-            <property name="color">
-             <color>
-              <red>255</red>
-              <green>165</green>
-              <blue>0</blue>
-             </color>
-            </property>
            </widget>
           </item>
           <item>
-           <widget class="KLed" name="process_time_led">
+           <widget class="QWidget" name="status_led" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>15</width>
+              <height>15</height>
+             </size>
+            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00ff00;&quot;&gt;Зеленый&lt;/span&gt; цвет - мир успевает обрабатываться&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Красный&lt;/span&gt; цвет - мир не успевает обрабатываться&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="color">
-             <color>
-              <red>133</red>
-              <green>133</green>
-              <blue>133</blue>
-             </color>
             </property>
            </widget>
           </item>
@@ -945,31 +952,6 @@
        </item>
        <item row="8" column="0">
         <widget class="QWidget" name="widget" native="true"/>
-       </item>
-       <item row="10" column="0" colspan="2">
-        <widget class="QwtPlot" name="historyPlot">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="whatsThis">
-          <string>График количества ботов и органики</string>
-         </property>
-         <property name="autoReplot">
-          <bool>true</bool>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
@@ -1041,18 +1023,6 @@
    </widget>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KLed</class>
-   <extends>QWidget</extends>
-   <header>kled.h</header>
-  </customwidget>
-  <customwidget>
-   <class>QwtPlot</class>
-   <extends>QFrame</extends>
-   <header>qwt_plot.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
