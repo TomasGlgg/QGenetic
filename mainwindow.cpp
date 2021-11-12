@@ -45,8 +45,10 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::renderTypeChanged() {
-    renderUI();
-    startMouseHandler();
+    if (worldInited) {
+        renderUI();
+        startMouseHandler();
+    }
 }
 
 void MainWindow::openBotEditor() {
@@ -383,7 +385,7 @@ void MainWindow::renderUI() {
         assert(false);
 
     //world->botsMutex.lock();
-            foreach (Bot *bot, world->bots) {
+    foreach (Bot *bot, world->bots) {
             QColor botColor = getColor(this, bot);
             scene->addRect(bot->getX() * botSize, ui->DrawArea->height() - (bot->getY() * botSize), botSize-1, botSize-1, QPen(botColor), QBrush(botColor));
         }
