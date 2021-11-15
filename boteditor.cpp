@@ -14,6 +14,7 @@ BotEditor::BotEditor(QWidget *parent) :
     infoUpdateTimer = new QTimer(this);
     tableUpdateTimer = new QTimer(this);
     connect(infoUpdateTimer, SIGNAL(timeout()), this, SLOT(renderInfo()));
+    connect(tableUpdateTimer, SIGNAL(timeout()), this, SLOT(renderTable()));
 
     tableSignalMapper = new QSignalMapper(this);
     infoSignalMapper = new QSignalMapper(this);
@@ -29,8 +30,8 @@ BotEditor::BotEditor(QWidget *parent) :
     connect(ui->minerals, SIGNAL(valueChanged(int)), infoSignalMapper, SLOT(map()));
     infoSignalMapper->setMapping(ui->minerals, 4);
 
-    connect(tableSignalMapper, SIGNAL(mapped(int)), this, SLOT(botGenomeEdited(int)));
-    connect(infoSignalMapper, SIGNAL(mapped(int)), this, SLOT(botInfoEdited(int)));
+    connect(tableSignalMapper, SIGNAL(mappedInt(int)), this, SLOT(botGenomeEdited(int)));
+    connect(infoSignalMapper, SIGNAL(mappedInt(int)), this, SLOT(botInfoEdited(int)));
 
     connect(ui->resetSelectionButton, SIGNAL(clicked()), this, SLOT(resetSelection()));
 
@@ -79,32 +80,34 @@ void BotEditor::botGenomeEdited(int genomeIndex) {
     bot->genome[genomeIndex] = newValue;
 }
 
-void BotEditor::disableUI() {
-    ui->tableWidget->setEnabled(false);
-    ui->type->setEnabled(false);
-    ui->energy->setEnabled(false);
-    ui->old->setEnabled(false);
-    ui->iterator->setEnabled(false);
-    ui->minerals->setEnabled(false);
-    ui->photosynthesisUsed->setEnabled(false);
-    ui->mineralsUsed->setEnabled(false);
-    ui->eatStealUsed->setEnabled(false);
-
+void BotEditor::disableUI(bool control) {
+    if (!control) {
+        ui->tableWidget->setEnabled(false);
+        ui->type->setEnabled(false);
+        ui->energy->setEnabled(false);
+        ui->old->setEnabled(false);
+        ui->iterator->setEnabled(false);
+        ui->minerals->setEnabled(false);
+        ui->photosynthesisUsed->setEnabled(false);
+        ui->mineralsUsed->setEnabled(false);
+        ui->eatStealUsed->setEnabled(false);
+    }
     ui->infoDelayUpdate->setEnabled(true);
     ui->tableDelayUpdate->setEnabled(true);
 }
 
-void BotEditor::enableUI() {
-    ui->tableWidget->setEnabled(true);
-    ui->type->setEnabled(true);
-    ui->energy->setEnabled(true);
-    ui->old->setEnabled(true);
-    ui->iterator->setEnabled(true);
-    ui->minerals->setEnabled(true);
-    ui->photosynthesisUsed->setEnabled(true);
-    ui->mineralsUsed->setEnabled(true);
-    ui->eatStealUsed->setEnabled(true);
-
+void BotEditor::enableUI(bool control) {
+    if (!control) {
+        ui->tableWidget->setEnabled(true);
+        ui->type->setEnabled(true);
+        ui->energy->setEnabled(true);
+        ui->old->setEnabled(true);
+        ui->iterator->setEnabled(true);
+        ui->minerals->setEnabled(true);
+        ui->photosynthesisUsed->setEnabled(true);
+        ui->mineralsUsed->setEnabled(true);
+        ui->eatStealUsed->setEnabled(true);
+    }
     ui->infoDelayUpdate->setEnabled(false);
     ui->tableDelayUpdate->setEnabled(false);
 }
@@ -126,6 +129,7 @@ void BotEditor::startMon() {
         infoUpdateTimer->start(ui->infoDelayUpdate->value());
         tableUpdateTimer->start(ui->tableDelayUpdate->value());
         monitoring = true;
+        enableUI(true);
     }
 }
 
@@ -134,12 +138,13 @@ void BotEditor::stopMon() {
         infoUpdateTimer->stop();
         tableUpdateTimer->stop();
         monitoring = false;
+        disableUI(true);
     }
 }
 
 void BotEditor::single() {
-    infoUpdateTimer->singleShot(0, this, SLOT(renderInfo()));
-    tableUpdateTimer->singleShot(0, this, SLOT(renderTable()));
+    renderInfo();
+    renderTable();
 }
 
 void BotEditor::renderTable() {
@@ -155,6 +160,8 @@ void BotEditor::renderTable() {
         int genValue = bot->genome[genomeIndex];
         spinBox->setMinimum(INT_MIN);
         spinBox->setValue(genValue);
+        if (genomeIndex == bot->iterator)
+            spinBox->setStyleSheet("background-color: red");
         ui->tableWidget->setCellWidget(rowIndex, columntIndex, spinBox);
         connect(spinBox, SIGNAL(valueChanged(int)), tableSignalMapper, SLOT(map()));
         tableSignalMapper->setMapping(spinBox, genomeIndex);

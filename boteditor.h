@@ -43,8 +43,8 @@ private:
     bool inited = false;
     bool monitoring = false;
 
-    void disableUI();
-    void enableUI();
+    void disableUI(bool control=false);
+    void enableUI(bool control=false);
 
     void closeEvent(QCloseEvent *event);
 
