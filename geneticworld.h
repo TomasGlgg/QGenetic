@@ -32,7 +32,8 @@ public:  // settings
     uint startWorldMinerals;
     uint mineralsPartSize;
 
-    float mutateChance;
+    float genMutateChance;
+    float botMutateChance;
     uint processDelay;
     uint genomeLen;
     uint maxEnergy;

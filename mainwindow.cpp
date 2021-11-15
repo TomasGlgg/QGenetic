@@ -127,7 +127,8 @@ void MainWindow::initWorld(uint x, uint y) {
 void MainWindow::updateWorldSettings() {
     world->genomeLen = ui->genome_len->value();
     world->maxEnergy = ui->max_energy->value();
-    world->mutateChance = ui->mutation_chance->value();
+    world->genMutateChance = ui->genMutationChance->value();
+    world->botMutateChance = ui->botMutationChance->value();
     world->startWorldPhotosynthesisEnergy = ui->startWorldPhotosynthesis->value();
     world->startWorldMinerals = ui->starWorldMinerals->value();
     world->mineralsPartSize = ui->mineralsPartSize->value();
@@ -154,7 +155,8 @@ void MainWindow::start() {
     ui->genome_len->setEnabled(false);
     ui->timerInterval->setEnabled(false);
     ui->process_delay->setEnabled(false);
-    ui->mutation_chance->setEnabled(false);
+    ui->genMutationChance->setEnabled(false);
+    ui->botMutationChance->setEnabled(false);
     ui->draw_lines->setEnabled(true);
     ui->world_parts_count->setEnabled(false);
     ui->startWorldPhotosynthesis->setEnabled(false);
@@ -222,7 +224,8 @@ void MainWindow::stop() {
     ui->timerInterval->setEnabled(true);
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
-    ui->mutation_chance->setEnabled(true);
+    ui->genMutationChance->setEnabled(true);
+    ui->botMutationChance->setEnabled(true);
     ui->draw_lines->setEnabled(false);
     ui->startWorldPhotosynthesis->setEnabled(true);
     ui->starWorldMinerals->setEnabled(true);
@@ -258,7 +261,8 @@ void MainWindow::newWorld() {
     ui->timerInterval->setEnabled(true);
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
-    ui->mutation_chance->setEnabled(true);
+    ui->genMutationChance->setEnabled(true);
+    ui->botMutationChance->setEnabled(true);
     ui->draw_lines->setEnabled(false);
     ui->world_parts_count->setEnabled(true);
     ui->startWorldPhotosynthesis->setEnabled(true);

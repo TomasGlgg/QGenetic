@@ -131,7 +131,7 @@ bool GeneticWorld::reproduction(Bot *bot) {
     float random;
     for (uint i = 0; i<genomeLen; i++) {
         random = rand()/(RAND_MAX + 1.);
-        if (random<mutateChance) {
+        if (random < genMutateChance) {
             k = rand()%3-1; // [-1, 1]
             new_bot->genome[i] = bot->genome[i] + k;
             mutationCount++;
@@ -163,7 +163,7 @@ void GeneticWorld::organicStep(Bot *bot) {
 }
 
 void GeneticWorld::mutateBotGenome(Bot *bot) {
-    mutateBotGenome(bot, mutateChance);
+    mutateBotGenome(bot, genMutateChance);
 }
 
 void GeneticWorld::mutateBotGenome(Bot *bot, float chance) {
