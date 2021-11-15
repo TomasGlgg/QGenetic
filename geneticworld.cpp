@@ -124,8 +124,9 @@ bool GeneticWorld::reproduction(Bot *bot) {
     if (!checkCoords(xy)) return false;
     Bot *new_bot = newBot(xy[0], xy[1]);
     new_bot->energy = newBotEnergy;
+    new_bot->direction = bot->direction;
 
-    //copy genom and mutate
+    //copy genome and mutate
     int k;
     float random;
     for (uint i = 0; i<genomeLen; i++) {
