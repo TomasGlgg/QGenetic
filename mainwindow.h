@@ -7,6 +7,9 @@
 #include <QGraphicsTextItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QHBoxLayout>
+#include <QChartView>
+#include <QLineSeries>
+#include <QValueAxis>
 
 #include <cmath>
 
@@ -63,15 +66,20 @@ private:
     QGraphicsScene *scene;
     GeneticWorld *world;
     MouseHandlerItem *mousePressHandler;
+    KLed *statusLed;
 
-    KLed *status_led;
-    KLed *process_time_led;
-
+    KLed *processTimeLed;
     QTimer *renderTimer;
-    QTimer *graphTimer;
 
-    QPolygonF aliveBotHistory;
-    QPolygonF organicBotHistory;
+    QTimer *graphTimer;
+    QChart *historyPlot;
+
+    QValueAxis *historyAxisX;
+    QValueAxis *historyAxisY;
+    QGridLayout *historyLayout;
+    QChartView *historyView;
+    QLineSeries *aliveBotHistory;
+    QLineSeries *organicBotHistory;
 
     uint botSize;
     bool worldInited = false;
@@ -83,13 +91,14 @@ private:
     void initWorld(uint x, uint y);
     void updateWorldSettings();
     void startMouseHandler();
+    void renderGraph(bool reset);
     void closeEvent(QCloseEvent *event);
 
 private slots:
     void renderTypeChanged();
+    void renderGraph();
     void openBotEditor();
     void mousePress(QPointF position);
-    //void renderGraph();
     void renderUI();
     void start();
     void stop();

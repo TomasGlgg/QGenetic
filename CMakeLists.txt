@@ -9,6 +9,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 COMPONENTS
         Core
         Widgets
+        Charts
         )
 
 add_executable(QGenetic main.cpp
@@ -21,4 +22,5 @@ add_executable(QGenetic main.cpp
 target_link_libraries(QGenetic
         Qt::Core
         Qt::Widgets
+        Qt::Charts
         )

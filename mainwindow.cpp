@@ -30,14 +30,46 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->radioColorByOld, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
 
     connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderUI()));
-    //connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
+    connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
 
-    status_led = new KLed(ui->status_led);
-    status_led->setShape(KLed::Circular);
-    status_led->setColor(QColor(255, 165, 0));  // orange
+    statusLed = new KLed(ui->statusLed);
+    statusLed->setShape(KLed::Circular);
+    statusLed->setColor(QColor(255, 165, 0));  // orange
 
-    process_time_led = new KLed(ui->process_time_led);
-    process_time_led->setColor(Qt::gray);
+    processTimeLed = new KLed(ui->processTimeLed);
+    processTimeLed->setColor(Qt::gray);
+
+    // Plotting
+    aliveBotHistory = new QLineSeries();
+    organicBotHistory = new QLineSeries();
+    *aliveBotHistory << QPoint(0, 0);
+    *organicBotHistory << QPoint(0, 0);
+    aliveBotHistory->setName("Живые");
+    organicBotHistory->setName("Органика");
+    aliveBotHistory->setColor(Qt::green);
+    organicBotHistory->setColor(Qt::gray);
+
+    historyPlot = new QChart();
+    historyAxisX = new QValueAxis();
+    historyAxisY = new QValueAxis();
+    historyPlot->addSeries(aliveBotHistory);
+    historyPlot->addSeries(organicBotHistory);
+    historyPlot->addAxis(historyAxisX, Qt::AlignBottom);
+    historyPlot->addAxis(historyAxisY, Qt::AlignLeft);
+    aliveBotHistory->attachAxis(historyAxisX);
+    aliveBotHistory->attachAxis(historyAxisY);
+    organicBotHistory->attachAxis(historyAxisX);
+    organicBotHistory->attachAxis(historyAxisY);
+
+    historyLayout = new QGridLayout(ui->historyView);
+    historyView = new QChartView(historyPlot);
+    historyLayout->addWidget(historyView);
+    historyView->setRenderHint(QPainter::Antialiasing);
+    historyView->setParent(ui->historyView);
+    historyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    ui->splitter->setStretchFactor(0, 1);
+    ui->splitter->setStretchFactor(1, 5);
 }
 
 MainWindow::~MainWindow() {
@@ -142,7 +174,7 @@ void MainWindow::start() {
 
     //graph
     if (ui->groupBox_graph->isChecked()) {
-        //ui->historyPlot->setEnabled(true);
+        historyPlot->setEnabled(true);
         graphTimer->start(ui->graph_freq->value());
     }
     ui->groupBox_graph->setEnabled(false);
@@ -159,8 +191,6 @@ void MainWindow::start() {
         uint windowH = botSize * world->maxY;
         ui->DrawArea->setMinimumSize(windowW, windowH);
         ui->DrawArea->setMaximumSize(windowW, windowH);
-        ui->dockWidget->setMinimumSize(ui->dockWidget->width(), ui->dockWidget->height());
-        ui->dockWidget->setMaximumSize(ui->dockWidget->width(), ui->dockWidget->height());
         scene->setSceneRect(0, botSize*2, ui->DrawArea->width(), ui->DrawArea->height());
 
         QString strSize = QString::number(world->maxX) + " x " + QString::number(world->maxY) + " (" + QString::number(world->maxBotCount) + ")";
@@ -168,10 +198,10 @@ void MainWindow::start() {
         ui->bot_completion->setMaximum(world->maxBotCount);
         ui->bot_completion->setFormat("%v/" + QString::number(world->maxBotCount) + " (%p%)");
 
-        aliveBotHistory.clear();
-        organicBotHistory.clear();
-        aliveBotHistory << QPointF(0, 0);
-        organicBotHistory << QPointF(0, 0);
+        aliveBotHistory->clear();
+        organicBotHistory->clear();
+        *aliveBotHistory << QPoint(0, 0);
+        *organicBotHistory << QPoint(0, 0);
     }
     updateWorldSettings();
 
@@ -179,7 +209,7 @@ void MainWindow::start() {
     world->start();
     renderTimer->start(ui->timerInterval->value());
     botEditorWindow->startMon();
-    status_led->setColor(QColor(0, 255, 0));
+    statusLed->setColor(QColor(0, 255, 0));
 }
 
 void MainWindow::stop() {
@@ -208,11 +238,11 @@ void MainWindow::stop() {
 
     //graph
     ui->groupBox_graph->setEnabled(true);
-    //ui->historyPlot->setEnabled(false);
+    historyPlot->setEnabled(false);
     ui->groupBox_graph->setEnabled(true);
 
     renderUI();  // render last
-    status_led->setColor(QColor(255, 128, 0));
+    statusLed->setColor(QColor(255, 128, 0));
     botEditorWindow->stopMon();
     startMouseHandler();
 }
@@ -247,8 +277,7 @@ void MainWindow::newWorld() {
     ui->mutateAttackChance->setEnabled(true);
 
     //graph
-    //ui->historyPlot->detachItems();
-    //ui->historyPlot->setEnabled(false);
+    historyPlot->setEnabled(false);
     ui->groupBox_graph->setEnabled(true);
 
     ui->generation->setText("0");
@@ -258,15 +287,14 @@ void MainWindow::newWorld() {
     ui->bot_count->display(0);
     ui->processing_time->setText("0");
     ui->bot_completion->setValue(0);
-    status_led->setColor(QColor(255, 128, 0));
-    process_time_led->setColor(QColor(123, 123, 123));
+    statusLed->setColor(QColor(255, 128, 0));
+    processTimeLed->setColor(QColor(123, 123, 123));
     ui->DrawArea->setMinimumSize(0, 0);
     ui->DrawArea->setMaximumSize(16777215, 16777215);
-    ui->dockWidget->setMinimumSize(0, 0);
-    ui->dockWidget->setMaximumSize(16777215, 16777215);
     scene->clear();
     worldInited = false;
     delete world;
+    renderGraph(true);
 }
 
 void MainWindow::startMouseHandler() {
@@ -312,32 +340,69 @@ QColor MainWindow::botColorByOld(Bot *bot) {
     return QColor(255, 255-color, 0);
 }
 
-/*void MainWindow::renderGraph() {
-    uint aliveBotCount = world->aliveBotsCount;
-    uint organicBotCount = world->bots.size() - aliveBotCount;
-    aliveBotHistory << QPointF(aliveBotHistory[aliveBotHistory.size()-1].x()+1, aliveBotCount);
-    organicBotHistory << QPointF(organicBotHistory[organicBotHistory.size()-1].x()+1, organicBotCount);
+void MainWindow::renderGraph() {
+    renderGraph(false);
+}
 
-    if (aliveBotHistory.size() > ui->graph_count->value()) {
-        aliveBotHistory.pop_front();
-        organicBotHistory.pop_front();
+void MainWindow::renderGraph(bool reset) {  // find max and set range
+    static int x = 0;
+    static int Max = 0;
+    static int maxCount = 0;
+    static int preMax = 0;
+    static int preMaxCount = 0;
+    if (reset) {
+        x = Max = maxCount = preMax = preMaxCount = 0;
+        aliveBotHistory->clear();
+        organicBotHistory->clear();
+        *aliveBotHistory << QPoint(0, 0);
+        *organicBotHistory << QPoint(0, 0);
+        return;
+    }
+    x++;
+    int aliveBotCount = world->aliveBotsCount;
+    int organicBotCount = world->bots.size() - aliveBotCount;
+    int currentMax = std::max(aliveBotCount, organicBotCount);
+
+    if (currentMax > Max) {
+        preMax = Max;
+        Max = currentMax;
+        preMaxCount = maxCount;
+        maxCount = 1;
+        historyAxisY->setRange(0, Max);
+    } else if (currentMax == Max) {
+        maxCount++;
+    } else if (currentMax > preMax) {
+        preMax = currentMax;
+        preMaxCount = 1;
+    } else if (currentMax == preMax) {
+        preMaxCount++;
     }
 
-    QwtPlotCurve *aliveHistoryCurve = new QwtPlotCurve();
-    QwtPlotCurve *organicHistoryCurve = new QwtPlotCurve();
-    aliveHistoryCurve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
-    organicHistoryCurve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
+    *aliveBotHistory << QPoint(x, aliveBotCount);
+    *organicBotHistory << QPoint(x, organicBotCount);
 
-    aliveHistoryCurve->setPen(Qt::red, 1);
-    aliveHistoryCurve->setSamples(aliveBotHistory);
+    if (aliveBotHistory->count() > ui->graph_count->value()) {
+        int lastMaxElement = std::max(aliveBotHistory->at(0).y(), organicBotHistory->at(0).y());
+        if (lastMaxElement == Max) {
+            maxCount--;
+            if (!maxCount) {
+                Max = preMax;
+                preMax = 0;
+                maxCount = 1;
+                historyAxisY->setRange(0, Max);
+            }
+        } else if (lastMaxElement == preMax) {
+            preMaxCount--;
+            if (!preMaxCount) preMax = 0;
+        }
 
-    organicHistoryCurve->setPen(Qt::blue, 1);
-    organicHistoryCurve->setSamples(organicBotHistory);
 
-    ui->historyPlot->detachItems();
-    aliveHistoryCurve->attach(ui->historyPlot);
-    organicHistoryCurve->attach(ui->historyPlot);
-}*/
+        aliveBotHistory->remove(0);
+        organicBotHistory->remove(0);
+    }
+
+    historyAxisX->setRange(x-aliveBotHistory->count()+1, x);
+}
 
 QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color) {
     QGraphicsTextItem *textItem = new QGraphicsTextItem(text);
@@ -351,9 +416,9 @@ void MainWindow::renderUI() {
 
     // process time led
     if (world->processDelay) {
-        if (world->processingTime >= world->processDelay*1000) process_time_led->setColor(Qt::red);
-        else process_time_led->setColor(Qt::green);
-    } else process_time_led->setColor(Qt::gray);
+        if (world->processingTime >= world->processDelay*1000) processTimeLed->setColor(Qt::red);
+        else processTimeLed->setColor(Qt::green);
+    } else processTimeLed->setColor(Qt::gray);
 
     uint botCount = world->bots.size();
     uint aliveBotCount = world->aliveBotsCount;
@@ -366,7 +431,7 @@ void MainWindow::renderUI() {
         botEditorWindow->stopMon();
         ui->newWorldButton->setEnabled(true);
         ui->stopButton->setEnabled(false);
-        status_led->setColor(Qt::red);
+        statusLed->setColor(Qt::red);
         return;
     }
 
@@ -414,7 +479,7 @@ void MainWindow::renderUI() {
                 scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height - 25, Qt::white));
         }
 
-        /*
+        /* // Debug
         uint last_energy_p = 0, last_energy_m = 0, energy;
         for (uint i = world->maxY; i>0; --i) {
             energy = world->getPhotosynthesisEnergy(i);
