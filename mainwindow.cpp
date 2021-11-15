@@ -477,7 +477,7 @@ void MainWindow::renderUI() {
             coordinates_y = world->partLenght * part;
             if (current_height != 0)
                 scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(Qt::gray));
-            if (!(part%world->startWorldMinerals) && part < world->mineralsPartSize*world->startWorldMinerals)  // minerals
+            if (!(part%world->mineralsPartSize) && part < world->mineralsPartSize*world->startWorldMinerals)  // minerals
                 scene->addItem(textWidget(QString::number(world->getMineralsCount(coordinates_y)), 0, current_height - 25, Qt::white));
             if (part >= (world->worldPartsCount - world->startWorldPhotosynthesisEnergy)) // photosynthesis
                 scene->addItem(textWidget(QString::number(world->getPhotosynthesisEnergy(coordinates_y)), ui->DrawArea->width() - 20, current_height - 25, Qt::white));
