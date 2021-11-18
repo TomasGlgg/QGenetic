@@ -28,7 +28,7 @@ public:
     ulong getHash();
     void genomeStatisticInit();
 
-    QList<int> genome;
+    QList<int8_t> genome;
 
     uint direction = 0;
     int energy;

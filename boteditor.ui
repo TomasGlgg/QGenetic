@@ -36,14 +36,14 @@
        <string>Управление</string>
       </property>
       <layout class="QFormLayout" name="formLayout_3">
-       <item row="1" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="label_9">
          <property name="text">
           <string>Задержка обновления таблицы</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="3" column="1">
         <widget class="QSpinBox" name="tableDelayUpdate">
          <property name="minimum">
           <number>100</number>
@@ -53,14 +53,14 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="label_10">
          <property name="text">
           <string>Задерэка обновления инф-ии</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="4" column="1">
         <widget class="QSpinBox" name="infoDelayUpdate">
          <property name="minimum">
           <number>10</number>
@@ -74,6 +74,20 @@
         <widget class="QPushButton" name="resetSelectionButton">
          <property name="text">
           <string>Сброс выделения</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QPushButton" name="saveGenomeButton">
+         <property name="text">
+          <string>Сохранить геном в файл</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QPushButton" name="loadGenomeButton">
+         <property name="text">
+          <string>Загрузить геном из файла</string>
          </property>
         </widget>
        </item>

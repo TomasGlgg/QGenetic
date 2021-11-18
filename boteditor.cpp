@@ -47,6 +47,7 @@ BotEditor::~BotEditor() {
 
 void BotEditor::resetSelection() {
     stopMon();
+    bot->monitoring = false;
     disconnect(bot, SIGNAL(botKilled()));
     inited = false;
     bot = nullptr;
@@ -113,6 +114,11 @@ void BotEditor::enableUI(bool control) {
 }
 
 void BotEditor::loadBot(Bot *bot) {
+    if (this->bot != nullptr) {
+        this->bot->monitoring = false;
+        disconnect(bot, SIGNAL(botKilled()));
+    }
+
     this->bot = bot;
     bot->monitoring = true;
     connect(bot, SIGNAL(botKilled()), this, SLOT(botKilled()));
