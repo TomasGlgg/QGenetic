@@ -32,7 +32,6 @@ public:  // settings
     uint startWorldMinerals;
     uint mineralsPartSize;
 
-    float genMutateChance;
     float botMutateChance;
     uint processDelay;
     uint genomeLen;
@@ -48,15 +47,13 @@ public:  // settings
 
     // commands settings
     float eatK;
-    float mutateAttackChance;
+    uint mutateAttackCount;
 
     int maxX, maxY;
-    uint partLenght;
+    uint partLength;
 
     //statistic
-    uint kills = 0;
     uint generation = 0;
-    uint mutationCount = 0;
     uint aliveBotsCount = 0;
 
     uint processingTime = 0;
@@ -69,7 +66,6 @@ private:
     QList<Bot*> killedBots;
 
     void mutateBotGenome(Bot *bot);
-    void mutateBotGenome(Bot *bot, float chance);
     uint botPart(Bot *bot);
     void moveBot(Bot *bot, int *xy);
     bool reproduction(Bot *bot);

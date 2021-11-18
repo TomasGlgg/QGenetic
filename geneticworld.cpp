@@ -40,18 +40,18 @@ inline bool GeneticWorld::eatOrganic(Bot *bot) {
 }
 
 uint GeneticWorld::botPart(Bot *bot) {
-    return floorDivision(bot->getY(), partLenght);
+    return floorDivision(bot->getY(), partLength);
 }
 
 uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
-    uint part = floorDivision(y, partLenght);
+    uint part = floorDivision(y, partLength);
     if (part >= (worldPartsCount - startWorldPhotosynthesisEnergy))
         return startWorldPhotosynthesisEnergy - (worldPartsCount - part) + 1;
     return 0;
 }
 
 uint GeneticWorld::getMineralsCount(uint y) {
-    uint part = floorDivision(y, partLenght);
+    uint part = floorDivision(y, partLength);
     if (part < mineralsPartSize*startWorldMinerals)
         return startWorldMinerals-floorDivision(part, mineralsPartSize);
     return 0;
@@ -125,18 +125,14 @@ bool GeneticWorld::reproduction(Bot *bot) {
     Bot *new_bot = newBot(xy[0], xy[1]);
     new_bot->energy = newBotEnergy;
     new_bot->direction = bot->direction;
+    new_bot->genome = QList(bot->genome);
 
     //copy genome and mutate
     int k;
     float random;
-    for (uint i = 0; i<genomeLen; i++) {
-        random = rand()/(RAND_MAX + 1.);
-        if (random < genMutateChance) {
-            k = rand()%3-1; // [-1, 1]
-            new_bot->genome[i] = bot->genome[i] + k;
-            mutationCount++;
-        } else
-            new_bot->genome[i] = bot->genome[i];
+    random = rand()/(RAND_MAX + 1.);
+    if (random < botMutateChance) {
+        mutateBotGenome(new_bot);
     }
     new_bot->genomeStatisticInit();
     return true;
@@ -163,18 +159,9 @@ void GeneticWorld::organicStep(Bot *bot) {
 }
 
 void GeneticWorld::mutateBotGenome(Bot *bot) {
-    mutateBotGenome(bot, genMutateChance);
-}
-
-void GeneticWorld::mutateBotGenome(Bot *bot, float chance) {
-    int k;
-    float random;
-    for (uint i = 0; i<genomeLen; i++) {
-        random = rand()/(RAND_MAX + 1.);
-        if (random<chance) {
-            k = rand()%3-1; // [-1, 1]
-            bot->genome[i] += k;
-        }
+    for (int i = 0; i<mutateAttackCount; i++) {
+        int index = rand() % genomeLen;
+        bot->genome[index] += rand()%10-5;
     }
     bot->genomeStatisticInit();
 }
@@ -251,7 +238,6 @@ void GeneticWorld::botStep(Bot *bot) {
                         bot->minerals -= targetBot->minerals;
                         bot->energy += targetBot->energy * eatK;
                         eatBot(targetBot, true);
-                        kills++;
                     } else {
                         targetBot->minerals -= bot->minerals;
                         bot->minerals = 0;
@@ -329,7 +315,7 @@ void GeneticWorld::botStep(Bot *bot) {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
-            if (bots.contains(target_hash)) mutateBotGenome(bots.value(target_hash), mutateAttackChance);
+            if (bots.contains(target_hash)) mutateBotGenome(bots.value(target_hash));
         }
 
         default: {  // unconditional transfer
@@ -381,8 +367,7 @@ void GeneticWorld::run() {
             }
             bot->old++;
         }
-        if (killedBots.size())
-            clearKilled();
+        if (killedBots.size()) clearKilled();
         if (!organicEnabled) assert((uint)bots.size() == aliveBotsCount);
         generation++;
 
