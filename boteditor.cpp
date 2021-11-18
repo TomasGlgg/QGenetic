@@ -121,6 +121,24 @@ void BotEditor::loadBot(Bot *bot) {
     uint rowCount = ceil(static_cast<float>(bot->genome.size()) / static_cast<float>(columntCount));
     ui->tableWidget->setRowCount(rowCount);
     ui->tableWidget->setVerticalHeaderLabels(progression(rowCount));
+
+    // init table
+    for (uint genomeIndex = 0; genomeIndex < (uint)bot->genome.size(); genomeIndex++) {
+        uint columntIndex = genomeIndex%columntCount;
+        uint rowIndex = floorDivision(genomeIndex, columntCount);
+
+        QSpinBox *spinBox = new QSpinBox();
+        //QSpinBox *spinBox = qobject_cast<QSpinBox*>(ui->tableWidget->cellWidget(rowIndex, columntIndex));
+        int genValue = bot->genome[genomeIndex];
+        spinBox->setMinimum(INT_MIN);
+        spinBox->setValue(genValue);
+        if (genomeIndex == bot->iterator) {
+            spinBox->setStyleSheet("background-color: red");
+        }
+        ui->tableWidget->setCellWidget(rowIndex, columntIndex, spinBox);
+        connect(spinBox, SIGNAL(valueChanged(int)), tableSignalMapper, SLOT(map()));
+        tableSignalMapper->setMapping(spinBox, genomeIndex);
+    }
 }
 
 void BotEditor::startMon() {
@@ -156,13 +174,16 @@ void BotEditor::renderTable() {
         uint columntIndex = genomeIndex%columntCount;
         uint rowIndex = floorDivision(genomeIndex, columntCount);
 
-        QSpinBox *spinBox = new QSpinBox();
+        //QSpinBox *spinBox = new QSpinBox();
+        QSpinBox *spinBox = qobject_cast<QSpinBox*>(ui->tableWidget->cellWidget(rowIndex, columntIndex));
         int genValue = bot->genome[genomeIndex];
         spinBox->setMinimum(INT_MIN);
         spinBox->setValue(genValue);
         if (genomeIndex == bot->iterator)
             spinBox->setStyleSheet("background-color: red");
-        ui->tableWidget->setCellWidget(rowIndex, columntIndex, spinBox);
+        else
+            spinBox->setStyleSheet("");
+        //ui->tableWidget->setCellWidget(rowIndex, columntIndex, spinBox);
         connect(spinBox, SIGNAL(valueChanged(int)), tableSignalMapper, SLOT(map()));
         tableSignalMapper->setMapping(spinBox, genomeIndex);
     }
