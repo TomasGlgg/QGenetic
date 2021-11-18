@@ -53,6 +53,13 @@ void BotEditor::resetSelection() {
     bot->monitoring = false;
     disconnect(bot, SIGNAL(botKilled()));
     inited = false;
+    for (uint genomeIndex = 0; genomeIndex < bot->genome.size(); genomeIndex++) {  // reset table
+        uint columntIndex = genomeIndex % columnCount;
+        uint rowIndex = floorDivision(genomeIndex, columnCount);
+        QSpinBox *spinBox = qobject_cast<QSpinBox*>(ui->tableWidget->cellWidget(rowIndex, columntIndex));
+        spinBox->setStyleSheet("");
+        spinBox->setValue(0);
+    }
     bot = nullptr;
     disableUI();
 }
@@ -132,7 +139,7 @@ void BotEditor::loadBot(Bot *bot) {
     ui->tableWidget->setVerticalHeaderLabels(progression(rowCount));
 
     // init table
-    for (uint genomeIndex = 0; genomeIndex < (uint)bot->genome.size(); genomeIndex++) {
+    for (uint genomeIndex = 0; genomeIndex < bot->genome.size(); genomeIndex++) {
         uint columntIndex = genomeIndex % columnCount;
         uint rowIndex = floorDivision(genomeIndex, columnCount);
 
@@ -210,8 +217,6 @@ void BotEditor::renderInfo() {
     ui->type->setCurrentIndex(bot->type);
     infoSignalMapper->blockSignals(false);
 }
-
-
 
 
 void BotEditor::botKilled() {
