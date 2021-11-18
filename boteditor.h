@@ -5,6 +5,8 @@
 #include <QTimer>
 #include <QSpinBox>
 #include <QSignalMapper>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include <cmath>
 
@@ -27,8 +29,6 @@ public:
     void stopMon();
     void single();
 
-    Bot* getBot();
-
 
 private:
     Ui::BotEditor *ui;
@@ -38,13 +38,16 @@ private:
     QTimer *tableUpdateTimer;
     Bot *bot;
 
-    uint columntCount = 10;
+    uint columnCount = 10;
 
     bool inited = false;
     bool monitoring = false;
 
     void disableUI(bool control=false);
     void enableUI(bool control=false);
+
+    void genome2File(QFile *file);
+    void file2Genome(QFile *file);
 
     void closeEvent(QCloseEvent *event);
 
@@ -57,6 +60,9 @@ private slots:
     void botKilled();
     void botInfoEdited(int index);
     void botGenomeEdited(int genomeIndex);
+
+    void saveGenome();
+    void loadGenome();
 };
 
 QStringList progression(uint max);

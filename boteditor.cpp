@@ -35,7 +35,10 @@ BotEditor::BotEditor(QWidget *parent) :
 
     connect(ui->resetSelectionButton, SIGNAL(clicked()), this, SLOT(resetSelection()));
 
-    ui->tableWidget->setHorizontalHeaderLabels(progression(columntCount));
+    connect(ui->loadGenomeButton, SIGNAL(clicked()), this, SLOT(loadGenome()));
+    connect(ui->saveGenomeButton, SIGNAL(clicked()), this, SLOT(saveGenome()));
+
+    ui->tableWidget->setHorizontalHeaderLabels(progression(columnCount));
     ui->splitter->setStretchFactor(0, 0);
     ui->splitter->setStretchFactor(1, 1);
     ui->splitter->setStretchFactor(2, 0);
@@ -75,8 +78,8 @@ void BotEditor::botInfoEdited(int index) {
 }
 
 void BotEditor::botGenomeEdited(int genomeIndex) {
-    uint rowIndex = floorDivision(genomeIndex, columntCount);
-    uint columnIndex = genomeIndex%columntCount;
+    uint rowIndex = floorDivision(genomeIndex, columnCount);
+    uint columnIndex = genomeIndex % columnCount;
     uint newValue = ((QSpinBox*)ui->tableWidget->cellWidget(rowIndex, columnIndex))->value();
     bot->genome[genomeIndex] = newValue;
 }
@@ -114,7 +117,7 @@ void BotEditor::enableUI(bool control) {
 }
 
 void BotEditor::loadBot(Bot *bot) {
-    if (this->bot != nullptr) {
+    if (inited) {
         this->bot->monitoring = false;
         disconnect(bot, SIGNAL(botKilled()));
     }
@@ -124,14 +127,14 @@ void BotEditor::loadBot(Bot *bot) {
     connect(bot, SIGNAL(botKilled()), this, SLOT(botKilled()));
     inited = true;
     enableUI();
-    uint rowCount = ceil(static_cast<float>(bot->genome.size()) / static_cast<float>(columntCount));
+    uint rowCount = ceil(static_cast<float>(bot->genome.size()) / static_cast<float>(columnCount));
     ui->tableWidget->setRowCount(rowCount);
     ui->tableWidget->setVerticalHeaderLabels(progression(rowCount));
 
     // init table
     for (uint genomeIndex = 0; genomeIndex < (uint)bot->genome.size(); genomeIndex++) {
-        uint columntIndex = genomeIndex%columntCount;
-        uint rowIndex = floorDivision(genomeIndex, columntCount);
+        uint columntIndex = genomeIndex % columnCount;
+        uint rowIndex = floorDivision(genomeIndex, columnCount);
 
         QSpinBox *spinBox = new QSpinBox();
         //QSpinBox *spinBox = qobject_cast<QSpinBox*>(ui->tableWidget->cellWidget(rowIndex, columntIndex));
@@ -177,8 +180,8 @@ void BotEditor::renderTable() {
         return;
     }
     for (uint genomeIndex = 0; genomeIndex < (uint)bot->genome.size(); genomeIndex++) {
-        uint columntIndex = genomeIndex%columntCount;
-        uint rowIndex = floorDivision(genomeIndex, columntCount);
+        uint columntIndex = genomeIndex % columnCount;
+        uint rowIndex = floorDivision(genomeIndex, columnCount);
 
         //QSpinBox *spinBox = new QSpinBox();
         QSpinBox *spinBox = qobject_cast<QSpinBox*>(ui->tableWidget->cellWidget(rowIndex, columntIndex));
@@ -209,22 +212,68 @@ void BotEditor::renderInfo() {
 }
 
 
+
+
 void BotEditor::botKilled() {
     infoSignalMapper->blockSignals(true);
     bot = nullptr;
     stopMon();
     inited = false;
-    ui->type->setCurrentIndex(KILLED);
+    ui->type->setCurrentIndex(DEAD);
     disableUI();
-}
-
-Bot* BotEditor::getBot() {
-    return bot;
 }
 
 void BotEditor::closeEvent(QCloseEvent *event) {
     stopMon();
     QWidget::closeEvent(event);
+}
+
+void BotEditor::genome2File(QFile *file) {
+    QByteArray bytes;
+    bytes.resize(bot->genome.size());
+    for (int i = 0; i<bot->genome.size(); i++)
+        bytes[i] = bot->genome[i];
+    file->write(bytes);
+}
+
+void BotEditor::file2Genome(QFile *file) {
+    for (int i = 0; i<bot->genome.size(); i++)
+        bot->genome[i] = file->read(1)[0];
+}
+
+void BotEditor::saveGenome() {
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Сохранить файл генома"), "",
+                                                    tr("Genome files (*.gen)"));
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::critical(this, tr("Ошибка"),
+                              tr("Не удалось открыть файл"));
+        return;
+    }
+
+    genome2File(&file);
+    file.close();
+}
+
+void BotEditor::loadGenome() {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Открыть файл генома"), "",
+                                                    tr("Genome files (*.gen)"));
+    if (!fileName.count()) return;
+    QFileInfo info(fileName);
+    if (info.size() != bot->genome.size()) {  // 1 gen == 1 byte
+        QMessageBox::critical(this, tr("Ошибка"),
+                              tr("Неверный размер файла. Размеры геномов не совпадают?"));
+        return;
+    }
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::critical(this, tr("Ошибка"),
+                              tr("Не удалось открыть файл"));
+        return;
+    }
+    file2Genome(&file);
+    file.close();
+    renderTable();
 }
 
 QStringList progression(uint max) {
