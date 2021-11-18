@@ -10,6 +10,7 @@
 #include <QChartView>
 #include <QLineSeries>
 #include <QValueAxis>
+#include <QPair>
 
 #include <cmath>
 
@@ -88,9 +89,11 @@ private:
     QColor botColorByEnergy(Bot *bot);
     QColor botColorByUsedGens(Bot *bot);
     QColor botColorByOld(Bot *bot);
+    QColor botColorByMinerals(Bot *bot);
     void initWorld(uint x, uint y);
     void updateWorldSettings();
     void startMouseHandler();
+    QPair<QPair<int, int>, QPair<int, int>> _find2Max();
     void renderGraph(bool reset);
     void closeEvent(QCloseEvent *event);
 

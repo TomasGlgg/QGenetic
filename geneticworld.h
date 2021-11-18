@@ -2,7 +2,7 @@
 #define GENETICWORLD_H
 
 #include <QThread>
-#include <QList>
+#include <QSet>
 #include <QHash>
 #include <QMutex>
 #include <QElapsedTimer>
@@ -24,7 +24,7 @@ public:  // settings
     Bot *newBot(uint x, uint y);
     void stop();
 
-    uint getPhotosynthesisEnergy(uint y);
+    uint getPhotosynthesisEnergy(int y);
     uint getMineralsCount(uint y);
 
     uint worldPartsCount;
@@ -50,7 +50,7 @@ public:  // settings
     uint mutateAttackCount;
 
     int maxX, maxY;
-    uint partLength;
+    int partLength;
 
     //statistic
     uint generation = 0;
@@ -63,10 +63,10 @@ public:  // settings
 
 private:
     bool runFlag;
-    QList<Bot*> killedBots;
+    QSet<Bot*> killedBots;
 
     void mutateBotGenome(Bot *bot);
-    uint botPart(Bot *bot);
+    inline uint botPart(Bot *bot);
     void moveBot(Bot *bot, int *xy);
     bool reproduction(Bot *bot);
     int* oppositeBot(Bot *bot, int *xy);
@@ -75,7 +75,7 @@ private:
     void organicStep(Bot *bot);
     void botStep(Bot *bot);
     inline void eatBot(Bot *bot, bool noOrganic=false);
-    inline bool eatOrganic(Bot *bot);
+    inline void killOrganic(Bot *bot);
     void clearKilled();
 };
 

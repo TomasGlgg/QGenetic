@@ -9,7 +9,7 @@
 enum BotType {
     ALIVE,
     ORGANIC,
-    KILLED
+    DEAD
 };
 
 class Bot : public QObject {

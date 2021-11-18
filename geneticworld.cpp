@@ -29,21 +29,21 @@ inline void GeneticWorld::eatBot(Bot *bot, bool noOrganic) {
         bot->old = 0;
         aliveBotsCount--;
      } else {
-        if (eatOrganic(bot)) aliveBotsCount--;
+        killOrganic(bot);
+        aliveBotsCount--;
     }
 }
 
-inline bool GeneticWorld::eatOrganic(Bot *bot) {
-    bot->type = KILLED;
-    killedBots.push_back(bot);
-    return true;
+inline void GeneticWorld::killOrganic(Bot *bot) {
+    bot->type = DEAD;
+    killedBots << bot;
 }
 
-uint GeneticWorld::botPart(Bot *bot) {
+inline uint GeneticWorld::botPart(Bot *bot) {
     return floorDivision(bot->getY(), partLength);
 }
 
-uint GeneticWorld::getPhotosynthesisEnergy(uint y) {
+uint GeneticWorld::getPhotosynthesisEnergy(int y) {
     uint part = floorDivision(y, partLength);
     if (part >= (worldPartsCount - startWorldPhotosynthesisEnergy))
         return startWorldPhotosynthesisEnergy - (worldPartsCount - part) + 1;
@@ -148,7 +148,7 @@ void GeneticWorld::moveBot(Bot *bot, int *xy) {
 
 void GeneticWorld::organicStep(Bot *bot) {
     if (bot->old >= maxOrganicOld) {
-        eatOrganic(bot);
+        killOrganic(bot);
         return;
     }
     int xy[2];
@@ -221,7 +221,7 @@ void GeneticWorld::botStep(Bot *bot) {
                 Bot* target_bot = bots.value(target_hash);
                 if (target_bot->type == ORGANIC) {
                     bot->energy += organicEnergy;
-                    eatOrganic(target_bot);
+                    killOrganic(target_bot);
                 }
             }
             break;
@@ -363,6 +363,9 @@ void GeneticWorld::run() {
                 case ORGANIC: {
                     organicStep(bot);
                     break;
+                }
+                case DEAD: {
+                    killedBots << bot;
                 }
             }
             bot->old++;

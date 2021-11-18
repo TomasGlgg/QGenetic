@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     scene = new QGraphicsScene(this);
-    botEditorWindow = new BotEditor();
+    botEditorWindow = new BotEditor(this);
     renderTimer = new QTimer(this);
     graphTimer = new QTimer(this);
 
@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->radioColorByGensType, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
     connect(ui->radioColorByEnergyCount, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
     connect(ui->radioColorByOld, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
+    connect(ui->radioColorByMineralsCount, SIGNAL(clicked()), this, SLOT(renderTypeChanged()));
 
     connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderUI()));
     connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
@@ -68,8 +69,6 @@ MainWindow::MainWindow(QWidget *parent)
     historyView->setParent(ui->historyView);
     historyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    ui->splitter->setStretchFactor(0, 1);
-    ui->splitter->setStretchFactor(1, 5);
 }
 
 MainWindow::~MainWindow() {
@@ -108,9 +107,9 @@ void MainWindow::initWorld(uint x, uint y) {
     world = new GeneticWorld();
     world->genomeLen = ui->genome_len->value();
     world->worldPartsCount = ui->world_parts_count->value();
-    world->partLenght = floorDivision(y, world->worldPartsCount);
+    world->partLength = floorDivision(y, world->worldPartsCount);
 
-    y = (world->worldPartsCount*world->partLenght);
+    y = (world->worldPartsCount*world->partLength);
 
     world->maxX = x;
     world->maxY = y;
@@ -127,7 +126,6 @@ void MainWindow::initWorld(uint x, uint y) {
 void MainWindow::updateWorldSettings() {
     world->genomeLen = ui->genome_len->value();
     world->maxEnergy = ui->max_energy->value();
-    world->genMutateChance = ui->genMutationChance->value();
     world->botMutateChance = ui->botMutationChance->value();
     world->startWorldPhotosynthesisEnergy = ui->startWorldPhotosynthesis->value();
     world->startWorldMinerals = ui->starWorldMinerals->value();
@@ -143,7 +141,7 @@ void MainWindow::updateWorldSettings() {
     ui->bot_completion->setMaximum(world->maxBotCount);
 
     world->eatK = ui->eat_k->value();
-    world->mutateAttackChance = ui->mutateAttackChance->value();
+    world->mutateAttackCount = ui->mutateAttackCount->value();
 }
 
 void MainWindow::start() {
@@ -155,7 +153,6 @@ void MainWindow::start() {
     ui->genome_len->setEnabled(false);
     ui->timerInterval->setEnabled(false);
     ui->process_delay->setEnabled(false);
-    ui->genMutationChance->setEnabled(false);
     ui->botMutationChance->setEnabled(false);
     ui->draw_lines->setEnabled(true);
     ui->world_parts_count->setEnabled(false);
@@ -172,7 +169,7 @@ void MainWindow::start() {
     ui->organicEnergy->setEnabled(false);
     ui->mineralPrice->setEnabled(false);
     ui->reproductionPrice->setEnabled(false);
-    ui->mutateAttackChance->setEnabled(false);
+    ui->mutateAttackCount->setEnabled(false);
 
     //graph
     if (ui->groupBox_graph->isChecked()) {
@@ -224,7 +221,6 @@ void MainWindow::stop() {
     ui->timerInterval->setEnabled(true);
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
-    ui->genMutationChance->setEnabled(true);
     ui->botMutationChance->setEnabled(true);
     ui->draw_lines->setEnabled(false);
     ui->startWorldPhotosynthesis->setEnabled(true);
@@ -237,7 +233,7 @@ void MainWindow::stop() {
     ui->organicEnergy->setEnabled(true);
     ui->mineralPrice->setEnabled(true);
     ui->reproductionPrice->setEnabled(true);
-    ui->mutateAttackChance->setEnabled(true);
+    ui->mutateAttackCount->setEnabled(true);
 
     //graph
     ui->groupBox_graph->setEnabled(true);
@@ -251,6 +247,7 @@ void MainWindow::stop() {
 }
 
 void MainWindow::newWorld() {
+    if (world->isRunning()) return;
     ui->newWorldButton->setEnabled(false);
     ui->max_energy->setEnabled(true);
     ui->genome_len->setEnabled(true);
@@ -261,7 +258,6 @@ void MainWindow::newWorld() {
     ui->timerInterval->setEnabled(true);
     ui->process_delay->setEnabled(true);
     ui->max_energy->setEnabled(true);
-    ui->genMutationChance->setEnabled(true);
     ui->botMutationChance->setEnabled(true);
     ui->draw_lines->setEnabled(false);
     ui->world_parts_count->setEnabled(true);
@@ -278,15 +274,13 @@ void MainWindow::newWorld() {
     ui->reproductionPrice->setEnabled(true);
     ui->new_bot_energy->setEnabled(true);
     ui->organicEnergy->setEnabled(true);
-    ui->mutateAttackChance->setEnabled(true);
+    ui->mutateAttackCount->setEnabled(true);
 
     //graph
     historyPlot->setEnabled(false);
     ui->groupBox_graph->setEnabled(true);
 
     ui->generation->setText("0");
-    ui->mutation_count->setText("0");
-    ui->kill_count->setText("0");
     ui->sizeLabel->setText("");
     ui->bot_count->display(0);
     ui->processing_time->setText("0");
@@ -308,52 +302,81 @@ void MainWindow::startMouseHandler() {
 }
 
 QColor MainWindow::botColorByType(Bot *bot) {
-    if (bot == botEditorWindow->getBot()) return QColor(Qt::magenta);  // if bot is monitored
+    if (bot->monitoring) return QColor(Qt::magenta);
     if (bot->type == ORGANIC) return QColor(Qt::gray);
     float total_number = bot->mineralsCount + bot->photosynthesisCount + bot->eatCount;
-    uint B = bot->mineralsCount/total_number * 255;
-    uint G = bot->photosynthesisCount/total_number * 255;
-    uint R = bot->eatCount/total_number * 255;
+    uint B = floorDivision(bot->mineralsCount*255, total_number);
+    uint G = floorDivision(bot->photosynthesisCount*255, total_number);
+    uint R = floorDivision(bot->eatCount*255, total_number);
     return QColor(R, G, B);
 }
 
 QColor MainWindow::botColorByEnergy(Bot *bot) {
-    if (bot == botEditorWindow->getBot()) return QColor(Qt::blue);  // if bot is monitored
+    if (bot->monitoring) return QColor(Qt::blue);
     if (bot->type == ORGANIC) return QColor(Qt::gray);
-    uint color = static_cast<float>(bot->energy) / static_cast<float>(world->maxEnergy) * 255;
+    uint color = floorDivision(bot->energy * 255, world->maxEnergy);
     if (color > 255) color = 255;
     return QColor(255, 255-color, 0);
 }
 
 QColor MainWindow::botColorByUsedGens(Bot *bot) {
-    if (bot == botEditorWindow->getBot()) return QColor(Qt::magenta);  // if bot is monitored
+    if (bot->monitoring) return QColor(Qt::magenta);
     if (bot->type == ORGANIC) return QColor(Qt::gray);
     float totalNumber = bot->usedEat + bot->usedMinerals + bot->usedPhotosynthesis;
     if (!totalNumber) return QColor(Qt::white);
-    uint B = bot->usedMinerals/totalNumber * 255;
-    uint G = bot->usedPhotosynthesis/totalNumber * 255;
-    uint R = bot->usedEat/totalNumber * 255;
+    uint B = floorDivision(bot->usedMinerals*255, totalNumber);
+    uint G = floorDivision(bot->usedPhotosynthesis*255, totalNumber);
+    uint R = floorDivision(bot->usedEat*255, totalNumber);
     return QColor(R, G, B);
 }
 
 QColor MainWindow::botColorByOld(Bot *bot) {
-    if (bot == botEditorWindow->getBot()) return QColor(Qt::blue);  // if bot is monitored
+    if (bot->monitoring) return QColor(Qt::blue);
     if (bot->type == ORGANIC) return QColor(Qt::gray);
-    uint color = static_cast<float>(bot->old) / static_cast<float>(world->maxOld) * 255;
+    uint color = floorDivision(bot->old * 255, world->maxOld);
     if (color > 255) color = 255;
     return QColor(255, 255-color, 0);
+}
+
+QColor MainWindow::botColorByMinerals(Bot *bot) {
+    if (bot->monitoring) return QColor(Qt::magenta);
+    if (bot->type == ORGANIC) return QColor(Qt::gray);
+    uint color = floorDivision(bot->minerals * 255, 100);
+    if (color > 255) color = 255;
+    return QColor(255-color, 255-color, 255);
 }
 
 void MainWindow::renderGraph() {
     renderGraph(false);
 }
 
+QPair<QPair<int, int>, QPair<int, int>> MainWindow::_find2Max() {
+    int Max = 0, maxCount = 0, preMax = 0, preMaxCount = 0;
+    for (int i = 1; i<aliveBotHistory->count(); i++) {
+        int value = aliveBotHistory->at(i).y();
+        if (value > Max) {
+            preMax = Max;
+            preMaxCount = maxCount;
+            Max = value;
+            maxCount = 1;
+        } else if (value == Max) maxCount++;
+        else if (value > preMax) {
+            preMax = value;
+            preMaxCount = 1;
+        } else if (value == preMax) preMaxCount++;
+    }
+    return qMakePair(qMakePair(Max, maxCount), qMakePair(preMax, preMaxCount));
+}
+
 void MainWindow::renderGraph(bool reset) {  // find max and set range
     static int x = 0;
+
     static int Max = 0;
     static int maxCount = 0;
+
     static int preMax = 0;
     static int preMaxCount = 0;
+
     if (reset) {
         x = Max = maxCount = preMax = preMaxCount = 0;
         aliveBotHistory->clear();
@@ -365,20 +388,20 @@ void MainWindow::renderGraph(bool reset) {  // find max and set range
     x++;
     int aliveBotCount = world->aliveBotsCount;
     int organicBotCount = world->bots.size() - aliveBotCount;
-    int currentMax = std::max(aliveBotCount, organicBotCount);
+    int current = std::max(aliveBotCount, organicBotCount);
 
-    if (currentMax > Max) {
+    if (current > Max) {
         preMax = Max;
-        Max = currentMax;
         preMaxCount = maxCount;
+        Max = current;
         maxCount = 1;
         historyAxisY->setRange(0, Max);
-    } else if (currentMax == Max) {
+    } else if (current == Max) {
         maxCount++;
-    } else if (currentMax > preMax) {
-        preMax = currentMax;
+    } else if (current > preMax) {
+        preMax = current;
         preMaxCount = 1;
-    } else if (currentMax == preMax) {
+    } else if (current == preMax) {
         preMaxCount++;
     }
 
@@ -386,20 +409,25 @@ void MainWindow::renderGraph(bool reset) {  // find max and set range
     *organicBotHistory << QPoint(x, organicBotCount);
 
     if (aliveBotHistory->count() > ui->graph_count->value()) {
-        int lastMaxElement = std::max(aliveBotHistory->at(0).y(), organicBotHistory->at(0).y());
-        if (lastMaxElement == Max) {
+        int lastElement = std::max(aliveBotHistory->at(0).y(), organicBotHistory->at(0).y());
+        if (lastElement == Max) {
             maxCount--;
             if (!maxCount) {
-                Max = preMax;
-                preMax = 0;
-                maxCount = 1;
+                auto result = _find2Max();  // QPair<QPair<Max, maxCount>, QPair<preMax, preMaxCount>>
+                Max = result.first.first;
+                maxCount = result.first.second;
                 historyAxisY->setRange(0, Max);
+                preMax = result.second.first;
+                preMaxCount = result.second.second;
             }
-        } else if (lastMaxElement == preMax) {
+        } else if (lastElement == preMax) {
             preMaxCount--;
-            if (!preMaxCount) preMax = 0;
+            if (!preMaxCount) {
+                auto result = _find2Max();
+                preMax = result.second.first;
+                preMaxCount = result.second.second;
+            }
         }
-
 
         aliveBotHistory->remove(0);
         organicBotHistory->remove(0);
@@ -450,11 +478,14 @@ void MainWindow::renderUI() {
         getColor = &MainWindow::botColorByUsedGens;
     else if (ui->radioColorByOld->isChecked())
         getColor = &MainWindow::botColorByOld;
+    else if (ui->radioColorByMineralsCount->isChecked())
+        getColor = &MainWindow::botColorByMinerals;
     else
         assert(false);
 
     //world->botsMutex.lock();
     foreach (Bot *bot, world->bots) {
+            if (bot->type == DEAD) continue;
             QColor botColor = getColor(this, bot);
             scene->addRect(bot->getX() * botSize, ui->DrawArea->height() - (bot->getY() * botSize), botSize-1, botSize-1, QPen(botColor), QBrush(botColor));
         }
@@ -463,8 +494,6 @@ void MainWindow::renderUI() {
     // ui info update
     ui->bot_count->display(QString::number(aliveBotCount));
     ui->generation->setText(QString::number(world->generation));
-    ui->mutation_count->setText(QString::number(world->mutationCount));
-    ui->kill_count->setText(QString::number(world->kills));
     ui->bot_completion->setValue(botCount);
     ui->processing_time->setText(QString::number(world->processingTime) + " (мкс)");
 
@@ -472,9 +501,9 @@ void MainWindow::renderUI() {
     if (ui->draw_lines->isChecked()) {
         uint current_height, coordinates_y;
         for (uint part = 0; part<=world->worldPartsCount; ++part) {
-            current_height = ui->DrawArea->height() - (world->partLenght*part)*botSize;
+            current_height = ui->DrawArea->height() - (world->partLength * part) * botSize;
 
-            coordinates_y = world->partLenght * part;
+            coordinates_y = world->partLength * part;
             if (current_height != 0)
                 scene->addLine(0, current_height, ui->DrawArea->width(), current_height, QPen(Qt::gray));
             if (!(part%world->mineralsPartSize) && part < world->mineralsPartSize*world->startWorldMinerals)  // minerals

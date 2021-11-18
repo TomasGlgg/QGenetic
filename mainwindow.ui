@@ -219,6 +219,13 @@
               </widget>
              </item>
              <item>
+              <widget class="QRadioButton" name="radioColorByMineralsCount">
+               <property name="text">
+                <string>кол-во минералов</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QRadioButton" name="radioColorByOld">
                <property name="text">
                 <string>возраста</string>
@@ -361,7 +368,7 @@
              <number>50</number>
             </property>
             <property name="value">
-             <number>7</number>
+             <number>5</number>
             </property>
            </widget>
           </item>
@@ -381,7 +388,7 @@
              <number>100</number>
             </property>
             <property name="value">
-             <number>3</number>
+             <number>2</number>
             </property>
            </widget>
           </item>
@@ -506,14 +513,14 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_15">
             <property name="text">
              <string>Макс. продолж. жизни бота</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="3" column="1">
            <widget class="QSpinBox" name="max_old">
             <property name="minimum">
              <number>2</number>
@@ -522,18 +529,18 @@
              <number>16777215</number>
             </property>
             <property name="value">
-             <number>1000</number>
+             <number>500</number>
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label_27">
             <property name="text">
              <string>Энергия нового бота</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
+          <item row="4" column="1">
            <widget class="QSpinBox" name="new_bot_energy">
             <property name="minimum">
              <number>1</number>
@@ -546,14 +553,14 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="0">
+          <item row="5" column="0">
            <widget class="QLabel" name="label_28">
             <property name="text">
              <string>Энергия органики</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
+          <item row="5" column="1">
            <widget class="QSpinBox" name="organicEnergy">
             <property name="minimum">
              <number>1</number>
@@ -566,28 +573,28 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="label_29">
             <property name="text">
-             <string>Стоимость минерала (1/m)</string>
+             <string>Стоимость минерала</string>
             </property>
            </widget>
           </item>
-          <item row="7" column="1">
+          <item row="6" column="1">
            <widget class="QSpinBox" name="mineralPrice">
             <property name="value">
-             <number>4</number>
+             <number>3</number>
             </property>
            </widget>
           </item>
-          <item row="8" column="0">
+          <item row="7" column="0">
            <widget class="QLabel" name="label_30">
             <property name="text">
              <string>Стоимость репродукции</string>
             </property>
            </widget>
           </item>
-          <item row="8" column="1">
+          <item row="7" column="1">
            <widget class="QSpinBox" name="reproductionPrice">
             <property name="minimum">
              <number>1</number>
@@ -600,7 +607,7 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="0" colspan="2">
+          <item row="8" column="0" colspan="2">
            <widget class="QGroupBox" name="groupBox_7">
             <property name="title">
              <string>Настройка первого бота</string>
@@ -683,29 +690,6 @@
             </layout>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QDoubleSpinBox" name="genMutationChance">
-            <property name="minimum">
-             <double>0.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>1.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-            <property name="value">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Шанс мутации гена</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </widget>
         <widget class="QWidget" name="tab_6">
@@ -756,20 +740,20 @@
               <item row="0" column="0">
                <widget class="QLabel" name="label_23">
                 <property name="text">
-                 <string>Шанс мутации</string>
+                 <string>Количество мутирующих генов</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QDoubleSpinBox" name="mutateAttackChance">
+               <widget class="QSpinBox" name="mutateAttackCount">
                 <property name="maximum">
-                 <double>1.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.100000000000000</double>
+                 <number>10</number>
                 </property>
                 <property name="value">
-                 <double>0.500000000000000</double>
+                 <number>1</number>
+                </property>
+                <property name="displayIntegerBase">
+                 <number>10</number>
                 </property>
                </widget>
               </item>
@@ -803,7 +787,7 @@
        </property>
        <property name="baseSize">
         <size>
-         <width>0</width>
+         <width>300</width>
          <height>0</height>
         </size>
        </property>
@@ -821,7 +805,7 @@
         <item row="0" column="1">
          <widget class="QLineEdit" name="sizeLabel">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -841,7 +825,7 @@
         <item row="1" column="1">
          <widget class="QLineEdit" name="generation">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -855,65 +839,16 @@
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>Кол-во мутаций:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="mutation_count">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>0</string>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_16">
-          <property name="text">
-           <string>Кол-во убийств:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="kill_count">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>0</string>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
          <widget class="QLabel" name="label_20">
           <property name="text">
            <string>Время об-ки:</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="2" column="1">
          <widget class="QLineEdit" name="processing_time">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -923,14 +858,14 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
+        <item row="3" column="0">
          <widget class="QLabel" name="label_5">
           <property name="text">
            <string>Кол-во ботов:</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="1">
+        <item row="3" column="1">
          <widget class="QLCDNumber" name="bot_count">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -949,17 +884,17 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="label_19">
           <property name="text">
            <string>Заполнение мира:</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="1">
+        <item row="4" column="1">
          <widget class="QProgressBar" name="bot_completion">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -972,14 +907,14 @@
           </property>
          </widget>
         </item>
-        <item row="7" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="label_10">
           <property name="text">
            <string>Статус:</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="1">
+        <item row="5" column="1">
          <widget class="QGroupBox" name="statusGroupBox">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -1035,10 +970,10 @@
           </layout>
          </widget>
         </item>
-        <item row="8" column="0" colspan="2">
+        <item row="6" column="0" colspan="2">
          <widget class="QWidget" name="historyView" native="true">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
