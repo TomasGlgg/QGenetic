@@ -29,6 +29,8 @@ BotEditor::BotEditor(QWidget *parent) :
     infoSignalMapper->setMapping(ui->iterator, 3);
     connect(ui->minerals, SIGNAL(valueChanged(int)), infoSignalMapper, SLOT(map()));
     infoSignalMapper->setMapping(ui->minerals, 4);
+    connect(ui->direction, SIGNAL(currentIndexChanged(int)), infoSignalMapper, SLOT(map()));
+    infoSignalMapper->setMapping(ui->direction, 5);
 
     connect(tableSignalMapper, SIGNAL(mappedInt(int)), this, SLOT(botGenomeEdited(int)));
     connect(infoSignalMapper, SIGNAL(mappedInt(int)), this, SLOT(botInfoEdited(int)));
@@ -83,6 +85,9 @@ void BotEditor::botInfoEdited(int index) {
         case 4: {
             bot->minerals = ui->minerals->value(); break;
         }
+        case 5: {
+            bot->direction = ui->direction->currentIndex(); break;
+        }
     }
 }
 
@@ -101,6 +106,7 @@ void BotEditor::disableUI(bool control) {
         ui->old->setEnabled(false);
         ui->iterator->setEnabled(false);
         ui->minerals->setEnabled(false);
+        ui->direction->setEnabled(false);
         ui->photosynthesisUsed->setEnabled(false);
         ui->mineralsUsed->setEnabled(false);
         ui->eatStealUsed->setEnabled(false);
@@ -117,6 +123,7 @@ void BotEditor::enableUI(bool control) {
         ui->old->setEnabled(true);
         ui->iterator->setEnabled(true);
         ui->minerals->setEnabled(true);
+        ui->direction->setEnabled(true);
         ui->photosynthesisUsed->setEnabled(true);
         ui->mineralsUsed->setEnabled(true);
         ui->eatStealUsed->setEnabled(true);
@@ -218,6 +225,7 @@ void BotEditor::renderInfo() {
     ui->mineralsUsed->setText(QString::number(bot->usedMinerals));
     ui->eatStealUsed->setText(QString::number(bot->usedEat));
     ui->type->setCurrentIndex(bot->type);
+    ui->direction->setCurrentIndex(bot->direction);
     infoSignalMapper->blockSignals(false);
 }
 
