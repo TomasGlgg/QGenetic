@@ -269,7 +269,7 @@
                 <number>1000</number>
                </property>
                <property name="value">
-                <number>1000</number>
+                <number>100</number>
                </property>
               </widget>
              </item>
@@ -342,7 +342,7 @@
              <number>100</number>
             </property>
             <property name="value">
-             <number>10</number>
+             <number>20</number>
             </property>
            </widget>
           </item>
@@ -368,7 +368,7 @@
              <number>50</number>
             </property>
             <property name="value">
-             <number>5</number>
+             <number>12</number>
             </property>
            </widget>
           </item>
@@ -388,7 +388,7 @@
              <number>100</number>
             </property>
             <property name="value">
-             <number>2</number>
+             <number>4</number>
             </property>
            </widget>
           </item>
@@ -469,7 +469,7 @@
              <number>1</number>
             </property>
             <property name="value">
-             <number>50</number>
+             <number>60</number>
             </property>
            </widget>
           </item>
@@ -489,7 +489,7 @@
              <number>10000</number>
             </property>
             <property name="value">
-             <number>100</number>
+             <number>300</number>
             </property>
            </widget>
           </item>
@@ -529,7 +529,7 @@
              <number>16777215</number>
             </property>
             <property name="value">
-             <number>500</number>
+             <number>1000</number>
             </property>
            </widget>
           </item>
@@ -603,7 +603,7 @@
              <number>10000</number>
             </property>
             <property name="value">
-             <number>80</number>
+             <number>200</number>
             </property>
            </widget>
           </item>
