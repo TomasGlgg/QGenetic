@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     historyView->setRenderHint(QPainter::Antialiasing);
     historyView->setParent(ui->historyView);
     historyView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
+    ui->splitter->setSizes(QList<int>{100, 600});  // TODO: fix ui
 }
 
 MainWindow::~MainWindow() {
