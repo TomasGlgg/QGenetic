@@ -118,7 +118,7 @@ void MainWindow::initWorld(uint x, uint y) {
     Bot *newBot = world->newBot(10, world->maxY-10);
     newBot->energy = ui->first_bot_energy->value();
     newBot->direction = ui->first_bot_direction->currentIndex();
-    newBot->genome.fill(commands::photosynthesis_command, world->genomeLen);
+    newBot->genome.fill(commands::photosynthesis, world->genomeLen);
     newBot->genomeStatisticInit();
     worldInited = true;
 }

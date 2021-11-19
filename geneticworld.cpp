@@ -57,6 +57,14 @@ uint GeneticWorld::getMineralsCount(uint y) {
     return 0;
 }
 
+bool GeneticWorld::checkSimilarity(Bot *bot1, Bot *bot2) {
+    int differencesCount = 0;
+    for (int i = 0; i<genomeLen; i++) {
+        if (bot1->genome[i] != bot2->genome[i]) differencesCount++;
+        if (differencesCount > 1) return false;
+    }
+    return true;
+}
 
 int* GeneticWorld::translateCoords(int *xy) {
     if (xy[0] >= maxX) xy[0] = 0;
@@ -68,38 +76,38 @@ int* GeneticWorld::oppositeBot(Bot *bot, int *xy) {
    xy[0] = bot->getX();
    xy[1] = bot->getY();
    switch (bot->direction) {
-       case 0: {
+       case UP: {
            xy[1]++;
            break;
        }
-       case 1: {
+       case UP_RIGHT: {
            xy[0]++;
            xy[1]++;
            break;
        }
-       case 2: {
+       case RIGHT: {
            xy[0]++;
            break;
        }
-       case 3: {
+       case RIGHT_DOWN: {
            xy[0]++;
            xy[1]--;
            break;
        }
-       case 4: {
+       case DOWN: {
            xy[1]--;
            break;
        }
-       case 5: {
+       case DOWN_LEFT: {
            xy[1]--;
            xy[0]--;
            break;
        }
-       case 6: {
+       case LEFT: {
            xy[0]--;
            break;
        }
-       case 7: {
+       case LEFT_UP: {
            xy[0]--;
            xy[1]++;
            break;
@@ -161,63 +169,62 @@ void GeneticWorld::organicStep(Bot *bot) {
 void GeneticWorld::mutateBotGenome(Bot *bot) {
     for (int i = 0; i<mutateAttackCount; i++) {
         int index = rand() % genomeLen;
-        bot->genome[index] += rand()%10-5;
+        bot->genome[index] += rand()%(mutateGenRange*2)-mutateGenRange;
     }
     bot->genomeStatisticInit();
 }
 
 void GeneticWorld::botStep(Bot *bot) {
     if (bot->energy>=maxEnergy)
-        reproduction(bot);
+        if (!reproduction(bot)) eatBot(bot);
 
 
     int command = bot->genome[bot->iterator];
     switch (command) {
-        case commands::reproduction_command: {
+        case commands::reproduction: {
             if (!reproduction(bot)) eatBot(bot);
             break;
         }
-        case commands::photosynthesis_command: {
+        case commands::photosynthesis: {
             bot->usedPhotosynthesis++;
             uint new_energy = getPhotosynthesisEnergy(bot->getY());
             bot->energy += new_energy;
             break;
         }
-        case commands::minerals_command: {
+        case commands::minerals: {
             bot->usedMinerals++;
             uint new_minerals = getMineralsCount(bot->getY());
             bot->minerals += new_minerals;
             break;
         }
-        case commands::convert_minerals_command: {
+        case commands::convert_minerals: {
             if (bot->minerals <= 0) break;
             bot->energy += mineralPrice;
             bot->minerals--;
             break;
         }
-        case commands::left_command: {
+        case commands::left: {
             if (bot->direction == 0) bot->direction = 7;
             else bot->direction--;
             break;
         }
-        case commands::right_command: {
+        case commands::right: {
             bot->direction++;
             bot->direction %= 8;
             break;
         }
-        case commands::step_command: {
+        case commands::step: {
             int xy[2];
             oppositeBot(bot, xy);
             if (checkCoords(xy))
                 moveBot(bot, xy);
             break;
         }
-        case commands::eat_command: {
+        case commands::eat: {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
             if (bots.contains(target_hash)) {
-                bot->usedEat++;
                 Bot* target_bot = bots.value(target_hash);
                 if (target_bot->type == ORGANIC) {
                     bot->energy += organicEnergy;
@@ -226,7 +233,7 @@ void GeneticWorld::botStep(Bot *bot) {
             }
             break;
         }
-        case commands::steal_command: {
+        case commands::steal: {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
@@ -240,13 +247,15 @@ void GeneticWorld::botStep(Bot *bot) {
                         eatBot(targetBot, true);
                     } else {
                         targetBot->minerals -= bot->minerals;
+                        bot->energy += targetBot->energy/2;
+                        targetBot->energy /= 2;
                         bot->minerals = 0;
                     }
                 }
             }
             break;
         }
-        case commands::share_command: {
+        case commands::share: {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
@@ -260,15 +269,24 @@ void GeneticWorld::botStep(Bot *bot) {
             }
             break;
         }
-        case commands::check_command: {
+        case commands::check: {  // 1 - empty, 2 - organic, 3 - bot, 4 - similarity bot
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
-            if (!bots.contains(target_hash)) {
+            if (!bots.contains(target_hash)) break;
+            Bot *targetBot = bots.value(target_hash);
+            if (targetBot->type == ORGANIC) {
+                bot->iterator += 1;
+            } else if (targetBot->type == ALIVE) {
                 bot->iterator += 2;
-            } else if (bots[target_hash]->type == ORGANIC) {
-                bot->iterator++;
+                if (checkSimilarity(bot, targetBot)) bot->iterator++;
             }
+            break;
+        }
+
+        case commands::align: {
+            Direction randDir = rand()%2 ? LEFT : RIGHT;
+            bot->direction = randDir;
             break;
         }
 
@@ -316,8 +334,8 @@ void GeneticWorld::botStep(Bot *bot) {
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
             if (bots.contains(target_hash)) mutateBotGenome(bots.value(target_hash));
+            break;
         }
-
         default: {  // unconditional transfer
             bot->iterator += command;
             break;

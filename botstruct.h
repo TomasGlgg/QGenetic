@@ -4,13 +4,7 @@
 #include <QObject>
 #include <QList>
 
-#include "commands.h"
-
-enum BotType {
-    ALIVE,
-    ORGANIC,
-    DEAD
-};
+#include "enums.h"
 
 class Bot : public QObject {
     Q_OBJECT

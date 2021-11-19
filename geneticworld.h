@@ -11,7 +11,7 @@
 #include <cmath>
 
 #include "botstruct.h"
-#include "commands.h"
+#include "enums.h"
 
 
 class GeneticWorld : public QThread {
@@ -45,6 +45,8 @@ public:  // settings
     uint reproductionPrice;
     bool organicEnabled = true;
 
+    int mutateGenRange = 20;  // TODO: to ui
+
     // commands settings
     float eatK;
     uint mutateAttackCount;
@@ -65,6 +67,7 @@ private:
     bool runFlag;
     QSet<Bot*> killedBots;
 
+    bool checkSimilarity(Bot *bot1, Bot *bot2);
     void mutateBotGenome(Bot *bot);
     inline uint botPart(Bot *bot);
     void moveBot(Bot *bot, int *xy);

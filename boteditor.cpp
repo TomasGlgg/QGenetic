@@ -67,7 +67,9 @@ void BotEditor::resetSelection() {
 void BotEditor::botInfoEdited(int index) {
     switch (index) {
         case 0: {
-            bot->type = ui->type->currentIndex(); break;
+            bot->type = ui->type->currentIndex();
+            renderTable();
+            break;
         }
         case 1: {
             bot->energy = ui->energy->value(); break;
@@ -144,9 +146,9 @@ void BotEditor::loadBot(Bot *bot) {
         uint rowIndex = floorDivision(genomeIndex, columnCount);
 
         QSpinBox *spinBox = new QSpinBox();
-        //QSpinBox *spinBox = qobject_cast<QSpinBox*>(ui->tableWidget->cellWidget(rowIndex, columntIndex));
         int genValue = bot->genome[genomeIndex];
-        spinBox->setMinimum(INT_MIN);
+        spinBox->setMinimum(-255);
+        spinBox->setMaximum(255);
         spinBox->setValue(genValue);
         if (genomeIndex == bot->iterator) {
             spinBox->setStyleSheet("background-color: red");
@@ -182,10 +184,12 @@ void BotEditor::single() {
 }
 
 void BotEditor::renderTable() {
-    if (bot->type == ORGANIC) {
+    if (bot->type == ORGANIC || bot->type == DEAD) {
         ui->tableWidget->setEnabled(false);
         return;
-    }
+    } else
+        ui->tableWidget->setEnabled(true);
+
     for (uint genomeIndex = 0; genomeIndex < (uint)bot->genome.size(); genomeIndex++) {
         uint columntIndex = genomeIndex % columnCount;
         uint rowIndex = floorDivision(genomeIndex, columnCount);
@@ -193,7 +197,6 @@ void BotEditor::renderTable() {
         //QSpinBox *spinBox = new QSpinBox();
         QSpinBox *spinBox = qobject_cast<QSpinBox*>(ui->tableWidget->cellWidget(rowIndex, columntIndex));
         int genValue = bot->genome[genomeIndex];
-        spinBox->setMinimum(INT_MIN);
         spinBox->setValue(genValue);
         if (genomeIndex == bot->iterator)
             spinBox->setStyleSheet("background-color: red");
@@ -230,7 +233,7 @@ void BotEditor::botKilled() {
 
 void BotEditor::closeEvent(QCloseEvent *event) {
     stopMon();
-    QWidget::closeEvent(event);
+    QDialog::closeEvent(event);
 }
 
 void BotEditor::genome2File(QFile *file) {
