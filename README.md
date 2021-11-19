@@ -8,3 +8,13 @@
 ## Зависимости:
  * Qt6
  
+## Скриншоты:
+![График](images/graph.png)
+
+![Минералы](images/minerals.png)
+
+![Использованные гены](images/used_gens.png)
+
+![Возраст](images/old.png)
+
+![Редактор генома](images/boteditor.png)
