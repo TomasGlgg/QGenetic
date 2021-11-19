@@ -43,9 +43,8 @@ public:  // settings
     uint organicEnergy;
     uint mineralPrice;
     uint reproductionPrice;
-    bool organicEnabled = true;
-
-    int mutateGenRange = 20;  // TODO: to ui
+    bool organicEnabled;
+    int mutateGenRange;
 
     // commands settings
     float eatK;

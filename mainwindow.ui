@@ -513,14 +513,14 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label_15">
             <property name="text">
              <string>Макс. продолж. жизни бота</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="4" column="1">
            <widget class="QSpinBox" name="max_old">
             <property name="minimum">
              <number>2</number>
@@ -533,14 +533,14 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="0">
+          <item row="5" column="0">
            <widget class="QLabel" name="label_27">
             <property name="text">
              <string>Энергия нового бота</string>
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="5" column="1">
            <widget class="QSpinBox" name="new_bot_energy">
             <property name="minimum">
              <number>1</number>
@@ -553,14 +553,14 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="label_28">
             <property name="text">
              <string>Энергия органики</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
+          <item row="6" column="1">
            <widget class="QSpinBox" name="organicEnergy">
             <property name="minimum">
              <number>1</number>
@@ -573,28 +573,28 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="0">
+          <item row="7" column="0">
            <widget class="QLabel" name="label_29">
             <property name="text">
              <string>Стоимость минерала</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
+          <item row="7" column="1">
            <widget class="QSpinBox" name="mineralPrice">
             <property name="value">
              <number>3</number>
             </property>
            </widget>
           </item>
-          <item row="7" column="0">
+          <item row="8" column="0">
            <widget class="QLabel" name="label_30">
             <property name="text">
              <string>Стоимость репродукции</string>
             </property>
            </widget>
           </item>
-          <item row="7" column="1">
+          <item row="8" column="1">
            <widget class="QSpinBox" name="reproductionPrice">
             <property name="minimum">
              <number>1</number>
@@ -607,7 +607,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="0" colspan="2">
+          <item row="9" column="0" colspan="2">
            <widget class="QGroupBox" name="groupBox_7">
             <property name="title">
              <string>Настройка первого бота</string>
@@ -688,6 +688,23 @@
               </widget>
              </item>
             </layout>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Предел мутации гена</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="mutateGenRange">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>20</number>
+            </property>
            </widget>
           </item>
          </layout>

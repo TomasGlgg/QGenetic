@@ -138,6 +138,7 @@ void MainWindow::updateWorldSettings() {
     world->organicEnergy = ui->organicEnergy->value();
     world->mineralPrice = ui->mineralPrice->value();
     world->reproductionPrice = ui->reproductionPrice->value();
+    world->mutateGenRange = ui->mutateGenRange->value();
     ui->bot_completion->setMaximum(world->maxBotCount);
 
     world->eatK = ui->eat_k->value();
@@ -170,6 +171,7 @@ void MainWindow::start() {
     ui->mineralPrice->setEnabled(false);
     ui->reproductionPrice->setEnabled(false);
     ui->mutateAttackCount->setEnabled(false);
+    ui->mutateGenRange->setEnabled(false);
 
     //graph
     if (ui->groupBox_graph->isChecked()) {
@@ -234,6 +236,7 @@ void MainWindow::stop() {
     ui->mineralPrice->setEnabled(true);
     ui->reproductionPrice->setEnabled(true);
     ui->mutateAttackCount->setEnabled(true);
+    ui->mutateGenRange->setEnabled(true);
 
     //graph
     ui->groupBox_graph->setEnabled(true);
@@ -275,6 +278,7 @@ void MainWindow::newWorld() {
     ui->new_bot_energy->setEnabled(true);
     ui->organicEnergy->setEnabled(true);
     ui->mutateAttackCount->setEnabled(true);
+    ui->mutateGenRange->setEnabled(true);
 
     //graph
     historyPlot->setEnabled(false);
