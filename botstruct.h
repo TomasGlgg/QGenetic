@@ -17,9 +17,9 @@ public:
     virtual ~Bot();
 
     void move(uint *xy);
-    uint getX();
-    uint getY();
-    ulong getHash();
+    uint getX() { return x; };
+    uint getY() { return y; };
+    ulong getHash() { return hash; };
     void genomeStatisticInit();
 
     QList<int8_t> genome;

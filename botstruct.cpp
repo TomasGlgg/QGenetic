@@ -19,10 +19,6 @@ void Bot::genomeStatisticInit() {
     eatCount = std::count(genome.begin(), genome.end(), commands::eat);
 }
 
-uint Bot::getX() { return x; }
-uint Bot::getY() { return y; }
-ulong Bot::getHash() { return hash; }
-
 void Bot::move(uint *xy) {
     assert(type != DEAD);
     x = xy[0];
