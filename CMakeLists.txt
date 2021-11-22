@@ -17,7 +17,8 @@ add_executable(QGenetic main.cpp
         boteditor.cpp boteditor.h boteditor.ui
         kled.h kled.cpp
         geneticworld.cpp geneticworld.h
-        botstruct.h botstruct.cpp)
+        botstruct.h botstruct.cpp
+        resources.qrc)
 
 target_link_libraries(QGenetic
         Qt::Core

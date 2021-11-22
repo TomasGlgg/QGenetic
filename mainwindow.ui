@@ -22,6 +22,10 @@
   <property name="windowTitle">
    <string>Генетический мир</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/icon/images/icon.png</normaloff>:/icon/images/icon.png</iconset>
+  </property>
   <property name="whatsThis">
    <string/>
   </property>
@@ -1051,6 +1055,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
