@@ -265,11 +265,9 @@ void GeneticWorld::botStep(Bot *bot) {
             ulong target_hash = hashxy(xy);
             if (bots.contains(target_hash)) {
                 Bot* target_bot = bots.value(target_hash);
-                if (target_bot->energy < bot->energy) {
-                    uint energy_delta = bot->energy - target_bot->energy;
-                    target_bot->energy += energy_delta;
-                    bot->energy -= energy_delta;
-                }
+                uint averageEnergy = floor((bot->energy + target_bot->energy)/2.);
+                target_bot->energy += averageEnergy;
+                bot->energy -= averageEnergy;
             }
             break;
         }
