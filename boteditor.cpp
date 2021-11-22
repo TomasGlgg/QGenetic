@@ -260,6 +260,8 @@ void BotEditor::file2Genome(QFile *file) {
 void BotEditor::saveGenome() {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Сохранить файл генома"), "",
                                                     tr("Genome files (*.gen)"));
+    if (!fileName.endsWith(".gen"))
+        fileName += ".gen";
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly)) {
         QMessageBox::critical(this, tr("Ошибка"),
