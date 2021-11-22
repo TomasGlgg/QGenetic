@@ -112,6 +112,9 @@ int* GeneticWorld::oppositeBot(Bot *bot, int *xy) {
            xy[1]++;
            break;
        }
+       default: {
+           assert(false);
+       }
    }
    translateCoords(xy);
    return xy;
@@ -248,8 +251,8 @@ void GeneticWorld::botStep(Bot *bot) {
                         eatBot(targetBot, true);
                     } else {
                         targetBot->minerals -= bot->minerals;
-                        bot->energy += targetBot->energy/2;
-                        targetBot->energy /= 2;
+                        bot->energy += targetBot->energy * eatK;
+                        targetBot->energy *= 1.-eatK;
                         bot->minerals = 0;
                     }
                 }
