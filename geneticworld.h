@@ -60,7 +60,7 @@ public:  // settings
     uint processingTime = 0;
 
     QHash<ulong, Bot*> bots;
-    QMutex botsMutex;
+    //QMutex botsMutex;
 
 private:
     bool runFlag;

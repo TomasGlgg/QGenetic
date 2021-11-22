@@ -15,9 +15,9 @@ GeneticWorld::~GeneticWorld() {
 Bot *GeneticWorld::newBot(uint x, uint y) {
     Bot *new_bot = new Bot(genomeLen, x, y);
     ulong hash = new_bot->getHash();
-    botsMutex.lock();
+    //botsMutex.lock();
     bots[hash] = new_bot;
-    botsMutex.unlock();
+    //botsMutex.unlock();
     aliveBotsCount++;
     return new_bot;
 }
@@ -148,11 +148,11 @@ bool GeneticWorld::reproduction(Bot *bot) {
 }
 
 void GeneticWorld::moveBot(Bot *bot, int *xy) {
-    botsMutex.lock();
+    //botsMutex.lock();
     bots.remove(bot->getHash());
     bot->move((uint*)xy);
     bots[bot->getHash()] = bot;
-    botsMutex.unlock();
+    //botsMutex.unlock();
 }
 
 void GeneticWorld::organicStep(Bot *bot) {
@@ -200,8 +200,8 @@ void GeneticWorld::botStep(Bot *bot) {
         }
         case commands::convert_minerals: {
             if (bot->minerals <= 0) break;
-            bot->energy += mineralPrice;
-            bot->minerals--;
+            bot->energy += bot->minerals*mineralPrice;
+            bot->minerals = 0;
             break;
         }
         case commands::left: {
