@@ -140,11 +140,10 @@ bool GeneticWorld::reproduction(Bot *bot) {
 
     //copy genome and mutate
     int k;
-    float random;
-    random = rand()/(RAND_MAX + 1.);
+    float random = rand()/(RAND_MAX + 1.);
     if (random < botMutateChance) {
         int index = rand() % genomeLen;
-        bot->genome[index] += rand()%(mutateGenRange*2)-mutateGenRange;
+        new_bot->genome[index] += rand()%(mutateGenRange*2)-mutateGenRange;
     }
     new_bot->genomeStatisticInit();
     return true;
