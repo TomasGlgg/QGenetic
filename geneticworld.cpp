@@ -188,34 +188,40 @@ void GeneticWorld::botStep(Bot *bot) {
             if (!reproduction(bot)) eatBot(bot);
             break;
         }
+
         case commands::photosynthesis: {
             bot->usedPhotosynthesis++;
             uint new_energy = getPhotosynthesisEnergy(bot->getY());
             bot->energy += new_energy;
             break;
         }
+
         case commands::minerals: {
             bot->usedMinerals++;
             uint new_minerals = getMineralsCount(bot->getY());
             bot->minerals += new_minerals;
             break;
         }
+
         case commands::convert_minerals: {
             if (bot->minerals <= 0) break;
             bot->energy += bot->minerals*mineralPrice;
             bot->minerals = 0;
             break;
         }
+
         case commands::left: {
             if (bot->direction == 0) bot->direction = 7;
             else bot->direction--;
             break;
         }
+
         case commands::right: {
             bot->direction++;
             bot->direction %= 8;
             break;
         }
+
         case commands::step: {
             int xy[2];
             oppositeBot(bot, xy);
@@ -223,6 +229,7 @@ void GeneticWorld::botStep(Bot *bot) {
                 moveBot(bot, xy);
             break;
         }
+
         case commands::eat: {
             int xy[2];
             oppositeBot(bot, xy);
@@ -236,6 +243,7 @@ void GeneticWorld::botStep(Bot *bot) {
             }
             break;
         }
+
         case commands::steal: {
             int xy[2];
             oppositeBot(bot, xy);
@@ -258,6 +266,7 @@ void GeneticWorld::botStep(Bot *bot) {
             }
             break;
         }
+
         case commands::share: {
             int xy[2];
             oppositeBot(bot, xy);
@@ -270,6 +279,7 @@ void GeneticWorld::botStep(Bot *bot) {
             }
             break;
         }
+
         case commands::check: {  // 1 - empty, 2 - organic, 3 - bot, 4 - similarity bot
             int xy[2];
             oppositeBot(bot, xy);
@@ -337,6 +347,14 @@ void GeneticWorld::botStep(Bot *bot) {
             if (bots.contains(target_hash)) mutateBotGenome(bots.value(target_hash));
             break;
         }
+
+        case commands::change_dir: {
+            bot->iterator++;
+            int direction = abs(bot->genome[bot->iterator%genomeLen])%8;
+            bot->direction = direction;
+            break;
+        }
+
         default: {  // unconditional transfer
             bot->iterator += command;
             break;
