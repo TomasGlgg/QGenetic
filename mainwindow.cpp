@@ -330,7 +330,7 @@ QColor MainWindow::botColorByUsedGens(Bot *bot) {
     if (!totalNumber) return QColor(Qt::white);
     uint B = floorDivision(bot->usedMinerals*255, totalNumber);
     uint G = floorDivision(bot->usedPhotosynthesis*255, totalNumber);
-    uint R = floorDivision(bot->usedEat*255, totalNumber);
+    uint R = floor(pow(static_cast<float>(bot->usedEat) / static_cast<float>(totalNumber), 0.1)*255);
     return QColor(R, G, B);
 }
 
