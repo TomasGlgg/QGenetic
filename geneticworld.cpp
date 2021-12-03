@@ -234,8 +234,8 @@ void GeneticWorld::botStep(Bot *bot) {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
-            if (bots.contains(target_hash)) {
-                Bot* target_bot = bots.value(target_hash);
+            Bot* target_bot = bots.value(target_hash, nullptr);
+            if (target_bot != nullptr) {
                 if (target_bot->type == ORGANIC) {
                     bot->energy += organicEnergy;
                     killOrganic(target_bot);
@@ -248,7 +248,8 @@ void GeneticWorld::botStep(Bot *bot) {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
-            if (bots.contains(target_hash)) {
+            Bot* target_bot = bots.value(target_hash, nullptr);
+            if (target_bot != nullptr) {
                 bot->usedEat++;
                 Bot* targetBot = bots.value(target_hash);
                 if (targetBot->type == ALIVE) {
@@ -271,7 +272,8 @@ void GeneticWorld::botStep(Bot *bot) {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
-            if (bots.contains(target_hash)) {
+            Bot* target_bot = bots.value(target_hash, nullptr);
+            if (target_bot != nullptr) {
                 Bot* target_bot = bots.value(target_hash);
                 uint averageEnergy = floor((bot->energy + target_bot->energy)/2.);
                 target_bot->energy += averageEnergy;
@@ -284,15 +286,17 @@ void GeneticWorld::botStep(Bot *bot) {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
-            if (!bots.contains(target_hash)) break;
-            Bot *targetBot = bots.value(target_hash);
-            if (targetBot->type == ORGANIC) {
-                bot->iterator += 1;
-            } else if (targetBot->type == ALIVE) {
-                bot->iterator += 2;
-                if (checkSimilarity(bot, targetBot)) bot->iterator++;
+            Bot* target_bot = bots.value(target_hash, nullptr);
+            if (target_bot != nullptr) {
+                Bot *targetBot = bots.value(target_hash);
+                if (targetBot->type == ORGANIC) {
+                    bot->iterator += 1;
+                } else if (targetBot->type == ALIVE) {
+                    bot->iterator += 2;
+                    if (checkSimilarity(bot, targetBot)) bot->iterator++;
+                }
+                break;
             }
-            break;
         }
 
         case commands::align: {
@@ -327,8 +331,9 @@ void GeneticWorld::botStep(Bot *bot) {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
-            if (bots.contains(target_hash)) {
-                int target_minerals = bots.value(target_hash)->minerals;
+            Bot* target_bot = bots.value(target_hash, nullptr);
+            if (target_bot != nullptr) {
+                int target_minerals = target_bot->minerals;
                 if (target_minerals > bot->minerals) bot->iterator++;
             }
             break;
@@ -344,7 +349,8 @@ void GeneticWorld::botStep(Bot *bot) {
             int xy[2];
             oppositeBot(bot, xy);
             ulong target_hash = hashxy(xy);
-            if (bots.contains(target_hash)) mutateBotGenome(bots.value(target_hash));
+            Bot* target_bot = bots.value(target_hash, nullptr);
+            if (target_bot != nullptr) mutateBotGenome(target_bot);
             break;
         }
 
