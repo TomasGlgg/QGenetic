@@ -3,23 +3,25 @@
 
 #include <QObject>
 #include <QList>
+#include <QPoint>
 
 #include "enums.h"
 
 class Bot : public QObject {
     Q_OBJECT
 private:
-    uint x, y;
+    QPoint xy;
     ulong hash;
 
 public:
-    Bot(uint genome_len, uint x, uint y);
+    Bot(uint genome_len, QPoint xy);
     virtual ~Bot();
 
-    void move(uint *xy);
-    uint getX() { return x; };
-    uint getY() { return y; };
-    ulong getHash() { return hash; };
+    void move(QPoint new_xy);
+    inline uint getX() { return xy.x(); };
+    inline uint getY() { return xy.y(); };
+    inline QPoint getXY() { return xy; };
+    inline ulong getHash() { return hash; };
     void genomeStatisticInit();
 
     QList<int8_t> genome;
@@ -41,10 +43,8 @@ signals:
 };
 
 
-ulong hashxy(int x, int y);
+ulong hashxy(QPoint xy);
 
 ulong hashxy(Bot *bot);
-
-ulong hashxy(int *xy);
 
 #endif // BOTSTRUCT_H

@@ -93,7 +93,7 @@ void MainWindow::mousePress(QPointF position) {
     int botX = floorDivision(position_x, botSize);
     int botY = floorDivision(position_y, botSize) + 1;
 
-    ulong botHash = hashxy(botX, botY);
+    ulong botHash = hashxy(QPoint(botX, botY));
     if (world->bots.contains(botHash)) {
         Bot *bot = world->bots.value(botHash);
         botEditorWindow->loadBot(bot);
@@ -115,7 +115,7 @@ void MainWindow::initWorld(uint x, uint y) {
     world->maxY = y;
     world->maxBotCount = x*y;
 
-    Bot *newBot = world->newBot(10, world->maxY-10);
+    Bot *newBot = world->newBot( QPoint(10, world->maxY-10) );
     newBot->energy = ui->first_bot_energy->value();
     newBot->direction = ui->first_bot_direction->currentIndex();
     newBot->genome.fill(commands::photosynthesis, world->genomeLen);

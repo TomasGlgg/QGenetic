@@ -6,6 +6,7 @@
 #include <QHash>
 #include <QMutex>
 #include <QElapsedTimer>
+#include <QPoint>
 
 #include <cassert>
 #include <cmath>
@@ -21,7 +22,7 @@ protected:
 
 public:  // settings
     ~GeneticWorld();
-    Bot *newBot(uint x, uint y);
+    Bot *newBot(QPoint xy);
     void stop();
 
     uint getPhotosynthesisEnergy(int y);
@@ -67,15 +68,15 @@ private:
     QSet<Bot*> killedBots;
 
     bool checkSimilarity(Bot *bot1, Bot *bot2);
-    void mutateBotGenome(Bot *bot);
-    inline uint botPart(Bot *bot);
-    void moveBot(Bot *bot, int *xy);
+    void translateCoords(QPoint &xy);
+    QPoint oppositeBot(Bot *bot);
+    inline bool checkCoords(QPoint xy);
     bool reproduction(Bot *bot);
-    int* oppositeBot(Bot *bot, int *xy);
-    inline bool checkCoords(int *xy);
-    int* translateCoords(int *xy);
+    void moveBot(Bot *bot, QPoint xy);
     void organicStep(Bot *bot);
     void botStep(Bot *bot);
+    void mutateBotGenome(Bot *bot);
+    inline uint botPart(Bot *bot);
     inline void eatBot(Bot *bot, bool noOrganic=false);
     inline void killOrganic(Bot *bot);
     void clearKilled();
