@@ -4,7 +4,7 @@
 
 Bot::Bot(uint genome_len, QPoint xy): xy(xy) {
     hash = hashxy(this);
-    genome.resize(genome_len);
+    //genome.resize(genome_len);
 }
 
 Bot::~Bot() {

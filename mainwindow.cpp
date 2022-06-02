@@ -118,8 +118,14 @@ void MainWindow::initWorld(uint x, uint y) {
     Bot *newBot = world->newBot( QPoint(10, world->maxY-10) );
     newBot->energy = ui->first_bot_energy->value();
     newBot->direction = ui->first_bot_direction->currentIndex();
-    newBot->genome.fill(commands::photosynthesis, world->genomeLen);
+    newBot->genome.fill(0, world->genomeLen);
+    newBot->genome[0] = commands::photosynthesis;
+    newBot->genome[1] = commands::right;
+    newBot->genome[2] = commands::photosynthesis;
+    newBot->genome[3] = commands::left;
+    newBot->genome[2] = world->genomeLen - 5;
     newBot->genomeStatisticInit();
+
     worldInited = true;
 }
 
