@@ -14,9 +14,9 @@ Bot::~Bot() {
 }
 
 void Bot::genomeStatisticInit() {
-    mineralsCount = std::count(genome.begin(), genome.end(), commands::minerals);
-    photosynthesisCount = std::count(genome.begin(), genome.end(), commands::photosynthesis);
-    eatCount = std::count(genome.begin(), genome.end(), commands::eat);
+    mineralsCount = genome.count(commands::minerals);
+    photosynthesisCount = genome.count( commands::photosynthesis);
+    eatCount = genome.count(commands::eat);
 }
 
 void Bot::move(QPoint new_xy) {
