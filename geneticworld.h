@@ -78,7 +78,7 @@ private:
     void mutateBotGenome(Bot *bot);
     inline uint botPart(Bot *bot);
     inline void eatBot(Bot *bot, bool noOrganic=false);
-    inline void killOrganic(Bot *bot);
+    inline void clearOrganic(Bot *bot);
     void clearKilled();
 };
 

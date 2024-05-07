@@ -27,14 +27,13 @@ inline void GeneticWorld::eatBot(Bot *bot, bool noOrganic) {
     if (organicEnabled && !noOrganic) {
         bot->type = ORGANIC;
         bot->old = 0;
-        aliveBotsCount--;
      } else {
-        killOrganic(bot);
-        aliveBotsCount--;
+        clearOrganic(bot);
     }
+     aliveBotsCount--;
 }
 
-inline void GeneticWorld::killOrganic(Bot *bot) {
+inline void GeneticWorld::clearOrganic(Bot *bot) {
     bot->type = DEAD;
     killedBots << bot;
 }
@@ -156,7 +155,7 @@ void GeneticWorld::moveBot(Bot *bot, QPoint xy) {
 
 void GeneticWorld::organicStep(Bot *bot) {
     if (bot->old >= maxOrganicOld) {
-        killOrganic(bot);
+        clearOrganic(bot);
         return;
     }
     QPoint xy = bot->getXY();
@@ -232,7 +231,7 @@ void GeneticWorld::botStep(Bot *bot) {
             if (target_bot != nullptr) {
                 if (target_bot->type == ORGANIC) {
                     bot->energy += organicEnergy;
-                    killOrganic(target_bot);
+                    clearOrganic(target_bot);
                 }
             }
             break;
@@ -365,9 +364,9 @@ void GeneticWorld::botStep(Bot *bot) {
 }
 
 void GeneticWorld::clearKilled() {
-    Bot *bot;
-    foreach (bot, killedBots) {
-        assert(bots.remove(bot->getHash()));
+    foreach (Bot* bot, killedBots) {
+        int res = bots.remove(bot->getHash());
+        assert(res);
         delete bot;
     }
     killedBots.clear();
