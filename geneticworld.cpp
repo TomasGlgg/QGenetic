@@ -168,11 +168,12 @@ int GeneticWorld::checkCoords(QPoint xy) {
 bool GeneticWorld::reproduction(Bot *bot) {
     QPoint xy = oppositeBot(bot);
     if (bot->energy<reproductionPrice) return false;
+    int energy = bot->energy/2;
+    bot->energy -= energy;
     bot->energy -= reproductionPrice;
-    //if (!checkCoords(xy)) return false;
     Bot *new_bot = newBot(xy);
     if (new_bot == nullptr) return false;
-    new_bot->energy = newBotEnergy;
+    new_bot->energy = energy;
     new_bot->direction = bot->direction;
     new_bot->genome = QList(bot->genome);
 
@@ -196,7 +197,8 @@ void GeneticWorld::moveBot(Bot *bot, QPoint xy) {
 }
 
 void GeneticWorld::organicStep(Bot *bot) {
-    if (bot->old >= maxOrganicOld) {
+    bot->energy--;
+    if (bot->energy <= 0) {
         clearOrganic(bot);
         return;
     }
@@ -269,7 +271,7 @@ void GeneticWorld::botStep(Bot *bot) {
             Bot* target_bot = bots.value(target_hash, nullptr);
             if (target_bot != nullptr) {
                 if (target_bot->type == ORGANIC) {
-                    bot->energy += organicEnergy;
+                    bot->energy += target_bot->energy;
                     clearOrganic(target_bot);
                 }
             }
@@ -286,13 +288,14 @@ void GeneticWorld::botStep(Bot *bot) {
                 if (targetBot->type == ALIVE) {
                     if (bot->minerals >= targetBot->minerals) {
                         bot->minerals -= targetBot->minerals;
-                        bot->energy += targetBot->energy * eatK;
+                        targetBot->minerals = 0;
+                        bot->energy += targetBot->energy * steal_coeff;
                         eatBot(targetBot, true);
                     } else {
                         targetBot->minerals -= bot->minerals;
-                        bot->energy += targetBot->energy * eatK;
-                        targetBot->energy *= 1.-eatK;
                         bot->minerals = 0;
+                        //bot->energy += targetBot->energy * steal_coeff;
+                        //targetBot->energy *= 1.-steal_coeff;
                     }
                 }
             }
@@ -315,8 +318,7 @@ void GeneticWorld::botStep(Bot *bot) {
         case commands::check: {  // 1 - empty, 2 - organic, 3 - bot, 4 - similarity bot
             QPoint xy = oppositeBot(bot);
             ulong target_hash = hashxy(xy);
-            Bot* target_bot = bots.value(target_hash, nullptr);
-            if (target_bot != nullptr) {
+            if (bots.contains(target_hash)) {
                 Bot *targetBot = bots.value(target_hash);
                 if (targetBot->type == ORGANIC) {
                     bot->iterator += 1;
@@ -324,8 +326,8 @@ void GeneticWorld::botStep(Bot *bot) {
                     bot->iterator += 2;
                     if (checkSimilarity(bot, targetBot)) bot->iterator++;
                 }
-                break;
             }
+            break;
         }
 
         case commands::align: {

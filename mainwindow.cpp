@@ -143,10 +143,8 @@ void MainWindow::updateWorldSettings() {
     world->mineralsPartSize = ui->mineralsPartSize->value();
     world->generationsInYear = ui->generations_in_year->value();
     world->maxOld = ui->max_old->value();
-    world->maxOrganicOld = ui->max_organic_old->value();
     world->minPhotosynthesisCoefficient = ui->min_photosynthesis_coefficient->value();
     world->organicEnabled = ui->organic->isChecked();
-    world->newBotEnergy = ui->new_bot_energy->value();
     world->processDelay = ui->process_delay->value();
     world->organicEnergy = ui->organicEnergy->value();
     world->mineralPrice = ui->mineralPrice->value();
@@ -154,7 +152,7 @@ void MainWindow::updateWorldSettings() {
     world->mutateGenRange = ui->mutateGenRange->value();
     ui->bot_completion->setMaximum(world->maxBotCount);
 
-    world->eatK = ui->eat_k->value();
+    world->steal_coeff = ui->steal_coeff->value();
     world->mutateAttackCount = ui->mutateAttackCount->value();
 }
 
@@ -175,11 +173,9 @@ void MainWindow::start() {
     ui->mineralsPartSize->setEnabled(false);
     ui->generations_in_year->setEnabled(false);
     ui->max_old->setEnabled(false);
-    ui->max_organic_old->setEnabled(false);
     ui->min_photosynthesis_coefficient->setEnabled(false);
-    ui->eat_k->setEnabled(false);
+    ui->steal_coeff->setEnabled(false);
     ui->organic->setEnabled(false);
-    ui->new_bot_energy->setEnabled(false);
     ui->first_bot_energy->setEnabled(false);
     ui->first_bot_direction->setEnabled(false);
     ui->organicEnergy->setEnabled(false);
@@ -245,10 +241,8 @@ void MainWindow::stop() {
     ui->mineralsPartSize->setEnabled(true);
     ui->generations_in_year->setEnabled(true);
     ui->max_old->setEnabled(true);
-    ui->max_organic_old->setEnabled(true);
     ui->min_photosynthesis_coefficient->setEnabled(true);
-    ui->eat_k->setEnabled(true);
-    ui->new_bot_energy->setEnabled(true);
+    ui->steal_coeff->setEnabled(true);
     ui->organicEnergy->setEnabled(true);
     ui->mineralPrice->setEnabled(true);
     ui->reproductionPrice->setEnabled(true);
@@ -285,13 +279,12 @@ void MainWindow::newWorld() {
     ui->mineralsPartSize->setEnabled(true);
     ui->max_old->setEnabled(true);
     ui->world_parts_count->setEnabled(true);
-    ui->eat_k->setEnabled(true);
+    ui->steal_coeff->setEnabled(true);
     ui->organic->setEnabled(true);
     ui->first_bot_direction->setEnabled(true);
     ui->first_bot_energy->setEnabled(true);
     ui->mineralPrice->setEnabled(true);
     ui->reproductionPrice->setEnabled(true);
-    ui->new_bot_energy->setEnabled(true);
     ui->organicEnergy->setEnabled(true);
     ui->mutateAttackCount->setEnabled(true);
     ui->mutateGenRange->setEnabled(true);
@@ -334,7 +327,8 @@ QColor MainWindow::botColorByEnergy(Bot *bot) {
 }
 
 QColor MainWindow::botColorByUsedGens(Bot *bot) {
-    if (bot->monitoring) return QColor(Qt::magenta);
+    if (bot->monitoring)
+        return QColor(Qt::magenta);
     if (bot->type == ORGANIC) return QColor(Qt::gray);
     float totalNumber = bot->usedEat + bot->usedMinerals + bot->usedPhotosynthesis;
     if (!totalNumber) return QColor(Qt::white);
@@ -355,7 +349,7 @@ QColor MainWindow::botColorByOld(Bot *bot) {
 QColor MainWindow::botColorByMinerals(Bot *bot) {
     if (bot->monitoring) return QColor(Qt::magenta);
     if (bot->type == ORGANIC) return QColor(Qt::gray);
-    uint color = floorDivision(bot->minerals * 255, 100);
+    uint color = floorDivision(bot->minerals * 255, 10);
     if (color > 255) color = 255;
     return QColor(255-color, 255-color, 255);
 }

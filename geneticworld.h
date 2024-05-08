@@ -45,9 +45,7 @@ public:  // == settings ==
     float botMutateChance;
     uint genomeLen;
     uint maxEnergy;
-    uint newBotEnergy;
     uint maxOld;
-    uint maxOrganicOld;
     uint maxBotCount;
     uint organicEnergy;
     uint reproductionPrice;
@@ -56,7 +54,7 @@ public:  // == settings ==
     uint mineralPrice;
 
     // commands settings
-    float eatK;
+    float steal_coeff;
     uint mutateAttackCount;
 
     int maxX, maxY;
