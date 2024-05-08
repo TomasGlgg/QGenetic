@@ -18,6 +18,10 @@ void GeneticWorld::deadBot2Alive(Bot* bot) {
     bot->minerals = 0;
     bot->iterator = 0;
     bot->old = 0;
+    if (bot->monitoring) {
+        emit bot->botKilled();
+        bot->monitoring = false;
+    }
 
     bot->usedPhotosynthesis = 0, bot->usedMinerals = 0, bot->usedEat = 0;
     bot->mineralsCount = 0, bot->photosynthesisCount = 0, bot->eatCount = 0;
@@ -221,6 +225,7 @@ void GeneticWorld::botStep(Bot *bot) {
     switch (command) {
         case commands::reproduction: {
             if (!reproduction(bot)) eatBot(bot);
+            bot->energy--;
             break;
         }
 
@@ -228,6 +233,7 @@ void GeneticWorld::botStep(Bot *bot) {
             bot->usedPhotosynthesis++;
             uint new_energy = getPhotosynthesisEnergy(bot->getY());
             bot->energy += new_energy;
+            bot->energy--;
             break;
         }
 
@@ -235,6 +241,7 @@ void GeneticWorld::botStep(Bot *bot) {
             bot->usedMinerals++;
             uint new_minerals = getMineralsCount(bot->getY());
             bot->minerals += new_minerals;
+            bot->energy--;
             break;
         }
 
@@ -242,18 +249,21 @@ void GeneticWorld::botStep(Bot *bot) {
             if (bot->minerals <= 0) break;
             bot->energy += bot->minerals*mineralPrice;
             bot->minerals = 0;
+            bot->energy--;
             break;
         }
 
         case commands::left: {
             if (bot->direction == 0) bot->direction = 7;
             else bot->direction--;
+            bot->energy--;
             break;
         }
 
         case commands::right: {
             bot->direction++;
             bot->direction %= 8;
+            bot->energy--;
             break;
         }
 
@@ -261,6 +271,7 @@ void GeneticWorld::botStep(Bot *bot) {
             QPoint xy = oppositeBot(bot);
             if (checkCoords(xy) == NULLBLOCK)
                 moveBot(bot, xy);
+            bot->energy--;
             break;
         }
 
@@ -275,6 +286,7 @@ void GeneticWorld::botStep(Bot *bot) {
                     clearOrganic(target_bot);
                 }
             }
+            bot->energy--;
             break;
         }
 
@@ -299,6 +311,7 @@ void GeneticWorld::botStep(Bot *bot) {
                     }
                 }
             }
+            bot->energy--;
             break;
         }
 
@@ -312,6 +325,7 @@ void GeneticWorld::botStep(Bot *bot) {
                 target_bot->energy += averageEnergy;
                 bot->energy -= averageEnergy;
             }
+            bot->energy--;
             break;
         }
 
@@ -333,6 +347,7 @@ void GeneticWorld::botStep(Bot *bot) {
         case commands::align: {
             Direction randDir = rand()%2 ? LEFT : RIGHT;
             bot->direction = randDir;
+            bot->energy--;
             break;
         }
 
@@ -380,6 +395,7 @@ void GeneticWorld::botStep(Bot *bot) {
             ulong target_hash = hashxy(xy);
             Bot* target_bot = bots.value(target_hash, nullptr);
             if (target_bot != nullptr) mutateBotGenome(target_bot);
+            bot->energy--;
             break;
         }
 
@@ -387,6 +403,7 @@ void GeneticWorld::botStep(Bot *bot) {
             bot->iterator++;
             int direction = abs(bot->genome[bot->iterator%genomeLen])%8;
             bot->direction = direction;
+            bot->energy--;
             break;
         }
 
@@ -395,7 +412,6 @@ void GeneticWorld::botStep(Bot *bot) {
             break;
         }
     }
-    bot->energy--;
 
     if (bot->energy>=maxEnergy)
             if (!reproduction(bot)) eatBot(bot);

@@ -15,6 +15,7 @@
 #include "enums.h"
 
 
+
 class GeneticWorld : public QThread {
     Q_OBJECT
 protected:

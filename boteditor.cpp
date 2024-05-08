@@ -95,7 +95,7 @@ void BotEditor::botGenomeEdited(int genomeIndex) {
     uint rowIndex = floorDivision(genomeIndex, columnCount);
     uint columnIndex = genomeIndex % columnCount;
     uint newValue = ((QSpinBox*)ui->tableWidget->cellWidget(rowIndex, columnIndex))->value();
-    bot->genome[genomeIndex] = newValue;
+    if (inited) bot->genome[genomeIndex] = newValue;
 }
 
 void BotEditor::disableUI(bool control) {
@@ -239,11 +239,6 @@ void BotEditor::botKilled() {
     disableUI();
 }
 
-void BotEditor::closeEvent(QCloseEvent *event) {
-    stopMon();
-    QDialog::closeEvent(event);
-}
-
 void BotEditor::genome2File(QFile *file) {
     QByteArray bytes;
     bytes.resize(bot->genome.size());
@@ -298,4 +293,9 @@ QStringList progression(uint max) {
     QStringList result;
     for (uint i = 0; i<max; i++) result << QString::number(i);
     return result;
+}
+
+void BotEditor::closeEvent(QCloseEvent *event) {
+    stopMon();
+    QDialog::closeEvent(event);
 }
