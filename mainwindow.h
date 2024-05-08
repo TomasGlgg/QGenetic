@@ -24,7 +24,6 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-
 class MouseHandlerItem : public QObject, public QGraphicsItem
 {
 Q_OBJECT
@@ -68,8 +67,8 @@ private:
     GeneticWorld *world;
     MouseHandlerItem *mousePressHandler;
     KLed *statusLed;
-
     KLed *processTimeLed;
+    KLed *seasonLed;
     QTimer *renderTimer;
 
     QTimer *graphTimer;
@@ -95,6 +94,7 @@ private:
     void startMouseHandler();
     QPair<QPair<int, int>, QPair<int, int>> _find2Max();
     void renderGraph(bool reset);
+    void updateSeasonLed();
     void closeEvent(QCloseEvent *event);
 
 private slots:

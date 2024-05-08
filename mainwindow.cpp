@@ -6,6 +6,7 @@ inline int floorDivision(int x, int y) {
     return floor(static_cast<float>(x) / static_cast<float>(y));
 }
 
+QColor orange = QColor(255, 165, 0);
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent)
@@ -33,12 +34,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderUI()));
     connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
 
+    // Leds
     statusLed = new KLed(ui->statusLed);
-    statusLed->setShape(KLed::Circular);
-    statusLed->setColor(QColor(255, 165, 0));  // orange
+    //statusLed->setShape(KLed::Circular);
+    statusLed->setColor(orange);
 
     processTimeLed = new KLed(ui->processTimeLed);
     processTimeLed->setColor(Qt::gray);
+    seasonLed = new KLed(ui->seasonLed);
+    seasonLed->setColor(Qt::gray);
 
     // Plotting
     aliveBotHistory = new QLineSeries();
@@ -118,12 +122,8 @@ void MainWindow::initWorld(uint x, uint y) {
     Bot *newBot = world->newBot( QPoint(10, world->maxY-10) );
     newBot->energy = ui->first_bot_energy->value();
     newBot->direction = ui->first_bot_direction->currentIndex();
-    newBot->genome.fill(0, world->genomeLen);
-    newBot->genome[0] = commands::photosynthesis;
-    newBot->genome[1] = commands::right;
-    newBot->genome[2] = commands::photosynthesis;
-    newBot->genome[3] = commands::left;
-    newBot->genome[2] = world->genomeLen - 5;
+    newBot->genome.fill(commands::photosynthesis, world->genomeLen);
+    newBot->genome[0] = commands::right;
     newBot->genomeStatisticInit();
 
     worldInited = true;
@@ -136,8 +136,10 @@ void MainWindow::updateWorldSettings() {
     world->startWorldPhotosynthesisEnergy = ui->startWorldPhotosynthesis->value();
     world->startWorldMinerals = ui->starWorldMinerals->value();
     world->mineralsPartSize = ui->mineralsPartSize->value();
+    world->generationsInYear = ui->generations_in_year->value();
     world->maxOld = ui->max_old->value();
     world->maxOrganicOld = ui->max_organic_old->value();
+    world->minPhotosynthesisCoefficient = ui->min_photosynthesis_coefficient->value();
     world->organicEnabled = ui->organic->isChecked();
     world->newBotEnergy = ui->new_bot_energy->value();
     world->processDelay = ui->process_delay->value();
@@ -166,8 +168,10 @@ void MainWindow::start() {
     ui->startWorldPhotosynthesis->setEnabled(false);
     ui->starWorldMinerals->setEnabled(false);
     ui->mineralsPartSize->setEnabled(false);
+    ui->generations_in_year->setEnabled(false);
     ui->max_old->setEnabled(false);
     ui->max_organic_old->setEnabled(false);
+    ui->min_photosynthesis_coefficient->setEnabled(false);
     ui->eat_k->setEnabled(false);
     ui->organic->setEnabled(false);
     ui->new_bot_energy->setEnabled(false);
@@ -234,8 +238,10 @@ void MainWindow::stop() {
     ui->startWorldPhotosynthesis->setEnabled(true);
     ui->starWorldMinerals->setEnabled(true);
     ui->mineralsPartSize->setEnabled(true);
+    ui->generations_in_year->setEnabled(true);
     ui->max_old->setEnabled(true);
     ui->max_organic_old->setEnabled(true);
+    ui->min_photosynthesis_coefficient->setEnabled(true);
     ui->eat_k->setEnabled(true);
     ui->new_bot_energy->setEnabled(true);
     ui->organicEnergy->setEnabled(true);
@@ -250,7 +256,7 @@ void MainWindow::stop() {
     ui->groupBox_graph->setEnabled(true);
 
     renderUI();  // render last
-    statusLed->setColor(QColor(255, 128, 0));
+    statusLed->setColor(orange);
     botEditorWindow->stopMon();
     startMouseHandler();
 }
@@ -295,7 +301,7 @@ void MainWindow::newWorld() {
     ui->bot_count->display(0);
     ui->processing_time->setText("0");
     ui->bot_completion->setValue(0);
-    statusLed->setColor(QColor(255, 128, 0));
+    statusLed->setColor(orange);
     processTimeLed->setColor(QColor(123, 123, 123));
     ui->DrawArea->setMinimumSize(0, 0);
     ui->DrawArea->setMaximumSize(16777215, 16777215);
@@ -418,7 +424,7 @@ void MainWindow::renderGraph(bool reset) {  // find max and set range
     *aliveBotHistory << QPoint(x, aliveBotCount);
     *organicBotHistory << QPoint(x, organicBotCount);
 
-    if (aliveBotHistory->count() > ui->graph_count->value()) {
+    while (aliveBotHistory->count() > ui->graph_count->value()) {
         int lastElement = std::max(aliveBotHistory->at(0).y(), organicBotHistory->at(0).y());
         if (lastElement == Max) {
             maxCount--;
@@ -446,6 +452,16 @@ void MainWindow::renderGraph(bool reset) {  // find max and set range
     historyAxisX->setRange(x-aliveBotHistory->count()+1, x);
 }
 
+void MainWindow::updateSeasonLed() {
+    float season = (float)(world->generation % world->generationsInYear) / world->generationsInYear;
+    QColor color;
+    if (season < 1/6. || season > 5/6.) color = Qt::green; // summer
+    else if (season < 2/6.) color = Qt::red; // autumn
+    else if (season < 4/6.) color = Qt::blue; // winter
+    else color = orange; // spring
+    seasonLed->setColor(color);
+}
+
 QGraphicsTextItem* textWidget(QString text, uint x, uint y, QColor color) {
     QGraphicsTextItem *textItem = new QGraphicsTextItem(text);
     textItem->setPos(x, y);
@@ -461,6 +477,8 @@ void MainWindow::renderUI() {
         if (world->processingTime >= world->processDelay*1000) processTimeLed->setColor(Qt::red);
         else processTimeLed->setColor(Qt::green);
     } else processTimeLed->setColor(Qt::gray);
+
+    updateSeasonLed();
 
     uint botCount = world->bots.size();
     uint aliveBotCount = world->aliveBotsCount;
@@ -506,6 +524,7 @@ void MainWindow::renderUI() {
     ui->generation->setText(QString::number(world->generation));
     ui->bot_completion->setValue(botCount);
     ui->processing_time->setText(QString::number(world->processingTime) + " (мкс)");
+    ui->photosynthesis_coefficient->setText(QString::number(world->getPhotosynthesisCoefficient()));
 
     // draw lines
     if (ui->draw_lines->isChecked()) {
@@ -538,6 +557,7 @@ void MainWindow::renderUI() {
                 scene->addRect(0, ui->DrawArea->height()-i*botSize, 1, 1, QPen(QColor(255, 0, 0)));
             }
         }*/
+        // Debug
 
     }
 }

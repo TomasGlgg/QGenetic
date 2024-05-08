@@ -20,21 +20,27 @@ class GeneticWorld : public QThread {
 protected:
     void run();
 
-public:  // settings
+public:  // == settings ==
     ~GeneticWorld();
     Bot *newBot(QPoint xy);
     void stop();
 
     uint getPhotosynthesisEnergy(int y);
     uint getMineralsCount(uint y);
+    float getPhotosynthesisCoefficient();
 
     uint worldPartsCount;
     uint startWorldPhotosynthesisEnergy;
     uint startWorldMinerals;
     uint mineralsPartSize;
+    float minPhotosynthesisCoefficient;
 
-    float botMutateChance;
     uint processDelay;
+
+    uint generationsInYear;
+
+    // bots
+    float botMutateChance;
     uint genomeLen;
     uint maxEnergy;
     uint newBotEnergy;
@@ -42,10 +48,10 @@ public:  // settings
     uint maxOrganicOld;
     uint maxBotCount;
     uint organicEnergy;
-    uint mineralPrice;
     uint reproductionPrice;
     bool organicEnabled;
     int mutateGenRange;
+    uint mineralPrice;
 
     // commands settings
     float eatK;

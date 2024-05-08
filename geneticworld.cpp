@@ -42,10 +42,18 @@ inline uint GeneticWorld::botPart(Bot *bot) {
     return floorDivision(bot->getY(), partLength);
 }
 
+float GeneticWorld::getPhotosynthesisCoefficient() {
+    float coeff = ((1+qCos(2.*generation/generationsInYear*M_PI))/2);
+    return minPhotosynthesisCoefficient + coeff * (1-minPhotosynthesisCoefficient);
+}
+
 uint GeneticWorld::getPhotosynthesisEnergy(int y) {
     uint part = floorDivision(y, partLength);
-    if (part >= (worldPartsCount - startWorldPhotosynthesisEnergy))
-        return startWorldPhotosynthesisEnergy - (worldPartsCount - part) + 1;
+    if (part >= (worldPartsCount - startWorldPhotosynthesisEnergy)) {
+        float energy = startWorldPhotosynthesisEnergy - (worldPartsCount - part) + 1;
+        energy *= getPhotosynthesisCoefficient();
+        return floor(energy);
+    }
     return 0;
 }
 
@@ -225,6 +233,7 @@ void GeneticWorld::botStep(Bot *bot) {
         }
 
         case commands::eat: {
+            bot->usedEat++;
             QPoint xy = oppositeBot(bot);
             ulong target_hash = hashxy(xy);
             Bot* target_bot = bots.value(target_hash, nullptr);
@@ -238,11 +247,11 @@ void GeneticWorld::botStep(Bot *bot) {
         }
 
         case commands::steal: {
+            bot->usedEat++;
             QPoint xy = oppositeBot(bot);
             ulong target_hash = hashxy(xy);
             Bot* target_bot = bots.value(target_hash, nullptr);
             if (target_bot != nullptr) {
-                bot->usedEat++;
                 Bot* targetBot = bots.value(target_hash);
                 if (targetBot->type == ALIVE) {
                     if (bot->minerals >= targetBot->minerals) {
@@ -374,7 +383,6 @@ void GeneticWorld::clearKilled() {
 
 
 void GeneticWorld::run() {
-    //setPriority(QThread::HighPriority);
     QElapsedTimer startTime;
     runFlag = true;
     while (runFlag) {
