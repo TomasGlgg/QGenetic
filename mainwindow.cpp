@@ -1,6 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+Scene::Scene(QObject *parent) : QGraphicsScene(parent) {}
+
+void Scene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    emit mousePress(event->scenePos());
+}
 
 inline int floorDivision(int x, int y) {
     return floor(static_cast<float>(x) / static_cast<float>(y));
@@ -13,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
         , ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    scene = new QGraphicsScene(this);
+    scene = new Scene(this);
     botEditorWindow = new BotEditor(this);
     renderTimer = new QTimer(this);
     graphTimer = new QTimer(this);
@@ -34,9 +39,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(renderTimer, SIGNAL(timeout()), this, SLOT(renderUI()));
     connect(graphTimer, SIGNAL(timeout()), this, SLOT(renderGraph()));
 
+    connect(scene, SIGNAL(mousePress(QPointF)), this, SLOT(mousePress(QPointF)));
+
     // Leds
     statusLed = new KLed(ui->statusLed);
-    //statusLed->setShape(KLed::Circular);
     statusLed->setColor(orange);
 
     processTimeLed = new KLed(ui->processTimeLed);
@@ -82,7 +88,6 @@ MainWindow::~MainWindow() {
 void MainWindow::renderTypeChanged() {
     if (worldInited) {
         renderUI();
-        startMouseHandler();
     }
 }
 
@@ -92,6 +97,7 @@ void MainWindow::openBotEditor() {
 }
 
 void MainWindow::mousePress(QPointF position) {
+    if (!worldInited || world->runFlag) return;
     uint position_x = position.x();
     uint position_y = ui->DrawArea->height() - position.y();
     int botX = floorDivision(position_x, botSize);
@@ -104,7 +110,6 @@ void MainWindow::mousePress(QPointF position) {
         botEditorWindow->single();
     }
     renderUI();
-    startMouseHandler();
 }
 
 void MainWindow::initWorld(uint x, uint y) {
@@ -258,7 +263,6 @@ void MainWindow::stop() {
     renderUI();  // render last
     statusLed->setColor(orange);
     botEditorWindow->stopMon();
-    startMouseHandler();
 }
 
 void MainWindow::newWorld() {
@@ -309,12 +313,6 @@ void MainWindow::newWorld() {
     worldInited = false;
     delete world;
     renderGraph(true);
-}
-
-void MainWindow::startMouseHandler() {
-    mousePressHandler = new MouseHandlerItem(ui->DrawArea->width(), ui->DrawArea->height());
-    scene->addItem(mousePressHandler);
-    connect(mousePressHandler, SIGNAL(mousePress(QPointF)), this, SLOT(mousePress(QPointF)));
 }
 
 QColor MainWindow::botColorByType(Bot *bot) {

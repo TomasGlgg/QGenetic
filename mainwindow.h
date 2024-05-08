@@ -24,33 +24,14 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class MouseHandlerItem : public QObject, public QGraphicsItem
-{
-Q_OBJECT
-private:
-    uint w = 0, h = 0;
+class Scene : public QGraphicsScene {
+    Q_OBJECT
 public:
-    explicit MouseHandlerItem(QObject *parent = 0) : QObject(parent), QGraphicsItem() {
-        setPos(0, 0);
-    }
-    explicit MouseHandlerItem(uint w = 0, uint h = 0, QObject *parent = 0) : QObject(parent), QGraphicsItem() {
-        this->w = w;
-        this->h = h;
-    }
-    QRectF boundingRect() const {
-        return QRectF(0,0,w,h);
-    }
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-        Q_UNUSED(painter);
-        Q_UNUSED(option);
-        Q_UNUSED(widget);
-    }
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) {
-        emit mousePress(mapToScene(event->pos()));
-    }
-
+    explicit Scene(QObject *parent = nullptr);
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 signals:
-    void mousePress(QPointF position);
+    void mousePress(QPointF);
 };
 
 
@@ -63,9 +44,8 @@ public:
 private:
     Ui::MainWindow *ui;
     BotEditor *botEditorWindow;
-    QGraphicsScene *scene;
+    Scene *scene;
     GeneticWorld *world;
-    MouseHandlerItem *mousePressHandler;
     KLed *statusLed;
     KLed *processTimeLed;
     KLed *seasonLed;
@@ -91,7 +71,6 @@ private:
     QColor botColorByMinerals(Bot *bot);
     void initWorld(uint x, uint y);
     void updateWorldSettings();
-    void startMouseHandler();
     QPair<QPair<int, int>, QPair<int, int>> _find2Max();
     void renderGraph(bool reset);
     void updateSeasonLed();

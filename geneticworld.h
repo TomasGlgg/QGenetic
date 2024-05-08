@@ -29,6 +29,8 @@ public:  // == settings ==
     uint getMineralsCount(uint y);
     float getPhotosynthesisCoefficient();
 
+    bool runFlag;
+
     uint worldPartsCount;
     uint startWorldPhotosynthesisEnergy;
     uint startWorldMinerals;
@@ -70,7 +72,6 @@ public:  // == settings ==
     //QMutex botsMutex;
 
 private:
-    bool runFlag;
     QSet<Bot*> killedBots;
 
     void deadBot2Alive(Bot* bot);
