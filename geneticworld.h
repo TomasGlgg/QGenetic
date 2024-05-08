@@ -73,10 +73,12 @@ private:
     bool runFlag;
     QSet<Bot*> killedBots;
 
+    void deadBot2Alive(Bot* bot);
+
     bool checkSimilarity(Bot *bot1, Bot *bot2);
     void translateCoords(QPoint &xy);
     QPoint oppositeBot(Bot *bot);
-    inline bool checkCoords(QPoint xy);
+    int checkCoords(QPoint xy);
     bool reproduction(Bot *bot);
     void moveBot(Bot *bot, QPoint xy);
     void organicStep(Bot *bot);

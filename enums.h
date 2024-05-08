@@ -29,7 +29,14 @@ namespace commands {
 enum BotType {
     ALIVE,
     ORGANIC,
-    DEAD
+    DEAD,
+};
+
+enum BlockType {
+    BOT,
+    DEADBOT,
+    ERROR,
+    NULLBLOCK
 };
 
 enum Direction {

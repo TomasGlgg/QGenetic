@@ -12,14 +12,42 @@ GeneticWorld::~GeneticWorld() {
     killedBots.clear();
 }
 
+void GeneticWorld::deadBot2Alive(Bot* bot) {
+    bot->type = ALIVE;
+    bot->direction = 0;
+    bot->minerals = 0;
+    bot->iterator = 0;
+    bot->old = 0;
+
+    bot->usedPhotosynthesis = 0, bot->usedMinerals = 0, bot->usedEat = 0;
+    bot->mineralsCount = 0, bot->photosynthesisCount = 0, bot->eatCount = 0;
+
+    int res = killedBots.remove(bot);
+    assert(res);
+}
+
 Bot *GeneticWorld::newBot(QPoint xy) {
-    Bot *new_bot = new Bot(genomeLen, xy);
-    ulong hash = new_bot->getHash();
-    //botsMutex.lock();
-    bots[hash] = new_bot;
-    //botsMutex.unlock();
+    Bot *bot;
+    int block = checkCoords(xy);
+    switch (block) {
+        case ERROR:
+        case BOT: return nullptr;
+
+        case DEADBOT:
+            bot = bots.value(hashxy(xy));
+            deadBot2Alive(bot);
+            break;
+
+        case NULLBLOCK:
+            bot = new Bot(genomeLen, xy);
+            ulong hash = bot->getHash();
+            //botsMutex.lock();
+            bots[hash] = bot;
+            //botsMutex.unlock();
+            break;
+    }
     aliveBotsCount++;
-    return new_bot;
+    return bot;
 }
 
 inline void GeneticWorld::eatBot(Bot *bot, bool noOrganic) {
@@ -125,10 +153,15 @@ QPoint GeneticWorld::oppositeBot(Bot *bot) {
    return xy;
 }
 
-inline bool GeneticWorld::checkCoords(QPoint xy) {
-    if (xy.y() < 0 || xy.y() >= maxY) return false;
+int GeneticWorld::checkCoords(QPoint xy) {
+    if (xy.y() < 0 || xy.y() >= maxY) return ERROR;
     ulong hash = hashxy(xy);
-    return !bots.contains(hash);
+    if (bots.contains(hash)) {
+           Bot* bot = bots.value(hash);
+           if (bot->type == ALIVE || bot->type == ORGANIC) return BOT;
+           return DEADBOT;
+    }
+    return NULLBLOCK;
 }
 
 
@@ -136,8 +169,9 @@ bool GeneticWorld::reproduction(Bot *bot) {
     QPoint xy = oppositeBot(bot);
     if (bot->energy<reproductionPrice) return false;
     bot->energy -= reproductionPrice;
-    if (!checkCoords(xy)) return false;
+    //if (!checkCoords(xy)) return false;
     Bot *new_bot = newBot(xy);
+    if (new_bot == nullptr) return false;
     new_bot->energy = newBotEnergy;
     new_bot->direction = bot->direction;
     new_bot->genome = QList(bot->genome);
@@ -168,7 +202,7 @@ void GeneticWorld::organicStep(Bot *bot) {
     }
     QPoint xy = bot->getXY();
     xy.ry()--;
-    if (checkCoords(xy))
+    if (checkCoords(xy) == NULLBLOCK)
         moveBot(bot, xy);
 }
 
@@ -181,10 +215,6 @@ void GeneticWorld::mutateBotGenome(Bot *bot) {
 }
 
 void GeneticWorld::botStep(Bot *bot) {
-    if (bot->energy>=maxEnergy)
-        if (!reproduction(bot)) eatBot(bot);
-
-
     int command = bot->genome[bot->iterator];
     switch (command) {
         case commands::reproduction: {
@@ -227,7 +257,7 @@ void GeneticWorld::botStep(Bot *bot) {
 
         case commands::step: {
             QPoint xy = oppositeBot(bot);
-            if (checkCoords(xy))
+            if (checkCoords(xy) == NULLBLOCK)
                 moveBot(bot, xy);
             break;
         }
@@ -364,6 +394,9 @@ void GeneticWorld::botStep(Bot *bot) {
         }
     }
     bot->energy--;
+
+    if (bot->energy>=maxEnergy)
+            if (!reproduction(bot)) eatBot(bot);
 
     if (bot->energy <= 0 || bot->old >= maxOld)
         eatBot(bot);
