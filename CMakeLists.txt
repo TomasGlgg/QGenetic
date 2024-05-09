@@ -18,6 +18,7 @@ add_executable(QGenetic main.cpp
         kled.h kled.cpp
         geneticworld.cpp geneticworld.h
         botstruct.h botstruct.cpp
+        enums.h
         resources.qrc)
 
 target_link_libraries(QGenetic
