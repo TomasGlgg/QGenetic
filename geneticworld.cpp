@@ -331,16 +331,25 @@ void GeneticWorld::botStep(Bot *bot) {
             break;
         }
 
-        case commands::check: {  // 1 - empty, 2 - organic, 3 - bot, 4 - similarity bot
+        case commands::check: {  // 1 - similarity bot, 2 - bot, 3 - organic, 4 - null, 5 - error
             QPoint xy = oppositeBot(bot);
+            int target_block = checkCoords(xy);
+            if (target_block == DEADBOT || target_block == NULLBLOCK) {
+                bot->iterator += 3;
+                break;
+            }
+            if (target_block == ERROR) {
+                bot->iterator += 4;
+                break;
+            }
+            // bot:
             ulong target_hash = hashxy(xy);
             if (bots.contains(target_hash)) {
                 Bot *targetBot = bots.value(target_hash);
                 if (targetBot->type == ORGANIC) {
                     bot->iterator += 1;
                 } else if (targetBot->type == ALIVE) {
-                    bot->iterator += 2;
-                    if (checkSimilarity(bot, targetBot)) bot->iterator++;
+                    if (!checkSimilarity(bot, targetBot)) bot->iterator++;
                 }
             }
             break;

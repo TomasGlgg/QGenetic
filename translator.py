@@ -70,7 +70,7 @@ Opcodes = {
     'REPRODUCTION': Opcode(-11, 0, 0),
     'EAT': Opcode(-10, 0, 0),
     'STEAL': Opcode(-9, 0, 0),
-    'CHECK': Opcode(-8, 0, 3),
+    'CHECK': Opcode(-8, 0, 4),
     'MINERALS': Opcode(-7, 0, 0),
     'PHOTOSYNTHESIS': Opcode(-6, 0, 0),
     'CONVERT_MINERALS': Opcode(-5, 0, 0),
