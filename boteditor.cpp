@@ -92,10 +92,11 @@ void BotEditor::botInfoEdited(int index) {
 }
 
 void BotEditor::botGenomeEdited(int genomeIndex) {
+    if (!inited) return;
     uint rowIndex = floorDivision(genomeIndex, columnCount);
     uint columnIndex = genomeIndex % columnCount;
     uint newValue = ((QSpinBox*)ui->tableWidget->cellWidget(rowIndex, columnIndex))->value();
-    if (inited) bot->genome[genomeIndex] = newValue;
+    bot->genome[genomeIndex] = newValue;
 }
 
 void BotEditor::disableUI(bool control) {
