@@ -276,7 +276,6 @@ void GeneticWorld::botStep(Bot *bot) {
         }
 
         case commands::eat: {
-            bot->usedEat++;
             QPoint xy = oppositeBot(bot);
             ulong target_hash = hashxy(xy);
             Bot* target_bot = bots.value(target_hash, nullptr);
@@ -284,6 +283,7 @@ void GeneticWorld::botStep(Bot *bot) {
                 if (target_bot->type == ORGANIC) {
                     bot->energy += target_bot->energy;
                     clearOrganic(target_bot);
+                    bot->usedEat++;
                 }
             }
             bot->energy--;
@@ -291,7 +291,6 @@ void GeneticWorld::botStep(Bot *bot) {
         }
 
         case commands::steal: {
-            bot->usedEat++;
             QPoint xy = oppositeBot(bot);
             ulong target_hash = hashxy(xy);
             Bot* target_bot = bots.value(target_hash, nullptr);
@@ -309,6 +308,7 @@ void GeneticWorld::botStep(Bot *bot) {
                         //bot->energy += targetBot->energy * steal_coeff;
                         //targetBot->energy *= 1.-steal_coeff;
                     }
+                    bot->usedEat++;
                 }
             }
             bot->energy--;
@@ -316,14 +316,16 @@ void GeneticWorld::botStep(Bot *bot) {
         }
 
         case commands::share: {
+            bot->iterator++;
+            int energy = 100*abs(bot->genome[bot->iterator%genomeLen]);
+
             QPoint xy = oppositeBot(bot);
             ulong target_hash = hashxy(xy);
             Bot* target_bot = bots.value(target_hash, nullptr);
             if (target_bot != nullptr) {
                 Bot* target_bot = bots.value(target_hash);
-                uint averageEnergy = floor((bot->energy + target_bot->energy)/2.);
-                target_bot->energy += averageEnergy;
-                bot->energy -= averageEnergy;
+                target_bot->energy += energy;
+                bot->energy -= energy;
             }
             bot->energy--;
             break;
@@ -353,14 +355,14 @@ void GeneticWorld::botStep(Bot *bot) {
 
         case commands::check_my_energy: {
             bot->iterator++;
-            int checkableEnergy = bot->genome[bot->iterator%genomeLen];
+            int checkableEnergy = 100*abs(bot->genome[bot->iterator%genomeLen]);
             if (bot->energy >= checkableEnergy) bot->iterator++;
             break;
         }
 
         case commands::check_my_level: {
             bot->iterator++;
-            int checkableLevel = bot->genome[bot->iterator%genomeLen];
+            int checkableLevel = abs(bot->genome[bot->iterator%genomeLen]);
             uint currentPart = botPart(bot);
             if (currentPart >= checkableLevel) bot->iterator++;
             break;
@@ -368,7 +370,7 @@ void GeneticWorld::botStep(Bot *bot) {
 
         case commands::check_my_minerals: {
             bot->iterator++;
-            int checkableMinerals = bot->genome[bot->iterator%genomeLen];
+            int checkableMinerals = abs(bot->genome[bot->iterator%genomeLen]);
             if (bot->minerals >= checkableMinerals) bot->iterator++;
             break;
         }
