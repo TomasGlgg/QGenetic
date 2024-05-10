@@ -3,50 +3,37 @@ from sys import argv
 from io import StringIO
 from re import compile
 
-# namespace opcodes {
-#    enum Opcodes {
-#        mutate_attack = -19,        // mutate attack         = -19
-#        mutate,                     // mutate genome         = -18
-#        check_target_minerals,      // check target minerals = -17
-#        check_my_minerals,          // check my minerals     = -16
-#        check_my_level,             // check my level        = -15
-#        check_my_energy,            // check my energy       = -14
-#        align,                      // align horizontally    = -13
-#        share,                      // share                 = -12
-#        reproduction,               // reproduction          = -11
-#        eat,                        // eat                   = -10
-#        steal,                      // steal                 = -9
-#        check,                      // check                 = -8
-#        minerals,                   // minerals              = -7
-#        photosynthesis,             // photosynthesis        = -6
-#        convert_minerals,           // convert minerals      = -5
-#        change_dir,                 // change directory (absolutely) = -4
-#        right,                      // right                 = -3
-#        left,                       // left                  = -2
-#        step                        // step                  = -1
-#   };
-#}
+# +---------- Example -----------
+# | #size 60
+# | #default NOP
+# |
+# | start:
+# |
+# | CHECK {
+# |     GOTO(simbot),
+# |     GOTO(bot),
+# |     GOTO(organic),
+# |     GOTO(empty),
+# |     GOTO(simbot)
+# | };
+# |
+# | empty:
+# | STEP;
+# | GOTO(start);
+# |
+# | organic:
+# | EAT;
+# | GOTO(start);
+# |
+# | bot:
+# | MINERALS;
+# | STEAL;
+# | GOTO(start);
+# |
+# | simbot:
+# | RIGHT;
+# | GOTO(start);
 
-#class Opcode(Enum):
-#    MUTATE_ATTACK         = -19
-#    MUTATE                = -18
-#    CHECK_TARGET_MINERALS = -17
-#    CHECK_MY_MINERALS     = -16
-#    CHECK_MY_LEVEL        = -15
-#    CHECK_MY_ENERGY       = -14
-#    ALIGN                 = -13
-#    SHARE                 = -12
-#    REPRODUCTION          = -11
-#    EAT                   = -10
-#    STEAL                 = -9
-#    CHECK                 = -8
-#    MINERALS              = -7
-#    PHOTOSYNTHESIS        = -6
-#    CONVERT_MINERALS      = -5
-#    CHANGE_DIR            = -4
-#    RIGHT                 = -3
-#    LEFT                  = -2
-#    STEP                  = -1
 
 @dataclass
 class Opcode:
