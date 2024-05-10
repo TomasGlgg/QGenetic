@@ -347,7 +347,7 @@ void GeneticWorld::botStep(Bot *bot) {
             if (bots.contains(target_hash)) {
                 Bot *targetBot = bots.value(target_hash);
                 if (targetBot->type == ORGANIC) {
-                    bot->iterator += 1;
+                    bot->iterator += 2;
                 } else if (targetBot->type == ALIVE) {
                     if (!checkSimilarity(bot, targetBot)) bot->iterator++;
                 }
