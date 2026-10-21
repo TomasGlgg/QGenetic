@@ -317,15 +317,18 @@ void GeneticWorld::botStep(Bot *bot) {
 
         case commands::share: {
             bot->iterator++;
-            int energy = 100*abs(bot->genome[bot->iterator%genomeLen]);
-
+            int share_energy = 100*abs(bot->genome[bot->iterator%genomeLen]);
+            if (share_energy > bot->energy) {
+                eatBot(bot);
+                break;
+            }
             QPoint xy = oppositeBot(bot);
             ulong target_hash = hashxy(xy);
             Bot* target_bot = bots.value(target_hash, nullptr);
             if (target_bot != nullptr) {
                 Bot* target_bot = bots.value(target_hash);
-                target_bot->energy += energy;
-                bot->energy -= energy;
+                target_bot->energy += share_energy;
+                bot->energy -= share_energy;
             }
             bot->energy--;
             break;
